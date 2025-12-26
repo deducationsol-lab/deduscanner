@@ -3,105 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$DEDU | Grok AI Scanner</title>
+    <title>$DEDU | AI Technical Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --deep-purple: #6b21a8; --dark-bg: #0b0118; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .anime-border { border: 2px solid var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 163, 0.1); background: rgba(18, 5, 38, 0.9); }
-        .grok-box { border-left: 4px solid #fff; background: rgba(255, 255, 255, 0.05); }
-        .scanner-input { background: rgba(107, 33, 168, 0.2); border: 1px solid var(--neon-green); color: var(--neon-green); }
-        iframe { width: 100%; height: 500px; border: none; border-radius: 8px; }
+        .anime-border { border: 2px solid var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 163, 0.1); background: rgba(18, 5, 38, 0.9); }
+        #chart-area { width: 100%; height: 500px; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4">
 
     <div class="max-w-6xl mx-auto text-center mb-6">
-        <h1 class="text-4xl font-black text-[#00ffa3] italic tracking-tighter">$DEDU x GROK_AI</h1>
-        <p class="text-[10px] text-purple-400 uppercase tracking-widest">Neural Link: Online | Helius RPC: Connected</p>
+        <h1 class="text-4xl font-black text-[#00ffa3] italic tracking-tighter underline underline-offset-8">$DEDU_INSIGHT</h1>
+        <p class="text-[10px] text-purple-400 mt-2 uppercase tracking-[0.4em]">Algorithmic Price Action Analysis</p>
     </div>
 
-    <div class="max-w-4xl mx-auto mb-6 grid grid-cols-1 md:grid-cols-2 gap-2">
-        <input id="xaiKey" type="password" placeholder="ENTER xAI (GROK) API KEY..." class="scanner-input p-2 text-xs">
-        <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="scanner-input p-2 text-xs">
-    </div>
-    <div class="text-center mb-10">
-        <button onclick="runGrokScan()" class="bg-[#00ffa3] text-black px-16 py-3 font-black hover:scale-105 transition-all">INITIALIZE ANALYSIS</button>
+    <div class="max-w-3xl mx-auto anime-border p-4 mb-8">
+        <div class="flex gap-2">
+            <input id="tokenAddr" type="text" placeholder="PASTE SOLANA MINT..." class="bg-black/50 border border-purple-900 p-3 flex-1 outline-none text-[#00ffa3] text-sm">
+            <button onclick="updateDashboard()" class="bg-[#00ffa3] text-black px-8 font-bold hover:bg-white transition-all">ANALYZE</button>
+        </div>
     </div>
 
-    <div id="terminal" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+    <div id="dashboard" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
         
-        <div class="lg:col-span-2 anime-border p-1 bg-black">
-            <iframe id="chart-frame" src=""></iframe>
+        <div class="lg:col-span-2 anime-border overflow-hidden bg-black">
+            <div id="chart-area">
+                <iframe id="price-chart" src=""></iframe>
+            </div>
         </div>
 
         <div class="space-y-4">
-            <div class="anime-border p-5 grok-box">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-2 h-2 bg-white rounded-full animate-ping"></div>
-                    <h3 class="font-bold text-white text-sm">GROK_TERMINAL_LOG</h3>
+            <div class="anime-border p-2 bg-black min-h-[400px]">
+                <h3 class="text-[#00ffa3] text-[10px] font-bold p-2 border-b border-purple-900 mb-2">AUTO_TECHNICAL_OVERVIEW >></h3>
+                
+                <div class="tradingview-widget-container" id="tv-gauge">
+                    <div class="tradingview-widget-container__widget"></div>
                 </div>
-                <div id="grokResponse" class="text-[11px] leading-relaxed text-gray-300 min-h-[300px]">
-                    Waiting for blockchain data packet...
+
+                <div class="p-4 mt-2 bg-purple-950/20 rounded border border-purple-900/50">
+                    <p class="text-[11px] text-gray-300 italic leading-relaxed">
+                        <span class="text-[#00ffa3] block mb-1 font-bold">SYST_MESSAGE:</span>
+                        Price action is being cross-referenced with RSI and Volatility bands. Check the gauge above for the current aggregate sentiment.
+                        <br><br>
+                        <span class="text-yellow-500 font-bold underline text-[10px]">NFA & DYOR applied to all data points.</span>
+                    </p>
                 </div>
             </div>
-            
-            <div class="p-3 text-[9px] text-center text-gray-500 font-bold border border-gray-800">
-                DISCLAIMER: NOT FINANCIAL ADVICE (NFA). DO YOUR OWN RESEARCH (DYOR).
+
+            <div class="p-3 bg-red-950/20 border border-red-900 text-[10px] text-center text-red-400 font-bold">
+                ⚠️ WARNING: NO FINANCIAL ADVICE (NFA). ALWAYS DO YOUR OWN RESEARCH (DYOR).
             </div>
         </div>
     </div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async></script>
     <script>
-        const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
-
-        async function runGrokScan() {
+        function updateDashboard() {
             const mint = document.getElementById('tokenAddr').value.trim();
-            const xaiKey = document.getElementById('xaiKey').value.trim();
+            if(!mint) return;
+
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            // 1. Update Chart
+            document.getElementById('price-chart').src = `https://www.geckoterminal.com/solana/pools/${mint}?embed=1&info=0&swaps=1`;
+
+            // 2. Inject Technical Gauge
+            // Note: TradingView uses Symbol names for the gauge. 
+            // For Pump.fun tokens, we default to SOL/USD or provide a message.
+            const gaugeContainer = document.querySelector("#tv-gauge .tradingview-widget-container__widget");
+            gaugeContainer.innerHTML = ''; // Clear old widget
             
-            if(!mint || !xaiKey) return alert("Keys required for Neural Link.");
-
-            document.getElementById('terminal').classList.remove('hidden');
-            document.getElementById('chart-frame').src = `https://www.geckoterminal.com/solana/pools/${mint}?embed=1`;
-            document.getElementById('grokResponse').innerText = "Grok is analyzing on-chain data flows...";
-
-            try {
-                // 1. Fetch live data from Helius
-                const hRes = await fetch(HELIUS_RPC, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: "2.0", id: 1,
-                        method: "getTokenLargestAccounts",
-                        params: [mint]
-                    })
-                });
-                const hData = await hRes.json();
-                const whaleData = JSON.stringify(hData.result.value.slice(0, 5));
-
-                // 2. Call Grok AI (xAI API)
-                const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${xaiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: "grok-beta", // Use 'grok-2' or latest available
-                        messages: [
-                            { role: "system", content: "You are Grok, a sharp-witted crypto analyst. Analyze the following Solana token holder data. Give a 'Best Suggestion' (Buy/Wait/Avoid) and 'Options' (Short-term/Long-term). You MUST end every response with: 'This is NFA. Please DYOR.'" },
-                            { role: "user", content: `Token Mint: ${mint}. Top 5 Holder Data: ${whaleData}. Provide a concise professional analysis for an educated investor.` }
-                        ]
-                    })
-                });
-
-                const grokData = await grokRes.json();
-                document.getElementById('grokResponse').innerText = grokData.choices[0].message.content;
-
-            } catch (err) {
-                document.getElementById('grokResponse').innerText = "ERROR: Connection to Grok failed. Check API credits.";
-            }
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+            script.async = true;
+            script.text = JSON.stringify({
+                "interval": "1m",
+                "width": "100%",
+                "isTransparent": true,
+                "height": 350,
+                "symbol": "COINBASE:SOLUSD", // Using SOL as the base sentiment for Solana tokens
+                "showIntervalTabs": true,
+                "displayMode": "single",
+                "locale": "en",
+                "colorTheme": "dark"
+            });
+            gaugeContainer.appendChild(script);
         }
     </script>
 </body>
