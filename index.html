@@ -2,74 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$DEDU | Gemini Facilitator Terminal</title>
+    <title>$DEDU | Gemini Intelligence Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --gemini-blue: #4285f4; --neon-green: #00ffa3; --dark-bg: #030108; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid rgba(66, 133, 244, 0.3); box-shadow: 0 0 20px rgba(66, 133, 244, 0.1); background: #0a0a0a; }
-        .ai-header { background: linear-gradient(90deg, #4285f4, #1a0b2e); padding: 4px 12px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
-        iframe { width: 100%; height: 550px; border: none; background: #000; }
-        .logo-frame { border: 2px solid var(--neon-green); border-radius: 50%; overflow: hidden; width: 60px; height: 60px; background: #111; }
+        .ai-header { background: linear-gradient(90deg, #4285f4, #1a0b2e); padding: 8px 12px; font-size: 11px; font-weight: bold; }
+        iframe { width: 100%; height: 600px; border: none; background: #000; }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-        <div class="flex items-center gap-5">
-            <div class="logo-frame shadow-[0_0_15px_#00ffa3]">
-                <div class="flex items-center justify-center h-full text-[#00ffa3] font-black italic">DEDU</div>
-            </div>
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full border-2 border-[#00ffa3] flex items-center justify-center font-black italic text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-4xl font-black italic text-white tracking-tighter">$DEDU_FACILITATOR</h1>
-                <p class="text-blue-400 text-[10px] tracking-[0.5em] uppercase">Status: Neural Link Ready</p>
+                <h1 class="text-3xl font-black italic tracking-tighter">$DEDU_TERMINAL</h1>
+                <p class="text-blue-400 text-[10px] tracking-[0.3em] uppercase">Powered by Gemini AI</p>
             </div>
         </div>
 
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-gray-800 p-3 text-sm flex-1 md:w-80 outline-none focus:border-blue-500 transition-colors text-blue-400">
-            <button onclick="executeGeminiScan()" class="bg-blue-600 hover:bg-white hover:text-blue-600 px-8 py-3 font-bold text-sm transition-all uppercase tracking-tighter">ANALYZE</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-gray-800 p-3 text-sm flex-1 md:w-96 outline-none focus:border-blue-500 text-blue-400">
+            <button onclick="launchFacilitator()" class="bg-blue-600 hover:bg-white hover:text-blue-600 px-10 py-3 font-bold text-sm transition-all uppercase">Analyze</button>
         </div>
     </div>
 
-    <div id="main-ui" class="max-w-7xl mx-auto hidden">
-        <div class="grid grid-cols-1 gap-6">
+    <div id="ui" class="max-w-7xl mx-auto hidden space-y-6">
+        
+        <div class="terminal-border rounded-lg overflow-hidden">
+            <div class="ai-header uppercase">Real-Time Market Data</div>
+            <div id="chart-container">
+                <iframe id="market-chart" src=""></iframe>
+            </div>
+        </div>
+
+        <div class="terminal-border rounded-lg overflow-hidden">
+            <div class="ai-header flex justify-between">
+                <span>FACILITATOR_OVERVIEW</span>
+                <span id="status" class="opacity-50 italic">AWAITING_DATA</span>
+            </div>
             
-            <div class="terminal-border rounded-lg overflow-hidden">
-                <div class="ai-header">LIVE_MARKET_FEED</div>
-                <iframe id="price-chart" src=""></iframe>
+            <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-blue-400 font-bold text-xs mb-4">// ANALYSIS_BRIEFING</h3>
+                    <div id="gemini-text" class="text-xs text-gray-300 leading-relaxed italic whitespace-pre-wrap">
+                        Syncing with Solana Mainnet...
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-black/50 p-4 border border-gray-800 rounded">
+                        <p class="text-[10px] text-blue-400 font-bold mb-1">RISK_LEVEL</p>
+                        <div id="risk-score" class="text-xl font-black">--</div>
+                    </div>
+                    <div class="bg-black/50 p-4 border border-gray-800 rounded">
+                        <p class="text-[10px] text-blue-400 font-bold mb-1">ENTRY_STRATEGY</p>
+                        <div id="entry-point" class="text-xl font-black text-[#00ffa3]">--</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="terminal-border rounded-lg overflow-hidden">
-                <div class="ai-header flex justify-between items-center">
-                    <span>GEMINI_AI_FACILITATION_LAYER</span>
-                    <span id="scan-status" class="text-[9px] opacity-70 italic">STBY...</span>
-                </div>
-                
-                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <h3 class="text-blue-400 font-bold text-sm uppercase tracking-widest">// Intelligent Overview</h3>
-                        <div id="gemini-overview" class="text-xs text-gray-300 leading-relaxed italic whitespace-pre-wrap">
-                            Synchronizing with Helius RPC...
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="bg-black/50 p-6 border border-gray-800 rounded">
-                            <h4 class="text-blue-400 text-[10px] font-bold mb-2 uppercase">Risk / Reward Rating</h4>
-                            <div id="gemini-risk" class="text-2xl font-black text-white">ANALYZING...</div>
-                        </div>
-                        <div class="bg-black/50 p-6 border border-gray-800 rounded">
-                            <h4 class="text-blue-400 text-[10px] font-bold mb-2 uppercase">Suitable Entry Point</h4>
-                            <div id="gemini-entry" class="text-2xl font-black text-[#00ffa3]">WAITING...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-red-950/10 border-t border-gray-900 text-[10px] text-center text-gray-500 font-bold">
-                    [SYSTEM_NOTICE] NOT FINANCIAL ADVICE (NFA) • DO YOUR OWN RESEARCH (DYOR)
-                </div>
+            <div class="p-4 border-t border-gray-900 text-[10px] text-center text-gray-500 font-bold">
+                NFA & DYOR • GENERATED BY $DEDU FACILITATOR
             </div>
         </div>
     </div>
@@ -78,19 +74,18 @@
         const GEMINI_KEY = "AIzaSyCNZk6fiLSQQEFhxJb8oJRaukoTlpY-yJE";
         const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
 
-        async function executeGeminiScan() {
+        async function launchFacilitator() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
-            // Show UI and Update Chart
-            document.getElementById('main-ui').classList.remove('hidden');
-            document.getElementById('scan-status').innerText = "FETCHING_DATA...";
+            document.getElementById('ui').classList.remove('hidden');
+            document.getElementById('status').innerText = "LINKING_TO_CHAIN...";
             
-            // FIXED GECKOTERMINAL URL: Using the Token endpoint is better than Pool
-            document.getElementById('price-chart').src = `https://www.geckoterminal.com/solana/tokens/${mint}?embed=1&info=0&swaps=1&transparent=1`;
+            // DexScreener Embed is the best for Solana
+            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
             try {
-                // 1. Fetch Holders from Helius
+                // Fetch Whale Data from Helius
                 const hRes = await fetch(HELIUS_RPC, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -99,29 +94,32 @@
                 const hData = await hRes.json();
                 const whales = hData.result.value.slice(0, 5);
 
-                // 2. Feed to Gemini
-                const prompt = `Act as the $DEDU Token Facilitator. 
-                Token Mint: ${mint}. 
-                Top 5 Holder Data: ${JSON.stringify(whales)}. 
-                Analyze and provide:
-                - A professional summary of risk (max 3 sentences).
-                - A Risk/Reward score (e.g. 4/10).
-                - A clear "Suitable Entry Point" recommendation.
-                Tone: Educated, stable, sharp.
-                MANDATORY: You must separate the sections with "|||".
-                Example Format: Summary text ||| Score ||| Entry recommendation.
+                // Prompt Gemini
+                const prompt = `Act as $DEDU Facilitator. 
+                Data: Mint ${mint}, Holders: ${JSON.stringify(whales)}. 
+                Provide: 1) Briefing (risk/reward summary), 2) Risk Level (1-10), 3) Entry Point.
+                Formatting: Separate the 3 sections with "###".
                 End with "NFA. DYOR."`;
 
-                const gemRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+                const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
 
-                const gData = await gemRes.json();
-                const rawResponse = gData.candidates[0].content.parts[0].text;
+                const gJson = await gRes.json();
+                const aiText = gJson.candidates[0].content.parts[0].text;
 
-                // 3. Parse and Display Gemini's Facilitation
-                const parts = rawResponse.split("|||");
-                document.getElementById('gemini-overview').innerText = (parts[0] || rawResponse).trim();
-                document.getElementById('gemini-risk').innerText
+                const segments = aiText.split("###");
+                document.getElementById('gemini-text').innerText = (segments[0] || aiText).trim();
+                document.getElementById('risk-score').innerText = (segments[1] || "MODERATE").trim();
+                document.getElementById('entry-point').innerText = (segments[2] || "WATCH_VOLUME").trim();
+                document.getElementById('status').innerText = "FACILITATION_COMPLETE";
+
+            } catch (err) {
+                document.getElementById('gemini-text').innerText = "CRITICAL_ERROR: Check API credits or Mint Address.";
+            }
+        }
+    </script>
+</body>
+</html>
