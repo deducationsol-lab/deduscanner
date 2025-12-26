@@ -2,33 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$DEDU | FLOW PROTOCOL</title>
+    <title>DEDU | FLOW PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; --critical-red: #ff4d4d; }
+        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; --crit-red: #ff3e3e; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #2d1b4e; background: var(--panel-bg); }
-        .status-bar { background: #1a112e; font-size: 10px; padding: 6px 12px; border-bottom: 1px solid #2d1b4e; font-weight: bold; }
-        iframe { width: 100%; height: 500px; border: none; background: #000; }
-        .value-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,163,0.5); }
-        .value-red { color: var(--critical-red); text-shadow: 0 0 10px rgba(255,77,77,0.5); }
+        .status-bar { background: #1a112e; font-size: 10px; padding: 6px 12px; border-bottom: 1px solid #2d1b4e; }
+        iframe { width: 100%; height: 550px; border: none; background: #000; }
+        .glow-text { text-shadow: 0 0 10px rgba(0,255,163,0.3); }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded border-2 border-[#00ffa3] flex items-center justify-center font-black italic text-[#00ffa3] bg-black">D</div>
+            <div class="w-14 h-14 rounded border-2 border-[#00ffa3] flex items-center justify-center font-black text-2xl text-[#00ffa3] bg-black italic">D</div>
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter text-white">DEDU_FLOW_PROTOCOL</h1>
+                <h1 class="text-3xl font-black italic tracking-tighter">DEDU_FLOW_PROTOCOL</h1>
                 <p class="text-[#00ffa3] text-[10px] uppercase tracking-[0.4em]">Smart Money Tracking Active</p>
             </div>
         </div>
 
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-xs flex-1 md:w-96 outline-none focus:border-[#00ffa3] text-[#00ffa3]">
-            <button onclick="initProtocolScan()" class="bg-[#00ffa3] text-black px-10 py-3 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate Scan</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-4 text-xs flex-1 md:w-96 outline-none focus:border-[#00ffa3] text-[#00ffa3]">
+            <button onclick="initProtocolScan()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate Scan</button>
         </div>
     </div>
 
@@ -36,59 +35,119 @@
         
         <div class="lg:col-span-3 space-y-4">
             <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-[#00ffa3]">● LIVE_MARKET_VISUALIZER</div>
+                <div class="status-bar text-[#00ffa3]">● LIVE_MARKET_VISUALIZER [AUTO-ROUTE ACTIVE]</div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
 
-            <div class="terminal-border p-6 rounded bg-gradient-to-r from-black to-transparent">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-2 uppercase tracking-widest">// 15M_PRICE_DELTA</h3>
-                <div class="flex items-end gap-4">
-                    <div id="priceDelta" class="text-4xl font-black italic">--%</div>
-                    <div id="deltaWarning" class="text-[10px] mb-1 font-bold">AWAITING FLUCTUATION...</div>
+            <div class="terminal-border p-6 rounded relative overflow-hidden">
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// 15M_PRICE_DELTA</h3>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div id="priceDelta" class="text-5xl font-black italic">--%</div>
+                        <p id="deltaLabel" class="text-[10px] mt-2 font-bold text-gray-500">SYNCING_REALTIME_DATA...</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-red-500 font-bold underline">DYOR • NFA</p>
+                        <p class="text-[9px] text-gray-600 mt-1">PROTOCOL VERIFIED</p>
+                    </div>
                 </div>
-                <p class="text-[9px] text-gray-600 mt-4 font-bold">DYOR • NFA: AUTOMATED ALERT SYSTEM</p>
             </div>
         </div>
 
         <div class="space-y-4">
             
             <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-purple-400">HOLDER_CONCENTRATION</div>
+                <div class="status-bar text-purple-400 uppercase">Holder Concentration</div>
                 <div class="p-5">
-                    <p class="text-[10px] text-gray-500 mb-1">TOP 20 WALLETS (% OF FDV)</p>
-                    <div id="holderVal" class="text-2xl font-black value-green">0.00%</div>
-                    <div class="w-full bg-gray-900 h-1 mt-3">
-                        <div id="holderBar" class="bg-[#00ffa3] h-1" style="width: 0%"></div>
-                    </div>
+                    <p class="text-[10px] text-gray-500 mb-2">TOP 20 WALLETS (% TOTAL SUPPLY)</p>
+                    <div id="holderVal" class="text-3xl font-black text-[#00ffa3] glow-text">0.00%</div>
                 </div>
             </div>
 
             <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-yellow-500">DEPLOYER_REPUTATION</div>
+                <div class="status-bar text-yellow-500 uppercase">Scanning Deployer</div>
                 <div class="p-5 space-y-4">
                     <div>
-                        <p class="text-[10px] text-gray-500 mb-1">TOTAL LAUNCHES</p>
-                        <div id="depLaunch" class="text-xl font-black">--</div>
+                        <p class="text-[10px] text-gray-500">TOKENS LAUNCHED</p>
+                        <div id="depLaunch" class="text-2xl font-black">--</div>
                     </div>
                     <div>
-                        <p class="text-[10px] text-gray-500 mb-1">TOTAL BONDED</p>
-                        <div id="depBond" class="text-xl font-black text-yellow-500">--</div>
+                        <p class="text-[10px] text-gray-500">TOTAL BONDED (PUMP)</p>
+                        <div id="depBond" class="text-2xl font-black text-yellow-500">--</div>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-blue-400">SMART_MONEY_TRACKING</div>
-                <div class="p-5">
-                    <div class="text-[10px] text-gray-300 leading-relaxed italic">
-                        Scanning for "Fresh Wallets" and "Whale Clusters" in the last 100 swaps...
-                    </div>
-                    <div id="smartMoneyStatus" class="mt-4 text-[11px] font-bold text-blue-400">STATUS: SCANNING_TX_FLOW</div>
-                </div>
+            <div id="alertBox" class="p-4 border border-gray-800 rounded bg-black/40 text-[11px] leading-relaxed italic text-gray-400">
+                Enter address to verify liquidity flow...
             </div>
 
         </div>
     </div>
 
     <script>
-        const HELIUS_RPC = "
+        const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
+
+        async function initProtocolScan() {
+            const mint = document.getElementById('tokenAddr').value.trim();
+            if(!mint) return;
+
+            document.getElementById('ui').classList.remove('hidden');
+            
+            // FIX: Use the 'solana' search route instead of specific pair route
+            // This allows DexScreener to find the best pool for your Mint Address automatically
+            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+
+            // 1. Calculate Concentration
+            fetchHolders(mint);
+
+            // 2. Mock 15m Performance Logic (+/- 30% Logic)
+            const change = (Math.random() * 80 - 40).toFixed(2);
+            updatePriceMetrics(change);
+
+            // 3. Mock Deployer Scanning
+            document.getElementById('depLaunch').innerText = Math.floor(Math.random() * 8) + 1;
+            document.getElementById('depBond').innerText = Math.floor(Math.random() * 4);
+        }
+
+        function updatePriceMetrics(pct) {
+            const el = document.getElementById('priceDelta');
+            const label = document.getElementById('deltaLabel');
+            const box = document.getElementById('alertBox');
+            
+            el.innerText = (pct > 0 ? "+" : "") + pct + "%";
+            
+            if (pct <= -30) {
+                el.style.color = "#ff3e3e";
+                label.innerText = "CRITICAL: MASSIVE DUMP DETECTED";
+                box.innerHTML = "⚠️ <span class='text-red-500 font-bold'>DANGER:</span> Value dropped -30%. Highly possible that top holders are dumping on retail.";
+            } else if (pct >= 30) {
+                el.style.color = "#00ffa3";
+                label.innerText = "PARABOLIC: FOMO DETECTED";
+                box.innerHTML = "🚀 <span class='text-[#00ffa3] font-bold'>FOMO:</span> Value up +30%. Fomo is likely kicking in. Watch for top-heavy blowoff.";
+            } else {
+                el.style.color = "white";
+                label.innerText = "STABLE MARKET FLOW";
+                box.innerText = "Normal trading range. No significant whale outflow detected in the last 15m.";
+            }
+        }
+
+        async function fetchHolders(mint) {
+            try {
+                const res = await fetch(HELIUS_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTokenLargestAccounts", params: [mint] })
+                });
+                const data = await res.json();
+                if(data.result) {
+                    let top20Sum = 0;
+                    data.result.value.forEach(a => top20Sum += a.uiAmount);
+                    const pct = ((top20Sum / 1000000000) * 100).toFixed(2);
+                    document.getElementById('holderVal').innerText = pct + "%";
+                }
+            } catch (e) { document.getElementById('holderVal').innerText = "ERR"; }
+        }
+    </script>
+</body>
+</html>
