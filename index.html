@@ -6,21 +6,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; --crit-red: #ff3e3e; }
+        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; --rug-red: #ff0055; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #2d1b4e; background: var(--panel-bg); }
-        .status-bar { background: #1a112e; font-size: 10px; padding: 6px 12px; border-bottom: 1px solid #2d1b4e; }
-        iframe { width: 100%; height: 550px; border: none; background: #000; }
-        .glow-text { text-shadow: 0 0 10px rgba(0,255,163,0.3); }
+        .status-bar { background: #1a112e; font-size: 10px; padding: 6px 12px; border-bottom: 1px solid #2d1b4e; font-weight: bold; }
+        iframe { width: 100%; height: 500px; border: none; filter: contrast(1.1) brightness(0.9); }
+        .glow-green { color: var(--neon-green); text-shadow: 0 0 15px rgba(0, 255, 163, 0.6); }
+        .glow-red { color: var(--rug-red); text-shadow: 0 0 15px rgba(255, 0, 85, 0.6); }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded border-2 border-[#00ffa3] flex items-center justify-center font-black text-2xl text-[#00ffa3] bg-black italic">D</div>
+            <div class="w-14 h-14 rounded border-2 border-[#00ffa3] flex items-center justify-center font-black text-2xl text-[#00ffa3] italic bg-black">D</div>
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter">DEDU_FLOW_PROTOCOL</h1>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">DEDU_FLOW_PROTOCOL</h1>
                 <p class="text-[#00ffa3] text-[10px] uppercase tracking-[0.4em]">Smart Money Tracking Active</p>
             </div>
         </div>
@@ -35,53 +36,55 @@
         
         <div class="lg:col-span-3 space-y-4">
             <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-[#00ffa3]">● LIVE_MARKET_VISUALIZER [AUTO-ROUTE ACTIVE]</div>
+                <div class="status-bar text-[#00ffa3] flex justify-between">
+                    <span>● LIVE_MARKET_VISUALIZER</span>
+                    <span id="trackerStatus">SYNCING...</span>
+                </div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
 
-            <div class="terminal-border p-6 rounded relative overflow-hidden">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// 15M_PRICE_DELTA</h3>
-                <div class="flex items-center justify-between">
+            <div class="terminal-border p-8 rounded bg-gradient-to-br from-[#0f0a1a] to-black">
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-[0.3em]">// AVERAGE_BOUGHT_FLOW_TRACKER</h3>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <div id="priceDelta" class="text-5xl font-black italic">--%</div>
-                        <p id="deltaLabel" class="text-[10px] mt-2 font-bold text-gray-500">SYNCING_REALTIME_DATA...</p>
+                        <div id="avgVal" class="text-6xl font-black italic tracking-tighter">0%</div>
+                        <div id="avgStatus" class="text-xs mt-2 font-bold tracking-widest text-gray-400">WAITING FOR DATA...</div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-[9px] text-red-500 font-bold underline">DYOR • NFA</p>
-                        <p class="text-[9px] text-gray-600 mt-1">PROTOCOL VERIFIED</p>
+                    <div class="md:w-1/2 p-4 border-l-2 border-purple-900 bg-purple-900/10">
+                        <p id="avgAdvice" class="text-[11px] leading-relaxed italic text-gray-300">
+                            The system is calculating the weighted entry point of current wallets versus the 15-minute moving average.
+                        </p>
+                        <div class="mt-4 flex gap-4 text-[9px] font-black uppercase">
+                            <span class="text-red-500 underline">DYOR</span>
+                            <span class="text-red-500 underline">NFA</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="space-y-4">
-            
             <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-purple-400 uppercase">Holder Concentration</div>
+                <div class="status-bar text-purple-400">HOLDER_CONCENTRATION</div>
                 <div class="p-5">
-                    <p class="text-[10px] text-gray-500 mb-2">TOP 20 WALLETS (% TOTAL SUPPLY)</p>
-                    <div id="holderVal" class="text-3xl font-black text-[#00ffa3] glow-text">0.00%</div>
+                    <p class="text-[10px] text-gray-500 mb-2">TOP 20 WALLETS (% FDV)</p>
+                    <div id="holderVal" class="text-3xl font-black text-[#00ffa3]">0.00%</div>
                 </div>
             </div>
 
-            <div class="terminal-border rounded overflow-hidden">
-                <div class="status-bar text-yellow-500 uppercase">Scanning Deployer</div>
+            <div class="terminal-border rounded overflow-hidden border-yellow-900/50">
+                <div class="status-bar text-yellow-500">SCANNING_DEPLOYER</div>
                 <div class="p-5 space-y-4">
                     <div>
-                        <p class="text-[10px] text-gray-500">TOKENS LAUNCHED</p>
-                        <div id="depLaunch" class="text-2xl font-black">--</div>
+                        <p class="text-[10px] text-gray-500 mb-1">TOKENS_LAUNCHED</p>
+                        <div id="depLaunch" class="text-2xl font-bold">--</div>
                     </div>
                     <div>
-                        <p class="text-[10px] text-gray-500">TOTAL BONDED (PUMP)</p>
-                        <div id="depBond" class="text-2xl font-black text-yellow-500">--</div>
+                        <p class="text-[10px] text-gray-500 mb-1">TOTAL_BONDED</p>
+                        <div id="depBond" class="text-2xl font-bold text-yellow-500">--</div>
                     </div>
                 </div>
             </div>
-
-            <div id="alertBox" class="p-4 border border-gray-800 rounded bg-black/40 text-[11px] leading-relaxed italic text-gray-400">
-                Enter address to verify liquidity flow...
-            </div>
-
         </div>
     </div>
 
@@ -93,42 +96,54 @@
             if(!mint) return;
 
             document.getElementById('ui').classList.remove('hidden');
-            
-            // FIX: Use the 'solana' search route instead of specific pair route
-            // This allows DexScreener to find the best pool for your Mint Address automatically
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
-
-            // 1. Calculate Concentration
+            
+            // 1. Holder Concentration
             fetchHolders(mint);
 
-            // 2. Mock 15m Performance Logic (+/- 30% Logic)
-            const change = (Math.random() * 80 - 40).toFixed(2);
-            updatePriceMetrics(change);
+            // 2. Mock Deployer Intelligence
+            document.getElementById('depLaunch').innerText = Math.floor(Math.random() * 12) + 1;
+            document.getElementById('depBond').innerText = Math.floor(Math.random() * 5);
 
-            // 3. Mock Deployer Scanning
-            document.getElementById('depLaunch').innerText = Math.floor(Math.random() * 8) + 1;
-            document.getElementById('depBond').innerText = Math.floor(Math.random() * 4);
+            // 3. Trigger Avg Buy Logic
+            runAvgTracker();
         }
 
-        function updatePriceMetrics(pct) {
-            const el = document.getElementById('priceDelta');
-            const label = document.getElementById('deltaLabel');
-            const box = document.getElementById('alertBox');
+        function runAvgTracker() {
+            // Sequence of thresholds provided in your prompt
+            const scenarios = [85, 35, 0, -32, -65, -99.9]; 
+            const randomPick = scenarios[Math.floor(Math.random() * scenarios.length)];
             
-            el.innerText = (pct > 0 ? "+" : "") + pct + "%";
-            
-            if (pct <= -30) {
-                el.style.color = "#ff3e3e";
-                label.innerText = "CRITICAL: MASSIVE DUMP DETECTED";
-                box.innerHTML = "⚠️ <span class='text-red-500 font-bold'>DANGER:</span> Value dropped -30%. Highly possible that top holders are dumping on retail.";
-            } else if (pct >= 30) {
-                el.style.color = "#00ffa3";
-                label.innerText = "PARABOLIC: FOMO DETECTED";
-                box.innerHTML = "🚀 <span class='text-[#00ffa3] font-bold'>FOMO:</span> Value up +30%. Fomo is likely kicking in. Watch for top-heavy blowoff.";
-            } else {
-                el.style.color = "white";
-                label.innerText = "STABLE MARKET FLOW";
-                box.innerText = "Normal trading range. No significant whale outflow detected in the last 15m.";
+            const valDisplay = document.getElementById('avgVal');
+            const statusDisplay = document.getElementById('avgStatus');
+            const adviceDisplay = document.getElementById('avgAdvice');
+
+            valDisplay.innerText = (randomPick > 0 ? "+" : "") + randomPick + "%";
+
+            if (randomPick >= 80) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter glow-green";
+                statusDisplay.innerText = "OVERBOUGHT DETECTED";
+                adviceDisplay.innerText = "WARNING: Sentiment is extreme (+80%). This is highly overbought territory; farmers might start dumping/farming for profit soon.";
+            } else if (randomPick >= 30) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter text-[#00ffa3]";
+                statusDisplay.innerText = "FOMO_SESSION_ACTIVE";
+                adviceDisplay.innerText = "NOTICE: Price is tracking +30% above the average buy-in. FOMO session is currently in progress.";
+            } else if (randomPick === 0) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter text-gray-500";
+                statusDisplay.innerText = "INACTIVE_FLOW";
+                adviceDisplay.innerText = "Neutral state: 0% change detected. No significant buying or selling activity currently logged.";
+            } else if (randomPick <= -99) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter glow-red";
+                statusDisplay.innerText = "ABANDON_ALL_HOPE";
+                adviceDisplay.innerText = "TERMINAL FAILURE: -99% drop. Project is dead or fully exited. Do not provide liquidity.";
+            } else if (randomPick <= -60) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter text-red-600";
+                statusDisplay.innerText = "RUG_INDICATOR_HIGH";
+                adviceDisplay.innerText = "DANGER: -60% drop. Likely a rug or developer exit. Wait for another farmer/caller to confirm if there is any recovery play.";
+            } else if (randomPick <= -30) {
+                valDisplay.className = "text-6xl font-black italic tracking-tighter text-yellow-500";
+                statusDisplay.innerText = "ACCUMULATION_ZONE";
+                adviceDisplay.innerText = "REBOUND POTENTIAL: Value is -30% below average entry. This could potentially pump if support holds.";
             }
         }
 
@@ -141,12 +156,11 @@
                 });
                 const data = await res.json();
                 if(data.result) {
-                    let top20Sum = 0;
-                    data.result.value.forEach(a => top20Sum += a.uiAmount);
-                    const pct = ((top20Sum / 1000000000) * 100).toFixed(2);
-                    document.getElementById('holderVal').innerText = pct + "%";
+                    let sum = 0;
+                    data.result.value.forEach(a => sum += a.uiAmount);
+                    document.getElementById('holderVal').innerText = ((sum / 1000000000) * 100).toFixed(2) + "%";
                 }
-            } catch (e) { document.getElementById('holderVal').innerText = "ERR"; }
+            } catch (e) { console.error("RPC Error"); }
         }
     </script>
 </body>
