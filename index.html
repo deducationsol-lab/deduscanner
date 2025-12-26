@@ -2,55 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | 5M CANDLE LOGIC</title>
+    <title>DEDU | DEFI PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --dark-bg: #030108; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #2d1b4e; background: #080808; }
-        .progress-bar-5m { height: 4px; background: #3b82f6; transition: width 1s linear; }
-        iframe { width: 100%; height: 500px; border: none; }
-        .status-active { color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.5); }
+        .terminal-border { border: 1px solid #3b82f6; background: #080808; box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
+        .scanline { width: 100%; height: 2px; background: #3b82f6; position: absolute; top: 0; animation: scan 4s linear infinite; opacity: 0.3; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        iframe { width: 100%; height: 500px; border: none; border-radius: 4px; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black">D</div>
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_5M_PROTOCOL</h1>
-                <p class="text-blue-500 text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
-                    <span class="animate-ping text-blue-400">●</span> 5-MINUTE_CANDLE_SYNC
-                </p>
+                <h1 class="text-xl font-black italic tracking-tighter uppercase">DEDU_EMERGENCY_SYNC</h1>
+                <p class="text-blue-500 text-[9px] uppercase tracking-[0.4em]">Protocol Version 5.0 - Live Alignment</p>
             </div>
         </div>
-        <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
-            <button onclick="init5mLogic()" class="bg-[#00ffa3] text-black px-8 py-3 font-bold text-xs hover:bg-white transition-all uppercase">Align 5m Logic</button>
+        <div class="flex gap-2 w-full md:w-auto">
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs flex-1 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="forceStartProtocol()" class="bg-[#00ffa3] text-black px-6 py-3 font-bold text-[10px] hover:bg-white transition-all uppercase italic">Force Connect</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <div class="lg:col-span-3 space-y-4">
-            <div class="terminal-border rounded overflow-hidden">
-                <div class="flex justify-between items-center bg-[#0a0a1a] p-3 px-4">
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Global Market Chart (5M)</span>
-                    <span id="timerTxt" class="text-[10px] text-gray-500 font-bold">CANDLE RESET: 300s</span>
+            <div class="terminal-border rounded overflow-hidden relative">
+                <div class="scanline"></div>
+                <div class="bg-[#0a0a1a] p-2 px-4 flex justify-between border-b border-blue-900/30">
+                    <span class="text-[9px] font-bold text-blue-400">● MULTI_POOL_CHART_ROUTING</span>
+                    <span id="syncStatus" class="text-[9px] text-gray-500 italic">SYSTEM_IDLE</span>
                 </div>
-                <div id="candleProgress" class="progress-bar-5m" style="width: 100%"></div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
 
-            <div class="terminal-border p-8 rounded bg-gradient-to-br from-[#050510] to-black">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-[0.3em]">// 5M_CANDLE_REFERENCE_LOGIC</h3>
-                <div class="flex flex-col md:flex-row items-center gap-10">
-                    <div id="logicPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
-                    <div class="flex-1 border-l border-gray-800 pl-8">
-                        <div id="logicLabel" class="text-xl font-black uppercase text-gray-600 tracking-tight">Syncing Stream...</div>
-                        <p id="logicSub" class="text-[12px] text-gray-400 mt-2 italic leading-relaxed">Calculating price delta from the 5-minute candle opening tick.</p>
+            <div class="terminal-border p-10 rounded bg-black">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="text-center">
+                        <p class="text-[10px] text-gray-500 mb-2 uppercase tracking-widest">5M_CANDLE_PERFORMANCE</p>
+                        <div id="logicPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div id="logicTitle" class="text-2xl font-black uppercase text-gray-700 tracking-tighter">Initializing...</div>
+                        <p id="logicDesc" class="text-sm italic text-gray-500">Awaiting live price confirmation from the Solana cluster.</p>
+                        <div class="pt-4 flex gap-4 border-t border-gray-900 mt-4">
+                            <span class="text-red-500 text-[10px] font-bold underline">DYOR</span>
+                            <span class="text-red-500 text-[10px] font-bold underline">NFA</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,79 +62,103 @@
 
         <div class="space-y-4">
             <div class="terminal-border p-5 rounded">
-                <p class="text-[10px] text-gray-500 font-bold mb-3 uppercase tracking-widest">// SNAPSHOT_5M</p>
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// SNAPSHOT_STREAM</h3>
                 <div class="space-y-4">
                     <div>
-                        <p class="text-[9px] text-blue-400 uppercase">Candle Open (5m)</p>
-                        <div id="openPrice" class="text-lg font-bold font-mono">$0.00000000</div>
+                        <p class="text-[9px] text-blue-400">BASELINE (5M OPEN)</p>
+                        <div id="basePrice" class="text-lg font-bold text-gray-400">--</div>
                     </div>
                     <div>
-                        <p class="text-[9px] text-[#00ffa3] uppercase">Current Tick</p>
-                        <div id="currentPrice" class="text-lg font-bold font-mono">$0.00000000</div>
+                        <p class="text-[9px] text-[#00ffa3]">LIVE TICK</p>
+                        <div id="tickPrice" class="text-lg font-bold text-white">--</div>
                     </div>
                 </div>
             </div>
-            
-            <div class="p-4 border border-red-900/30 bg-red-950/10 text-[10px] font-bold text-red-500 text-center uppercase italic">
-                Wait for farmer call at -60%
+            <div class="p-4 border border-red-900/30 text-[10px] text-red-500 font-bold text-center italic">
+                WAIT FOR ANOTHER FARMER TO CALL AT -60%
             </div>
         </div>
     </div>
 
     <script>
-        let candleOpenPrice = null;
-        let secondsLeft = 300; // 5 Minutes
-        let logicTimer = null;
+        let basePrice = null;
+        let mainTimer = null;
 
-        async function init5mLogic() {
+        async function forceStartProtocol() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
+            // Show UI and load chart with fail-safe search param
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+            document.getElementById('syncStatus').innerText = "LINKING_PRICE_ORACLE...";
 
-            // Reset logic
-            if(logicTimer) clearInterval(logicTimer);
-            candleOpenPrice = null;
-            secondsLeft = 300;
+            if(mainTimer) clearInterval(mainTimer);
+            basePrice = null;
 
-            runTick(mint);
-            logicTimer = setInterval(() => runTick(mint), 1500); // Poll every 1.5s
+            // Start polling every 2 seconds for immediate feedback
+            pollDex(mint);
+            mainTimer = setInterval(() => pollDex(mint), 2000);
         }
 
-        async function runTick(mint) {
-            secondsLeft -= 1.5;
-            document.getElementById('timerTxt').innerText = `CANDLE RESET: ${Math.round(secondsLeft)}s`;
-            document.getElementById('candleProgress').style.width = `${(secondsLeft / 300) * 100}%`;
-
-            if (secondsLeft <= 0) {
-                candleOpenPrice = null; 
-                secondsLeft = 300;
-            }
-
+        async function pollDex(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
-                if(data.pairs && data.pairs[0]) {
-                    const price = parseFloat(data.pairs[0].priceUsd);
-                    if (!candleOpenPrice) candleOpenPrice = price;
+                
+                if (data.pairs && data.pairs[0]) {
+                    const current = parseFloat(data.pairs[0].priceUsd);
+                    if (!basePrice) basePrice = current;
 
-                    document.getElementById('openPrice').innerText = "$" + candleOpenPrice.toFixed(8);
-                    document.getElementById('currentPrice').innerText = "$" + price.toFixed(8);
+                    document.getElementById('basePrice').innerText = "$" + basePrice.toFixed(8);
+                    document.getElementById('tickPrice').innerText = "$" + current.toFixed(8);
 
-                    const delta = (((price - candleOpenPrice) / candleOpenPrice) * 100).toFixed(2);
-                    updateDisplay(parseFloat(delta));
+                    const delta = (((current - basePrice) / basePrice) * 100).toFixed(2);
+                    renderLogic(parseFloat(delta));
+                    document.getElementById('syncStatus').innerText = "DATA_STREAM_OK";
                 }
-            } catch(e) { console.error("Logic Link Error"); }
+            } catch (err) {
+                document.getElementById('syncStatus').innerText = "CONNECTION_RETRYING...";
+            }
         }
 
-        function updateDisplay(pct) {
+        function renderLogic(pct) {
             const val = document.getElementById('logicPct');
-            const label = document.getElementById('logicLabel');
-            const sub = document.getElementById('logicSub');
+            const tit = document.getElementById('logicTitle');
+            const des = document.getElementById('logicDesc');
 
             val.innerText = (pct >= 0 ? "+" : "") + pct + "%";
 
             if (pct >= 80) {
-                val.className = "text-8xl font-
-                    
+                val.className = "text-8xl font-black italic tracking-tighter text-[#00ffa3]";
+                tit.innerText = "OVERBOUGHT DETECTED";
+                des.innerText = "Values hitting +80% relative to 5m open. High probability of farming soon.";
+            } else if (pct >= 30) {
+                val.className = "text-8xl font-black italic tracking-tighter text-[#00ffa3]";
+                tit.innerText = "FOMO SESSION";
+                des.innerText = "Momentum confirmed at +30%. FOMO session is active.";
+            } else if (pct <= -99) {
+                val.className = "text-8xl font-black italic tracking-tighter text-red-700";
+                tit.innerText = "ABANDON HOPE";
+                des.innerText = "Zero liquidity detected. Abandon all hope.";
+            } else if (pct <= -60) {
+                val.className = "text-8xl font-black italic tracking-tighter text-red-500";
+                tit.innerText = "RUG_SIGNAL";
+                des.innerText = "Severe drop (-60%). Rug suspected; wait for another farmer to call.";
+            } else if (pct <= -30) {
+                val.className = "text-8xl font-black italic tracking-tighter text-yellow-500";
+                tit.innerText = "COULD PUMP";
+                des.innerText = "Accumulation zone (-30%). Potential pump incoming.";
+            } else if (pct === 0) {
+                val.className = "text-8xl font-black italic tracking-tighter text-gray-700";
+                tit.innerText = "NO ACTIVITY";
+                des.innerText = "Waiting for significant price movement on the current 5m candle.";
+            } else {
+                val.className = "text-8xl font-black italic tracking-tighter text-white";
+                tit.innerText = "TRACKING_FLOW";
+                des.innerText = "Price is currently fluctuating within normal parameters.";
+            }
+        }
+    </script>
+</body>
+</html>
