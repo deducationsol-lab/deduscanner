@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Token Scanner Widget</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="ai-scanner-widget">
+        <h3>SOL Token AI Scanner</h3>
+        <div class="input-group">
+            <input type="text" id="tokenCA" placeholder="Enter Solana CA...">
+            <button onclick="startScan()">Scan Token</button>
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+            <div id="report">
+                <h4>AI Risk Assessment</h4>
+                <p id="ai-summary">Waiting for scan...</p>
+                <ul id="metrics"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myChart;
+
+        async function startScan() {
+            const ca = document.getElementById('tokenCA').value;
+            if (!ca) return alert("Please enter a Contract Address");
+
+            document.getElementById('ai-summary').innerText = "Analyzing patterns...";
+            document.getElementById('results').classList.remove('hidden');
+
+            try {
+                // Call our Node.js backend
+                const response = await fetch(`/api/scan?ca=${ca}`);
+                const data = await response.json();
+
+                renderChart(data.priceHistory);
+                displayReport(data.analysis);
+            } catch (err) {
+                document.getElementById('ai-summary').innerText = "Error fetching data.";
+            }
+        }
+
+        function renderChart(history) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: history.map((_, i) => i),
+                    datasets: [{
+                        label: 'Price (USD)',
+                        data: history,
+                        borderColor: '#00ffa3',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+
+        function displayReport(analysis) {
+            document.getElementById('ai-summary').innerText = analysis.summary;
+            const metrics = document.getElementById('metrics');
+            metrics.innerHTML = `
+                <li><strong>Risk Score:</strong> ${analysis.riskScore}/100</li>
+                <li><strong>Liquidity:</strong> $${analysis.liquidity}</li>
+                <li><strong>Top Holders:</strong> ${analysis.holderConcentration}%</li>
+            `;
+        }
+    </script>
+</body>
+</html>
