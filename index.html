@@ -2,38 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | FLOW PROTOCOL</title>
+    <title>DEDU | LIVE ALIGNMENT PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; --rug-red: #ff0055; }
+        :root { --neon-green: #00ffa3; --dark-bg: #030108; --crit-red: #ff0055; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #2d1b4e; background: var(--panel-bg); }
-        .status-bar { background: #1a112e; font-size: 10px; padding: 6px 12px; border-bottom: 1px solid #2d1b4e; font-weight: bold; }
-        iframe { width: 100%; height: 500px; border: none; filter: contrast(1.1) brightness(0.9); }
-        .glow-green { color: var(--neon-green); text-shadow: 0 0 15px rgba(0, 255, 163, 0.6); }
-        .glow-red { color: var(--rug-red); text-shadow: 0 0 15px rgba(255, 0, 85, 0.6); }
+        .terminal-border { border: 1px solid #2d1b4e; background: #0a0a0a; }
+        .live-tag { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        iframe { width: 100%; height: 500px; border: none; }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded border-2 border-[#00ffa3] flex items-center justify-center font-black text-2xl text-[#00ffa3] italic bg-black">D</div>
+            <div class="w-12 h-12 rounded-full border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic">D</div>
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase">DEDU_FLOW_PROTOCOL</h1>
-                <p class="text-[#00ffa3] text-[10px] uppercase tracking-[0.4em]">Smart Money Tracking Active</p>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_LIVE_ALIGNER</h1>
+                <p class="text-blue-400 text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
+                    <span class="live-tag text-red-500">●</span> REAL-TIME_PRICE_SYNC_ACTIVE
+                </p>
             </div>
         </div>
-
-        <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-4 text-xs flex-1 md:w-96 outline-none focus:border-[#00ffa3] text-[#00ffa3]">
-            <button onclick="initProtocolScan()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate Scan</button>
+        <div class="flex gap-2 mt-4 md:mt-0">
+            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
+            <button onclick="syncLiveTerminal()" class="bg-[#00ffa3] text-black px-6 py-3 font-bold text-xs hover:bg-white transition-all">SYNC_LIVE</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         
+        <div class="lg:col-span-3 terminal-border rounded overflow-hidden">
+            <iframe id="market-chart" src=""></iframe>
+        </div>
+
+        <div class="space-y-4">
+            <div class="terminal-border p-5 rounded">
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// LIVE_PRICE_DELTA</h3>
+                <div id="liveDelta" class="text-5xl font-black italic text-white">0.00%</div>
+                <div id="liveStatus" class="text-[10px] mt-2 font-bold text-blue-400">CALCULATING...</div>
+            </div>
+
+            <div id="logicAlert" class="terminal-border p-5 rounded bg-black/50 border-l-4 border-white">
+                <p class="text-[11px] leading-relaxed italic text-gray-300">
+                    Awaiting live price feed for logic alignment...
+                </p>
+            </div>
+
+            <div class="p-4 bg-red-950/10 border border-red-900/30 text-[9px] text-center text-red-500 font-bold">
+                DYOR • NFA: LIVE DATA MAY HAVE LATENCY
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let initialPrice = null;
+        let updateInterval = null;
+
+        async function syncLiveTerminal() {
+            const mint = document.getElementById('tokenAddr').value.trim();
+            if(!mint) return;
+
+            document.getElementById('ui').classList.remove('hidden');
+            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+
+            // Reset logic
+            if(updateInterval) clearInterval(updateInterval);
+            initialPrice = null;
+
+            // Start polling DexScreener API for live price
+            fetchLivePrice(mint);
+            updateInterval = setInterval(() => fetchLivePrice(mint), 10000); // Poll every 10s
+        }
+
+        async function fetchLivePrice(mint) {
+            try {
+                const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+                const data = await response.json();
+                
+                if (data.pairs && data.pairs.length > 0) {
+                    const currentPrice = parseFloat(data.pairs[0].priceUsd);
+                    
+                    // Set baseline on first run
+                    if (!initialPrice) initialPrice = currentPrice;
+
+                    // Calculate live % change from the moment you clicked "Sync"
+                    const change = (((currentPrice - initialPrice) / initialPrice) * 100).toFixed(2);
+                    applyTradingLogic(parseFloat(change));
+                }
+            } catch (e) { console.error("Price Sync Error"); }
+        }
+
+        function applyTradingLogic(pct) {
+            const deltaEl = document.getElementById('liveDelta');
+            const statusEl = document.getElementById('liveStatus');
+            const alertBox = document.getElementById('logicAlert');
+
+            deltaEl.innerText = (pct >= 0 ? "+" : "") + pct + "%";
+
+            if (pct >= 80) {
+                statusEl.innerText = "STATUS: OVERBOUGHT";
+                alertBox.className = "terminal-border p-5 rounded bg-green-950/20 border-l-4 border-[#00ffa3]";
+                alertBox.innerHTML = "Sentiment extreme. Might farm soon. Watch for top-heavy exhaustion.";
+            } else if (pct >= 30) {
+                statusEl.innerText = "STATUS: FOMO_SESSION";
+                alertBox.innerHTML = "Price tracking +30% above entry. Fomo session is active.";
+            } else if (pct <= -99) {
+                statusEl.innerText = "STATUS: TERMINATED";
+                alertBox.className = "terminal-border p-5 rounded bg-red-950/20 border-l-4 border-red-600";
+                alertBox.innerHTML = "Abandon all hope. 99% drawdown detected.";
+            } else if (pct <= -60) {
+                statusEl.innerText = "STATUS: RUG_RISK_MAX";
+                alertBox.innerHTML = "Rug detected. Wait for another farmer/caller before reentry.";
+            } else if (pct <= -30) {
+                statusEl.innerText = "STATUS: ACCUMULATION";
+                alertBox.innerHTML = "Value dropped -30% from sync. High probability of a pump if support holds.";
+            } else if (pct === 0) {
+                statusEl.innerText = "STATUS: NEUTRAL";
+                alertBox.innerHTML = "No significant price action detected since sync.";
+            }
+        }
+    </script>
+</body>
+</html>
         <div class="lg:col-span-3 space-y-4">
             <div class="terminal-border rounded overflow-hidden">
                 <div class="status-bar text-[#00ffa3] flex justify-between">
@@ -165,3 +258,4 @@
     </script>
 </body>
 </html>
+
