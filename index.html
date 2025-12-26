@@ -2,33 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | 1M CANDLE SYNC</title>
+    <title>DEDU | 5M CANDLE LOGIC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #030108; --rug-red: #ff0055; }
+        :root { --neon-green: #00ffa3; --dark-bg: #030108; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #2d1b4e; background: #080808; }
-        .logic-flash { transition: all 0.3s ease; }
-        .progress-bar { height: 3px; background: #00ffa3; transition: width 1s linear; }
+        .progress-bar-5m { height: 4px; background: #3b82f6; transition: width 1s linear; }
         iframe { width: 100%; height: 500px; border: none; }
+        .status-active { color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.5); }
     </style>
 </head>
 <body class="p-4">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black">D</div>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_FLOW_PROTOCOL</h1>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_5M_PROTOCOL</h1>
                 <p class="text-blue-500 text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
-                    <span class="animate-pulse text-red-600">●</span> 1M_CANDLE_REF_ACTIVE
+                    <span class="animate-ping text-blue-400">●</span> 5-MINUTE_CANDLE_SYNC
                 </p>
             </div>
         </div>
         <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
-            <button onclick="activate1mLogic()" class="bg-[#00ffa3] text-black px-8 py-3 font-bold text-xs hover:bg-white transition-all uppercase">Align 1m Logic</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="init5mLogic()" class="bg-[#00ffa3] text-black px-8 py-3 font-bold text-xs hover:bg-white transition-all uppercase">Align 5m Logic</button>
         </div>
     </div>
 
@@ -36,25 +36,21 @@
         
         <div class="lg:col-span-3 space-y-4">
             <div class="terminal-border rounded overflow-hidden">
-                <div class="flex justify-between items-center bg-[#1a112e] p-2 px-4">
-                    <span class="text-[9px] font-bold text-[#00ffa3] uppercase tracking-widest">Live 1m Candle Feed</span>
-                    <span id="timerTxt" class="text-[9px] text-gray-500 italic">RESETTING IN: 60s</span>
+                <div class="flex justify-between items-center bg-[#0a0a1a] p-3 px-4">
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Global Market Chart (5M)</span>
+                    <span id="timerTxt" class="text-[10px] text-gray-500 font-bold">CANDLE RESET: 300s</span>
                 </div>
-                <div id="candleProgress" class="progress-bar" style="width: 100%"></div>
+                <div id="candleProgress" class="progress-bar-5m" style="width: 100%"></div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
 
-            <div class="terminal-border p-8 rounded bg-gradient-to-br from-[#0f0a1a] to-black relative">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-[0.3em]">// 1M_LOGIC_REFERENCE</h3>
-                <div class="flex flex-col md:flex-row items-center gap-8">
-                    <div id="logicPct" class="text-7xl font-black italic tracking-tighter">0.00%</div>
-                    <div class="flex-1">
-                        <div id="logicLabel" class="text-sm font-black uppercase text-[#00ffa3]">Awaiting Tick...</div>
-                        <p id="logicSub" class="text-[11px] text-gray-400 mt-2 italic max-w-md">Synchronizing live price with the current 1-minute candle open.</p>
-                    </div>
-                    <div class="text-right border-l border-gray-800 pl-6 hidden md:block">
-                        <p class="text-[9px] text-red-500 font-bold underline mb-1 italic">DYOR</p>
-                        <p class="text-[9px] text-red-500 font-bold underline italic">NFA</p>
+            <div class="terminal-border p-8 rounded bg-gradient-to-br from-[#050510] to-black">
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-[0.3em]">// 5M_CANDLE_REFERENCE_LOGIC</h3>
+                <div class="flex flex-col md:flex-row items-center gap-10">
+                    <div id="logicPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
+                    <div class="flex-1 border-l border-gray-800 pl-8">
+                        <div id="logicLabel" class="text-xl font-black uppercase text-gray-600 tracking-tight">Syncing Stream...</div>
+                        <p id="logicSub" class="text-[12px] text-gray-400 mt-2 italic leading-relaxed">Calculating price delta from the 5-minute candle opening tick.</p>
                     </div>
                 </div>
             </div>
@@ -62,57 +58,54 @@
 
         <div class="space-y-4">
             <div class="terminal-border p-5 rounded">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// SNAPSHOT_LOG</h3>
+                <p class="text-[10px] text-gray-500 font-bold mb-3 uppercase tracking-widest">// SNAPSHOT_5M</p>
                 <div class="space-y-4">
                     <div>
-                        <p class="text-[10px] text-purple-400 uppercase">Candle Open</p>
-                        <div id="openPrice" class="text-xl font-bold">$0.00...</div>
+                        <p class="text-[9px] text-blue-400 uppercase">Candle Open (5m)</p>
+                        <div id="openPrice" class="text-lg font-bold font-mono">$0.00000000</div>
                     </div>
                     <div>
-                        <p class="text-[10px] text-blue-400 uppercase">Live Tick</p>
-                        <div id="currentPrice" class="text-xl font-bold">$0.00...</div>
+                        <p class="text-[9px] text-[#00ffa3] uppercase">Current Tick</p>
+                        <div id="currentPrice" class="text-lg font-bold font-mono">$0.00000000</div>
                     </div>
                 </div>
             </div>
             
-            <div class="terminal-border p-5 rounded border-yellow-900/30">
-                <p class="text-[10px] text-yellow-500 font-bold mb-2 uppercase tracking-widest">// DEPLOYER_SCAN</p>
-                <div id="depStats" class="text-[11px] italic text-gray-400">Scan deployer for trust score...</div>
+            <div class="p-4 border border-red-900/30 bg-red-950/10 text-[10px] font-bold text-red-500 text-center uppercase italic">
+                Wait for farmer call at -60%
             </div>
         </div>
     </div>
 
     <script>
         let candleOpenPrice = null;
-        let secondsLeft = 60;
-        let timer = null;
+        let secondsLeft = 300; // 5 Minutes
+        let logicTimer = null;
 
-        async function activate1mLogic() {
+        async function init5mLogic() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
-            // Reset
-            if(timer) clearInterval(timer);
+            // Reset logic
+            if(logicTimer) clearInterval(logicTimer);
             candleOpenPrice = null;
-            secondsLeft = 60;
+            secondsLeft = 300;
 
-            // Start Cycle
-            runCycle(mint);
-            timer = setInterval(() => runCycle(mint), 1000);
+            runTick(mint);
+            logicTimer = setInterval(() => runTick(mint), 1500); // Poll every 1.5s
         }
 
-        async function runCycle(mint) {
-            // Update UI timer
-            secondsLeft--;
-            document.getElementById('timerTxt').innerText = `RESETTING IN: ${secondsLeft}s`;
-            document.getElementById('candleProgress').style.width = `${(secondsLeft / 60) * 100}%`;
+        async function runTick(mint) {
+            secondsLeft -= 1.5;
+            document.getElementById('timerTxt').innerText = `CANDLE RESET: ${Math.round(secondsLeft)}s`;
+            document.getElementById('candleProgress').style.width = `${(secondsLeft / 300) * 100}%`;
 
             if (secondsLeft <= 0) {
                 candleOpenPrice = null; 
-                secondsLeft = 60;
+                secondsLeft = 300;
             }
 
             try {
@@ -120,20 +113,18 @@
                 const data = await res.json();
                 if(data.pairs && data.pairs[0]) {
                     const price = parseFloat(data.pairs[0].priceUsd);
-                    
-                    // Capture Candle Open at start of minute
                     if (!candleOpenPrice) candleOpenPrice = price;
 
                     document.getElementById('openPrice').innerText = "$" + candleOpenPrice.toFixed(8);
                     document.getElementById('currentPrice').innerText = "$" + price.toFixed(8);
 
-                    const diff = (((price - candleOpenPrice) / candleOpenPrice) * 100).toFixed(2);
-                    applyLogic(parseFloat(diff));
+                    const delta = (((price - candleOpenPrice) / candleOpenPrice) * 100).toFixed(2);
+                    updateDisplay(parseFloat(delta));
                 }
-            } catch(e) { console.error("Tick Error"); }
+            } catch(e) { console.error("Logic Link Error"); }
         }
 
-        function applyLogic(pct) {
+        function updateDisplay(pct) {
             const val = document.getElementById('logicPct');
             const label = document.getElementById('logicLabel');
             const sub = document.getElementById('logicSub');
@@ -141,34 +132,5 @@
             val.innerText = (pct >= 0 ? "+" : "") + pct + "%";
 
             if (pct >= 80) {
-                val.className = "text-7xl font-black italic tracking-tighter text-[#00ffa3]";
-                label.innerText = "OVERBOUGHT: EXIT ZONE";
-                sub.innerText = "Current candle is up +80%. Extreme overbought territory; farmers might start dumping soon.";
-            } else if (pct >= 30) {
-                val.className = "text-7xl font-black italic tracking-tighter text-[#00ffa3]";
-                label.innerText = "FOMO SESSION ACTIVE";
-                sub.innerText = "Price is tracking +30% above candle open. FOMO is officially kicking in.";
-            } else if (pct <= -99) {
-                val.className = "text-7xl font-black italic tracking-tighter text-red-600";
-                label.innerText = "ABANDON ALL HOPE";
-                sub.innerText = "Terminal failure. Value has hit zero. Abandon all positions.";
-            } else if (pct <= -60) {
-                val.className = "text-7xl font-black italic tracking-tighter text-red-500";
-                label.innerText = "RUG_INDICATOR: HIGH";
-                sub.innerText = "Massive candle dump. Likely a rug; wait for another farmer/caller to confirm before moving.";
-            } else if (pct <= -30) {
-                val.className = "text-7xl font-black italic tracking-tighter text-yellow-500";
-                label.innerText = "ACCUMULATION_ZONE";
-                sub.innerText = "Price is -30% from candle open. Possible rebound or pump incoming.";
-            } else if (pct === 0) {
-                val.className = "text-7xl font-black italic tracking-tighter text-gray-700";
-                label.innerText = "NO ACTIVITY";
-                sub.innerText = "Neutral flow. Waiting for significant candle movement.";
-            } else {
-                val.className = "text-7xl font-black italic tracking-tighter text-white";
-                label.innerText = "TRACKING TICKET FLOW...";
-            }
-        }
-    </script>
-</body>
-</html>
+                val.className = "text-8xl font-
+                    
