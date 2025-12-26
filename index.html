@@ -74,8 +74,22 @@
                 <li><strong>Risk Score:</strong> ${analysis.riskScore}/100</li>
                 <li><strong>Liquidity:</strong> $${analysis.liquidity}</li>
                 <li><strong>Top Holders:</strong> ${analysis.holderConcentration}%</li>
+                function displayReport(data) {
+    document.getElementById('ai-summary').innerText = data.analysis.summary;
+    const metrics = document.getElementById('metrics');
+    metrics.innerHTML = `
+        <li><strong>Current Market Cap:</strong> $${data.marketCap}</li>
+        <li><strong>Deployer Address:</strong> ${data.deployer.address.substring(0,6)}...</li>
+        <li><strong>Tokens by Deployer:</strong> ${data.deployer.count} tokens</li>
+        <li><strong>AI Risk Score:</strong> ${data.analysis.score}/100</li>
+    `;
+    renderChart(data.mcHistory); // Pass the Market Cap history
+}
             `;
         }
     </script>
 </body>
+
 </html>
+
+// Inside your displayReport function
