@@ -2,98 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$DEDU | AI Technical Terminal</title>
+    <title>$DEDU | Gemini Trader Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --deep-purple: #6b21a8; --dark-bg: #0b0118; }
+        :root { --gemini-blue: #4285f4; --neon-green: #00ffa3; --dark-bg: #030108; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .anime-border { border: 2px solid var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 163, 0.1); background: rgba(18, 5, 38, 0.9); }
-        #chart-area { width: 100%; height: 500px; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .terminal-border { border: 1px solid rgba(66, 133, 244, 0.3); box-shadow: 0 0 20px rgba(66, 133, 244, 0.1); background: #0a0a0a; }
+        .ai-header { background: linear-gradient(90deg, #4285f4, #1a0b2e); padding: 4px 12px; font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+        iframe { width: 100%; height: 550px; border: none; }
+        .logo-frame { border: 2px solid var(--neon-green); border-radius: 50%; overflow: hidden; width: 60px; height: 60px; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-6xl mx-auto text-center mb-6">
-        <h1 class="text-4xl font-black text-[#00ffa3] italic tracking-tighter underline underline-offset-8">$DEDU_INSIGHT</h1>
-        <p class="text-[10px] text-purple-400 mt-2 uppercase tracking-[0.4em]">Algorithmic Price Action Analysis</p>
-    </div>
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+        <div class="flex items-center gap-5">
+            <div class="logo-frame shadow-[0_0_15px_#00ffa3]">
+                <img src="https://files.oaiusercontent.com/file-K1S9A8v7Y3J8X9H7R5B2Z1?se=2024-05-22T12%3A00%3A00Z&sp=r&sv=24.0.0&sr=b&rscc=max-age%3D31536000%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dlogo.png&sig=YourAuthSig" alt="$DEDU Logo" class="w-full h-full object-cover">
+            </div>
+            <div>
+                <h1 class="text-4xl font-black italic text-white tracking-tighter">$DEDU_FACILITATOR</h1>
+                <p class="text-blue-400 text-[10px] tracking-[0.5em] uppercase">Powered by Gemini 1.5 Flash</p>
+            </div>
+        </div>
 
-    <div class="max-w-3xl mx-auto anime-border p-4 mb-8">
-        <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="PASTE SOLANA MINT..." class="bg-black/50 border border-purple-900 p-3 flex-1 outline-none text-[#00ffa3] text-sm">
-            <button onclick="updateDashboard()" class="bg-[#00ffa3] text-black px-8 font-bold hover:bg-white transition-all">ANALYZE</button>
+        <div class="flex gap-2 w-full md:w-auto">
+            <input id="tokenAddr" type="text" placeholder="SOLANA MINT..." class="bg-black border border-gray-800 p-3 text-sm flex-1 md:w-80 outline-none focus:border-blue-500 transition-colors">
+            <button onclick="executeGeminiScan()" class="bg-blue-600 hover:bg-white hover:text-blue-600 px-8 py-3 font-bold text-sm transition-all uppercase tracking-tighter">Initialize</button>
         </div>
     </div>
 
-    <div id="dashboard" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-        
-        <div class="lg:col-span-2 anime-border overflow-hidden bg-black">
-            <div id="chart-area">
+    <div id="main-ui" class="max-w-7xl mx-auto hidden">
+        <div class="grid grid-cols-1 gap-6">
+            
+            <div class="terminal-border rounded-lg overflow-hidden">
                 <iframe id="price-chart" src=""></iframe>
             </div>
-        </div>
 
-        <div class="space-y-4">
-            <div class="anime-border p-2 bg-black min-h-[400px]">
-                <h3 class="text-[#00ffa3] text-[10px] font-bold p-2 border-b border-purple-900 mb-2">AUTO_TECHNICAL_OVERVIEW >></h3>
+            <div class="terminal-border rounded-lg overflow-hidden">
+                <div class="ai-header flex justify-between items-center">
+                    <span>GEMINI_AI_FACILITATION_LAYER</span>
+                    <span id="scan-status" class="text-[9px] opacity-70 italic text-white">READY_FOR_PACKET</span>
+                </div>
                 
-                <div class="tradingview-widget-container" id="tv-gauge">
-                    <div class="tradingview-widget-container__widget"></div>
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h3 class="text-blue-400 font-bold text-sm">// EXECUTIVE_SUMMARY</h3>
+                        <div id="gemini-overview" class="text-xs text-gray-400 leading-relaxed italic">
+                            Gemini is awaiting on-chain data to synthesize an overview...
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-black/50 p-4 border border-gray-800">
+                            <h4 class="text-blue-400 text-[10px] font-bold mb-2">RISK_REWARD_RATING</h4>
+                            <div id="gemini-risk" class="text-lg font-bold">---</div>
+                        </div>
+                        <div class="bg-black/50 p-4 border border-gray-800">
+                            <h4 class="text-blue-400 text-[10px] font-bold mb-2">OPTIMAL_ENTRY_ZONE</h4>
+                            <div id="gemini-entry" class="text-lg font-bold text-[#00ffa3]">---</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="p-4 mt-2 bg-purple-950/20 rounded border border-purple-900/50">
-                    <p class="text-[11px] text-gray-300 italic leading-relaxed">
-                        <span class="text-[#00ffa3] block mb-1 font-bold">SYST_MESSAGE:</span>
-                        Price action is being cross-referenced with RSI and Volatility bands. Check the gauge above for the current aggregate sentiment.
-                        <br><br>
-                        <span class="text-yellow-500 font-bold underline text-[10px]">NFA & DYOR applied to all data points.</span>
-                    </p>
-                </div>
-            </div>
-
-            <div class="p-3 bg-red-950/20 border border-red-900 text-[10px] text-center text-red-400 font-bold">
-                ⚠️ WARNING: NO FINANCIAL ADVICE (NFA). ALWAYS DO YOUR OWN RESEARCH (DYOR).
-            </div>
-        </div>
-    </div>
-
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async></script>
-    <script>
-        function updateDashboard() {
-            const mint = document.getElementById('tokenAddr').value.trim();
-            if(!mint) return;
-
-            document.getElementById('dashboard').classList.remove('hidden');
-
-            // 1. Update Chart
-            document.getElementById('price-chart').src = `https://www.geckoterminal.com/solana/pools/${mint}?embed=1&info=0&swaps=1`;
-
-            // 2. Inject Technical Gauge
-            // Note: TradingView uses Symbol names for the gauge. 
-            // For Pump.fun tokens, we default to SOL/USD or provide a message.
-            const gaugeContainer = document.querySelector("#tv-gauge .tradingview-widget-container__widget");
-            gaugeContainer.innerHTML = ''; // Clear old widget
-            
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
-            script.async = true;
-            script.text = JSON.stringify({
-                "interval": "1m",
-                "width": "100%",
-                "isTransparent": true,
-                "height": 350,
-                "symbol": "COINBASE:SOLUSD", // Using SOL as the base sentiment for Solana tokens
-                "showIntervalTabs": true,
-                "displayMode": "single",
-                "locale": "en",
-                "colorTheme": "dark"
-            });
-            gaugeContainer.appendChild(script);
-        }
-    </script>
-</body>
-</html>
+                <div class="p-3 bg-red-950/10 border-t border-gray
