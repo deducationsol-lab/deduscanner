@@ -1,165 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$DEDU | Ultra-Fast Solana Scanner</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --neon-green: #00ffa3;
-            --deep-purple: #6b21a8;
-            --dark-bg: #0b0118;
-        }
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Space+Mono', monospace;
-            background-image: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #0b0118 100%);
-        }
-        .anime-border {
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
-            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
-        }
-        .header-glow {
-            filter: drop-shadow(0 0 10px var(--neon-green));
-        }
-        .scanner-input {
-            background: rgba(107, 33, 168, 0.2);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-        }
-        .btn-scan {
-            background: var(--neon-green);
-            color: black;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .btn-scan:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--neon-green);
-        }
-        #tradingview_widget {
-            height: 400px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-    </style>
-</head>
-<body class="p-4 md:p-8">
+const HELIUS_RPC = 'https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8';
 
-    <div class="max-w-6xl mx-auto text-center mb-8">
-        <img src="https://files.oaiusercontent.com/file-K1S2vj3ZJ0R8lTjQ8vY6T2?se=2024-05-23T00%3A00%3A00Z&sp=r&sv=2021-08-06&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3Ddedu_logo.png&sig=..." 
-             alt="$DEDU Header" class="mx-auto w-48 mb-4 header-glow rounded-full">
-        <h1 class="text-4xl font-bold text-[#00ffa3] italic tracking-tighter">ZENITH_SCANNER v1.0</h1>
-        <p class="text-purple-400">DETECTING ANOMALIES ON SOLANA MAINNET...</p>
-    </div>
+async function startScan() {
+    const mint = document.getElementById('tokenAddr').value.trim();
+    if(!mint) return alert("ENTER MINT ADDRESS, ANON.");
 
-    <div class="max-w-4xl mx-auto anime-border p-6 bg-[#120526] mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <input id="tokenAddr" type="text" placeholder="PASTE TOKEN MINT ADDRESS..." class="scanner-input p-3 outline-none">
-            <button onclick="startScan()" class="btn-scan p-3">INITIATE SCAN</button>
-        </div>
-        <div class="flex items-center space-x-2 text-xs text-gray-400">
-            <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-            <span>HELIUS NODE: ACTIVE (1a333300-...)</span>
-        </div>
-    </div>
+    // Reveal UI
+    document.getElementById('results').style.opacity = '1';
+    
+    try {
+        // 1. EMBED TRADINGVIEW (Fastest Charting)
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": `DEXSCREENER:${mint}`, // Dexscreener provider for newest pairs
+            "interval": "1",
+            "theme": "dark",
+            "container_id": "tradingview_widget",
+            "library_path": "https://s3.tradingview.com/tv.js"
+        });
 
-    <div id="results" class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 opacity-0 transition-opacity duration-1000">
+        // 2. FETCH TOKEN METADATA & DEPLOYER (DAS API)
+        const assetResponse = await fetch(HELIUS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0', id: 'dedu-scan',
+                method: 'getAsset',
+                params: { id: mint }
+            })
+        });
+        const assetData = await assetResponse.json();
+        const deployerWallet = assetData.result.authorities[0]?.address;
+
+        // 3. FETCH TOP 20 HOLDERS (Live Data)
+        const holderResponse = await fetch(HELIUS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0', id: 'dedu-scan',
+                method: 'getTokenLargestAccounts',
+                params: [mint]
+            })
+        });
+        const holders = await holderResponse.json();
+        renderVolumeBars(holders.result.value);
+
+        // 4. SCAN DEPLOYER HISTORY (Check for serial launches)
+        const sigResponse = await fetch(HELIUS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0', id: 'dedu-scan',
+                method: 'getSignaturesForAddress',
+                params: [deployerWallet, { limit: 50 }]
+            })
+        });
+        const sigs = await sigResponse.json();
         
-        <div class="lg:col-span-2 anime-border p-2 bg-black">
-            <div id="tradingview_widget"></div>
-        </div>
+        // Logical Analysis
+        const tokensMade = sigs.result.length > 40 ? "50+" : sigs.result.length;
+        document.getElementById('tokensMade').innerText = `${tokensMade} TXS`;
+        document.getElementById('bondedCount').innerText = assetData.result.supply.basis_points > 0 ? "ACTIVE" : "BONDED";
 
-        <div class="space-y-6">
-            <div class="anime-border p-4 bg-[#120526]">
-                <h3 class="text-[#00ffa3] mb-3 border-b border-purple-900 pb-2">DEPLOYER_INTEL</h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between"><span>TOTAL_MADE:</span> <span id="tokensMade" class="text-purple-300">--</span></div>
-                    <div class="flex justify-between"><span>BONDED_COUNT:</span> <span id="bondedCount" class="text-purple-300">--</span></div>
-                    <div class="flex justify-between"><span>DEV_BALANCE:</span> <span id="devBal" class="text-purple-300">--</span></div>
-                </div>
-            </div>
+        generateAISuggestion(holders.result.value, tokensMade);
 
-            <div class="anime-border p-4 bg-[#120526]">
-                <h3 class="text-[#00ffa3] mb-3 border-b border-purple-900 pb-2">WHALE_FLOW (TOP 20)</h3>
-                <div id="volumeTracker" class="h-24 flex items-end justify-between space-x-1">
-                    </div>
-                <p id="top20Action" class="text-center mt-2 text-xs font-bold text-green-400">MONITORING SQUAWK...</p>
-            </div>
-        </div>
+    } catch (err) {
+        console.error("SCAN_ERROR:", err);
+        document.getElementById('aiSuggestion').innerText = "ERROR: NODE CONGESTION OR INVALID MINT.";
+    }
+}
 
-        <div class="lg:col-span-3 anime-border p-4 bg-[#1a0b2e] border-l-4 border-l-[#00ffa3]">
-            <h3 class="text-[#00ffa3] text-sm italic mb-1">AI_ANALYSIS_ENGINE >></h3>
-            <p id="aiSuggestion" class="text-gray-300 italic">Awaiting data stream for terminal evaluation...</p>
-        </div>
-    </div>
+function renderVolumeBars(holders) {
+    const tracker = document.getElementById('volumeTracker');
+    tracker.innerHTML = '';
+    holders.slice(0, 20).forEach(h => {
+        const bar = document.createElement('div');
+        const percentage = (h.uiAmount / holders[0].uiAmount) * 100;
+        bar.className = 'w-2 bg-[#6b21a8] hover:bg-[#00ffa3] transition-all duration-300';
+        bar.style.height = `${Math.max(percentage, 10)}%`;
+        tracker.appendChild(bar);
+    });
+    document.getElementById('top20Action').innerText = "TOP 20: DISTRIBUTION ANALYZED";
+}
 
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-        const HELIUS_KEY = '1a333300-f919-4d0e-ae4c-31b993844ba8';
+function generateAISuggestion(holders, txCount) {
+    const top1 = holders[0].share || 0;
+    let advice = "";
+    
+    if (top1 > 15) advice = "CRITICAL: Top holder owns >15%. High dump potential. 🚨";
+    else if (txCount > 40) advice = "WARNING: Highly active deployer. Check for 'churning' patterns. ⚠️";
+    else advice = "BULLISH: Clean holder distribution & fresh deployer. Looks SAFU. ✅";
 
-        async function startScan() {
-            const mint = document.getElementById('tokenAddr').value;
-            if(!mint) return alert("Enter Mint Address!");
-
-            // Show UI
-            document.getElementById('results').style.opacity = '1';
-
-            // 1. Load Chart (TradingView)
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": `PUMPFUN:${mint}`,
-                "interval": "5",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "container_id": "tradingview_widget",
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-            });
-
-            // 2. Fetch Helius Data (Deployer Audit)
-            // Note: In a real app, you'd fetch the transaction history of the mint
-            // This is a simulation of the logic for the lowest latency
-            document.getElementById('tokensMade').innerText = Math.floor(Math.random() * 10) + " TOKENS";
-            document.getElementById('bondedCount').innerText = Math.floor(Math.random() * 5) + " BONDED";
-            
-            // 3. Live Volume Simulation (Top 20 Behavior)
-            simulateVolume();
-
-            // 4. AI Suggestion Logic
-            generateAIAdvice();
-        }
-
-        function simulateVolume() {
-            const tracker = document.getElementById('volumeTracker');
-            tracker.innerHTML = '';
-            for(let i=0; i<20; i++) {
-                const height = Math.random() * 100;
-                const bar = document.createElement('div');
-                bar.className = 'w-2 bg-purple-500 transition-all duration-500';
-                bar.style.height = height + '%';
-                if(height > 70) bar.style.backgroundColor = '#00ffa3';
-                tracker.appendChild(bar);
-            }
-            document.getElementById('top20Action').innerText = "TOP 20 HOLDERS: ACCUMULATING (BULLISH)";
-        }
-
-        function generateAIAdvice() {
-            const suggestions = [
-                "WARNING: High deployer concentration. Likely rug-risk. Proceed with caution, Anon.",
-                "SENSORY DATA: Low dev dumping, volume increasing. Potential moon-shot detected.",
-                "NEUTRAL: Consolidation phase. Top 20 holders are diamond handing. Entry point optimal."
-            ];
-            document.getElementById('aiSuggestion').innerText = suggestions[Math.floor(Math.random()*suggestions.length)];
-        }
-    </script>
-</body>
-</html>
+    document.getElementById('aiSuggestion').innerText = `[SYSTEM_ADVICE]: ${advice}`;
+}
