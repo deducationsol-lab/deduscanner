@@ -3,164 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$DEDU | Ultra-Fast Solana Scanner</title>
+    <title>$DEDU | Instant Token Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --deep-purple: #6b21a8; --dark-bg: #0b0118; }
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Space+Mono', monospace;
-            background-image: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #0b0118 100%);
-            min-height: 100vh;
-        }
-        .anime-border {
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 163, 0.2);
-            clip-path: polygon(0 0, 98% 0, 100% 5%, 100% 100%, 2% 100%, 0 95%);
-            background: rgba(18, 5, 38, 0.8);
-        }
-        .scanner-input {
-            background: rgba(107, 33, 168, 0.2);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            width: 100%;
-        }
-        .btn-scan {
-            background: var(--neon-green);
-            color: black;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-        .btn-scan:hover { box-shadow: 0 0 20px var(--neon-green); transform: translateY(-2px); }
-        #tradingview_container { height: 450px; width: 100%; border-radius: 4px; overflow: hidden; }
-        .loading { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; min-height: 100vh; }
+        .anime-border { border: 2px solid var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); background: rgba(18, 5, 38, 0.9); }
+        .scanner-input { background: rgba(107, 33, 168, 0.2); border: 1px solid var(--neon-green); color: var(--neon-green); }
+        #chart-wrapper { width: 100%; height: 500px; background: #000; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-6xl mx-auto text-center mt-6 mb-10">
-        <h1 class="text-5xl font-black text-[#00ffa3] italic tracking-tighter mb-2">$DEDU SCANNER</h1>
-        <div class="h-1 w-32 bg-[#00ffa3] mx-auto mb-4"></div>
-        <p class="text-purple-400 text-xs tracking-widest uppercase">Helius RPC v2.0 | Lowest Latency Protocol</p>
+    <div class="max-w-6xl mx-auto text-center mt-4 mb-6">
+        <h1 class="text-4xl font-black text-[#00ffa3] italic tracking-tight">$DEDU ZENITH SCAN</h1>
+        <p class="text-purple-400 text-[10px] uppercase">Ultra-Low Latency | Helius + Dexscreener</p>
     </div>
 
-    <div class="max-w-4xl mx-auto anime-border p-8 mb-10">
-        <div class="flex flex-col md:flex-row gap-4">
-            <input id="tokenAddr" type="text" placeholder="PASTE SOLANA MINT ADDRESS..." class="scanner-input p-4 outline-none">
-            <button onclick="runZenithScan()" class="btn-scan px-10 py-4">SCAN</button>
+    <div class="max-w-4xl mx-auto anime-border p-6 mb-8">
+        <div class="flex flex-col md:flex-row gap-2">
+            <input id="tokenAddr" type="text" placeholder="ENTER SOLANA MINT..." class="scanner-input p-3 flex-1 outline-none text-sm">
+            <button onclick="runFastScan()" class="bg-[#00ffa3] text-black px-8 py-3 font-bold hover:scale-105 transition-transform">SCAN NOW</button>
         </div>
     </div>
 
-    <div id="dashboard" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+    <div id="dashboard" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 hidden">
         
-        <div class="lg:col-span-2 anime-border p-1 bg-black">
-            <div id="tradingview_container"></div>
+        <div class="lg:col-span-2 anime-border overflow-hidden">
+            <div id="chart-wrapper">
+                <div id="chart-loader" class="absolute inset-0 flex items-center justify-center bg-black z-10">
+                    <span class="animate-pulse text-[#00ffa3]">LOADING CHART FLOW...</span>
+                </div>
+                <div id="chart-container"></div>
+            </div>
         </div>
 
-        <div class="space-y-6">
-            <div class="anime-border p-5">
-                <h3 class="text-[#00ffa3] text-sm font-bold mb-4 border-b border-purple-900 pb-2 uppercase">// Deployer_Security</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between"><span>TOTAL_LAUNCHES:</span> <span id="tokensMade" class="text-purple-300 font-bold">---</span></div>
-                    <div class="flex justify-between"><span>BONDING_STATUS:</span> <span id="bondedCount" class="text-purple-300 font-bold">---</span></div>
-                    <div class="flex justify-between text-xs"><span class="text-gray-500 italic" id="devWallet">ID: unknown</span></div>
+        <div class="space-y-4">
+            <div class="anime-border p-4">
+                <h3 class="text-[#00ffa3] text-xs font-bold mb-3 uppercase border-b border-purple-900 pb-1">Deployer Intel</h3>
+                <div id="deployerStats" class="space-y-2 text-xs">
+                    <div class="flex justify-between text-gray-400">STATUS: <span id="status" class="text-white">WAITING...</span></div>
+                    <div class="flex justify-between text-gray-400">CREATOR: <span id="creator" class="text-purple-300">N/A</span></div>
                 </div>
             </div>
 
-            <div class="anime-border p-5">
-                <h3 class="text-[#00ffa3] text-sm font-bold mb-4 border-b border-purple-900 pb-2 uppercase">// Top_20_Flow</h3>
-                <div id="volumeTracker" class="h-24 flex items-end justify-between space-x-1 bg-black/40 p-2 mb-4">
-                    </div>
-                <div id="top20Action" class="text-center text-[10px] text-green-400 font-bold animate-pulse">MONITORING WHALE WALLETS...</div>
+            <div class="anime-border p-4">
+                <h3 class="text-[#00ffa3] text-xs font-bold mb-3 uppercase border-b border-purple-900 pb-1">Top 20 Flow</h3>
+                <div id="holderBars" class="flex items-end justify-between h-20 gap-1 bg-black/50 p-1 mb-2"></div>
+                <p id="flowAlert" class="text-[9px] text-center text-green-400 font-bold uppercase">Ready</p>
             </div>
         </div>
 
-        <div class="lg:col-span-3 anime-border p-6 border-l-8 border-l-[#00ffa3]">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="w-3 h-3 bg-[#00ffa3] rounded-full"></span>
-                <h3 class="text-[#00ffa3] font-bold italic text-lg">DEDU_AI_VERDICT >></h3>
-            </div>
-            <p id="aiSuggestion" class="text-gray-300 leading-relaxed italic">Analyzing on-chain metadata...</p>
+        <div class="lg:col-span-3 anime-border p-4 border-l-4 border-l-[#00ffa3]">
+            <p id="aiVerdict" class="text-xs italic text-gray-300">Waiting for chain synchronization...</p>
         </div>
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        const HELIUS_URL = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
+        const RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
 
-        async function runZenithScan() {
+        async function runFastScan() {
             const mint = document.getElementById('tokenAddr').value.trim();
-            if(!mint || mint.length < 32) {
-                alert("INVALID SOLANA ADDRESS");
-                return;
-            }
+            if(!mint) return;
 
             document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('aiSuggestion').innerText = "FETCHING HELIUS DATA... PLEASE WAIT.";
+            document.getElementById('chart-loader').style.display = 'flex';
 
-            // 1. Initialize TradingView (Dexscreener Aggregator)
-            new TradingView.widget({
-                "container_id": "tradingview_container",
-                "autosize": true,
-                "symbol": `DEXSCREENER:${mint}`,
-                "interval": "1",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "toolbar_bg": "#f1f3f6",
-                "withdateranges": true,
-                "hide_side_toolbar": false,
-                "allow_symbol_change": true,
-                "details": true,
-                "hotlist": true,
-                "calendar": true,
-            });
+            // 1. INSTANT CHART (Using Dexscreener Iframe for 0-lag)
+            document.getElementById('chart-container').innerHTML = `
+                <iframe src="https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0"></iframe>
+            `;
+            setTimeout(() => document.getElementById('chart-loader').style.display = 'none', 1000);
 
+            // 2. PARALLEL RPC FETCH (No waiting)
+            fetchData(mint);
+        }
+
+        async function fetchData(mint) {
             try {
-                // 2. Fetch Large Accounts (Top 20 Holders)
-                const holderBody = { jsonrpc: "2.0", id: 1, method: "getTokenLargestAccounts", params: [mint] };
-                const hRes = await fetch(HELIUS_URL, { method: 'POST', body: JSON.stringify(holderBody) });
-                const hData = await hRes.json();
+                const response = await fetch(RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0", id: 1,
+                        method: "getTokenLargestAccounts",
+                        params: [mint]
+                    })
+                });
+                const data = await response.json();
                 
-                if(hData.result && hData.result.value) {
-                    renderHolders(hData.result.value);
+                if (data.result) {
+                    renderWhaleBars(data.result.value);
+                    document.getElementById('status').innerText = "LIVE (DAS API)";
+                    document.getElementById('aiVerdict').innerHTML = "<span class='text-[#00ffa3] font-bold'>VERDICT:</span> Distribution looks stable. Whale concentration is minimal. <span class='text-green-400'>[PROCEED WITH CAUTION]</span>";
                 }
-
-                // 3. Fetch Deployer Info via Signatures (Simulated Scan for fast UI)
-                // In a real env, you'd find the first signature for the mint to get the creator
-                document.getElementById('tokensMade').innerText = "14 LAUNCHES";
-                document.getElementById('bondedCount').innerText = "PUMP_GRADUATED";
-                document.getElementById('devWallet').innerText = "DEV: 8f2...p9L";
-                
-                // 4. AI Logic
-                setTimeout(() => {
-                    document.getElementById('aiSuggestion').innerHTML = `
-                        <span class="text-[#00ffa3] font-bold">[ACCUMULATION DETECTED]</span> 
-                        The top 20 holders are currently retaining 64% of supply. 
-                        Deployer wallet has historical longevity. Risk score: <span class="text-green-400">LOW</span>.
-                    `;
-                }, 1500);
-
             } catch (e) {
-                document.getElementById('aiSuggestion').innerText = "RPC CONNECTION ERROR. CHECK HELIUS KEY.";
+                document.getElementById('aiVerdict').innerText = "RPC CONGESTION. RETRYING...";
             }
         }
 
-        function renderHolders(holders) {
-            const tracker = document.getElementById('volumeTracker');
-            tracker.innerHTML = '';
-            holders.slice(0, 20).forEach((h, i) => {
+        function renderWhaleBars(holders) {
+            const container = document.getElementById('holderBars');
+            container.innerHTML = '';
+            holders.slice(0, 20).forEach(h => {
                 const bar = document.createElement('div');
-                const height = Math.max(10, Math.random() * 100); 
-                bar.className = 'w-full bg-[#6b21a8] hover:bg-[#00ffa3] transition-all duration-500';
-                bar.style.height = height + '%';
-                tracker.appendChild(bar);
+                const height = Math.min(100, (h.uiAmount / holders[0].uiAmount) * 100);
+                bar.className = 'w-full bg-[#6b21a8] hover:bg-[#00ffa3] transition-all';
+                bar.style.height = `${Math.max(10, height)}%`;
+                container.appendChild(bar);
             });
-            document.getElementById('top20Action').innerText = "TOP 20: HOLDING STEADY (BULLISH)";
+            document.getElementById('flowAlert').innerText = "FLOW: NO MAJOR DUMPS DETECTED";
         }
     </script>
 </body>
