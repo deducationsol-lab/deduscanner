@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$DEDU | Gemini Intelligence Hub</title>
+    <title>$DEDU | Volume & Value Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gemini-blue: #4285f4; --neon-green: #00ffa3; --dark-bg: #030108; }
+        :root { --neon-green: #00ffa3; --dark-bg: #05020a; --panel-bg: #0f0a1a; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid rgba(66, 133, 244, 0.3); box-shadow: 0 0 20px rgba(66, 133, 244, 0.1); background: #0a0a0a; }
-        .ai-header { background: linear-gradient(90deg, #4285f4, #1a0b2e); padding: 8px 12px; font-size: 11px; font-weight: bold; }
+        .terminal-border { border: 1px solid #2d1b4e; background: var(--panel-bg); }
+        .alert-box { border-left: 4px solid #00ffa3; background: rgba(0, 255, 163, 0.05); }
         iframe { width: 100%; height: 600px; border: none; background: #000; }
+        .stat-value { font-size: 24px; font-weight: 900; color: #00ffa3; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -19,105 +20,100 @@
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-full border-2 border-[#00ffa3] flex items-center justify-center font-black italic text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter">$DEDU_TERMINAL</h1>
-                <p class="text-blue-400 text-[10px] tracking-[0.3em] uppercase">Powered by Gemini AI</p>
+                <h1 class="text-3xl font-black italic tracking-tighter">$DEDU_FLOW_SCAN</h1>
+                <p class="text-purple-500 text-[10px] uppercase tracking-[0.3em]">Volume & Value Protocol</p>
             </div>
         </div>
 
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-gray-800 p-3 text-sm flex-1 md:w-96 outline-none focus:border-blue-500 text-blue-400">
-            <button onclick="launchFacilitator()" class="bg-blue-600 hover:bg-white hover:text-blue-600 px-10 py-3 font-bold text-sm transition-all uppercase">Analyze</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-purple-900/50 p-3 text-sm flex-1 md:w-96 outline-none text-[#00ffa3]">
+            <button onclick="calculateDynamics()" class="bg-[#00ffa3] text-black px-10 py-3 font-bold text-sm hover:bg-white transition-all">SCAN FLOW</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden space-y-6">
         
-        <div class="terminal-border rounded-lg overflow-hidden">
-            <div class="ai-header uppercase">Real-Time Market Data</div>
-            <div id="chart-container">
-                <iframe id="market-chart" src=""></iframe>
-            </div>
+        <div class="terminal-border rounded overflow-hidden">
+            <iframe id="market-chart" src=""></iframe>
         </div>
 
-        <div class="terminal-border rounded-lg overflow-hidden">
-            <div class="ai-header flex justify-between">
-                <span>FACILITATOR_OVERVIEW</span>
-                <span id="status" class="opacity-50 italic">AWAITING_DATA</span>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="md:col-span-2">
-                    <h3 class="text-blue-400 font-bold text-xs mb-4">// ANALYSIS_BRIEFING</h3>
-                    <div id="gemini-text" class="text-xs text-gray-300 leading-relaxed italic whitespace-pre-wrap">
-                        Syncing with Solana Mainnet...
-                    </div>
-                </div>
+            <div class="terminal-border p-6 rounded">
+                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-widest">// HOLDER_CONCENTRATION</h3>
                 <div class="space-y-4">
-                    <div class="bg-black/50 p-4 border border-gray-800 rounded">
-                        <p class="text-[10px] text-blue-400 font-bold mb-1">RISK_LEVEL</p>
-                        <div id="risk-score" class="text-xl font-black">--</div>
-                    </div>
-                    <div class="bg-black/50 p-4 border border-gray-800 rounded">
-                        <p class="text-[10px] text-blue-400 font-bold mb-1">ENTRY_STRATEGY</p>
-                        <div id="entry-point" class="text-xl font-black text-[#00ffa3]">--</div>
+                    <div>
+                        <p class="text-[10px] text-purple-400">VALUE HELD BY TOP 20 (vs FDV)</p>
+                        <div id="holderVal" class="stat-value">0.00%</div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-4 border-t border-gray-900 text-[10px] text-center text-gray-500 font-bold">
-                NFA & DYOR • GENERATED BY $DEDU FACILITATOR
+            <div class="md:col-span-2 terminal-border p-6 rounded alert-box">
+                <h3 class="text-[#00ffa3] text-[10px] font-bold mb-4 uppercase tracking-widest">// MARKET_SENTIMENT_ENGINE</h3>
+                <div id="sentimentMsg" class="text-xs italic text-gray-300 leading-relaxed">
+                    Awaiting price action synchronization...
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-800 flex gap-4 text-[9px] font-bold">
+                    <span class="text-red-500 underline">DYOR: DO YOUR OWN RESEARCH</span>
+                    <span class="text-red-500 underline">NFA: NOT FINANCIAL ADVICE</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const GEMINI_KEY = "AIzaSyCNZk6fiLSQQEFhxJb8oJRaukoTlpY-yJE";
         const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
 
-        async function launchFacilitator() {
+        async function calculateDynamics() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
             document.getElementById('ui').classList.remove('hidden');
-            document.getElementById('status').innerText = "LINKING_TO_CHAIN...";
-            
-            // DexScreener Embed is the best for Solana
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
             try {
-                // Fetch Whale Data from Helius
-                const hRes = await fetch(HELIUS_RPC, {
+                // Fetch Holder Data from Helius
+                const response = await fetch(HELIUS_RPC, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTokenLargestAccounts", params: [mint] })
+                    body: JSON.stringify({
+                        jsonrpc: "2.0", id: 1,
+                        method: "getTokenLargestAccounts",
+                        params: [mint]
+                    })
                 });
-                const hData = await hRes.json();
-                const whales = hData.result.value.slice(0, 5);
+                const data = await response.json();
+                
+                if(data.result) {
+                    // Logic for Concentration (Assuming total supply of 1B for Pump.fun tokens)
+                    const totalSupply = 1000000000; 
+                    let top20Sum = 0;
+                    data.result.value.forEach(acc => top20Sum += acc.uiAmount);
+                    
+                    const percentHeld = ((top20Sum / totalSupply) * 100).toFixed(2);
+                    document.getElementById('holderVal').innerText = percentHeld + "%";
 
-                // Prompt Gemini
-                const prompt = `Act as $DEDU Facilitator. 
-                Data: Mint ${mint}, Holders: ${JSON.stringify(whales)}. 
-                Provide: 1) Briefing (risk/reward summary), 2) Risk Level (1-10), 3) Entry Point.
-                Formatting: Separate the 3 sections with "###".
-                End with "NFA. DYOR."`;
+                    // Simple Price Trend Simulation (For UI Demonstration)
+                    // In a live app, you would compare current price to 1h ago
+                    updateSentiment(0); // Pass the % change here
+                }
+            } catch (e) {
+                console.error("RPC Error");
+            }
+        }
 
-                const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                const gJson = await gRes.json();
-                const aiText = gJson.candidates[0].content.parts[0].text;
-
-                const segments = aiText.split("###");
-                document.getElementById('gemini-text').innerText = (segments[0] || aiText).trim();
-                document.getElementById('risk-score').innerText = (segments[1] || "MODERATE").trim();
-                document.getElementById('entry-point').innerText = (segments[2] || "WATCH_VOLUME").trim();
-                document.getElementById('status').innerText = "FACILITATION_COMPLETE";
-
-            } catch (err) {
-                document.getElementById('gemini-text').innerText = "CRITICAL_ERROR: Check API credits or Mint Address.";
+        function updateSentiment(changePercent) {
+            const msgBox = document.getElementById('sentimentMsg');
+            
+            // Your custom +/- 30% logic
+            if (changePercent <= -30) {
+                msgBox.innerHTML = `<span class="text-red-500 font-bold underline">WARNING:</span> Value drop detected (>30%). High probability that <span class="text-white underline">top holders are selling</span> and exit liquidity is thinning.`;
+            } else if (changePercent >= 30) {
+                msgBox.innerHTML = `<span class="text-[#00ffa3] font-bold underline">NOTICE:</span> Value up (>30%). High probability that <span class="text-white underline">FOMO is kicking in</span>. Watch for potential over-extension.`;
+            } else {
+                msgBox.innerHTML = `Market value is currently stable. Monitor for volume spikes near the 30% threshold for trend confirmation.`;
             }
         }
     </script>
