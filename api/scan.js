@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
     const { ca } = req.query;
-    const HELIUS_KEY = "YOUR_HELIUS_API_KEY"; // Replace with your key
+    const HELIUS_KEY = "1a333300-f919-4d0e-ae4c-31b993844ba8"; // Replace with your key
 
     try {
         // 1. Fetch Dex Data (Price & Market Cap)
