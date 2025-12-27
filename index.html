@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | DEFI PROTOCOL V17</title>
+    <title>DEDU | DEFI PROTOCOL V18</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; --warning: #ffaa00; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
-        .command-box { border-left: 15px solid #1e1b4b; transition: all 0.3s ease; }
-        .glitch-text { text-shadow: 2px 2px #ff0000, -2px -2px #0000ff; }
+        .timer-bar { height: 4px; background: #3b82f6; transition: width 1s linear; box-shadow: 0 0 10px #3b82f6; }
+        .decision-panel { border-left: 15px solid #1e1b4b; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         iframe { width: 100%; height: 500px; border: none; }
-        .status-pill { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-blink { animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -21,30 +22,30 @@
         <div class="flex items-center gap-5">
             <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">DEDU_DEFI_V17</h1>
-                <p class="text-[9px] text-blue-500 tracking-[0.3em] mt-1">COMMAND_ENGINE_ACTIVE</p>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">DEDU_PROTOCOL_V18</h1>
+                <p class="text-[9px] text-blue-500 tracking-[0.3em] mt-1">5M_CANDLE_SNAPSHOT_ENGINE</p>
             </div>
         </div>
         <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
-            <button onclick="igniteProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-black text-xs hover:scale-105 transition-all uppercase italic">Execute Scan</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="startDeduScan()" class="bg-[#00ffa3] text-black px-10 py-4 font-black text-xs hover:bg-white transition-all uppercase italic">Launch Oracle</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3 space-y-6">
             
-            <div id="commandPanel" class="terminal-border p-10 command-box relative overflow-hidden">
-                <div id="timerBar" class="absolute top-0 left-0 h-1 bg-[#00ffa3] transition-all" style="width: 0%"></div>
-                <div class="flex flex-col md:flex-row justify-between items-center gap-10">
+            <div id="decisionBox" class="terminal-border p-10 decision-panel relative overflow-hidden">
+                <div id="timerBar" class="timer-bar absolute top-0 left-0" style="width: 0%"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// 5M_PRICE_ACTION</p>
-                        <div id="deltaPct" class="text-8xl font-black italic tracking-tighter">0.00%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// 5M_CANDLE_DELTA</p>
+                        <div id="deltaPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
                     </div>
-                    <div class="text-center md:text-right flex-1">
+                    <div class="text-center md:text-right">
                         <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// TRADER_DECISION</p>
-                        <div id="decisionCmd" class="text-5xl font-black italic uppercase leading-tight mb-2">CALIBRATING</div>
-                        <div id="decisionExplainer" class="text-sm text-gray-400 italic max-w-md ml-auto">Analyzing 5-minute liquidity and volume clusters...</div>
+                        <div id="decisionTitle" class="text-5xl font-black italic uppercase leading-none mb-3">SYNCING...</div>
+                        <p id="decisionText" class="text-sm text-gray-400 italic max-w-sm ml-auto">Establishing 5-minute reference point. This compares the price at the 5m candle open to current market price.</p>
                     </div>
                 </div>
             </div>
@@ -53,159 +54,156 @@
         </div>
 
         <div class="space-y-6">
-            <div id="auditCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
-                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_WALLET_AUDIT</p>
-                <div id="auditLoader" class="text-[10px] text-gray-600 animate-pulse">CONNECTING TO SOLANA MAINNET...</div>
-                
-                <div id="auditContent" class="hidden space-y-4">
+            <div id="depCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
+                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_WALLET_SCAN</p>
+                <div id="depData" class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-[10px] text-gray-500">WALLET_HISTORY</span>
-                        <span id="statHistory" class="font-black text-white italic">--</span>
+                        <span class="text-[10px] text-gray-500">LAUNCHED</span>
+                        <span id="launchedCount" class="font-black text-white italic">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-[10px] text-[#00ffa3]">SUCCESS_BONDED</span>
-                        <span id="statBonded" class="font-black text-[#00ffa3] italic">--</span>
+                        <span class="text-[10px] text-[#00ffa3]">BONDED</span>
+                        <span id="bondedCount" class="font-black text-[#00ffa3] italic">--</span>
                     </div>
-                    <div class="pt-2">
-                        <p class="text-[9px] text-gray-500 mb-1 uppercase">VERDICT</p>
-                        <div id="verdictLabel" class="text-xs font-black italic">--</div>
+                    <div class="pt-2 text-center">
+                        <p class="text-[9px] text-gray-500 mb-1 uppercase tracking-widest">VERDICT</p>
+                        <div id="devVerdict" class="text-xs font-black italic uppercase text-gray-600">PENDING_SCAN</div>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border p-6">
-                <p class="text-[10px] text-blue-400 font-bold mb-2 uppercase tracking-widest">// REFERENCE_DATA</p>
-                <p class="text-[9px] text-gray-600 uppercase">5m Avg Buy Price</p>
-                <div id="avgBuy" class="text-xs font-mono text-gray-400 mb-4">$0.00...</div>
-                <p class="text-[9px] text-gray-600 uppercase">Current Market</p>
-                <div id="liveTick" class="text-xs font-mono text-white">$0.00...</div>
+            <div class="terminal-border p-6 border-t-4 border-t-blue-900">
+                <p class="text-[10px] text-blue-400 font-bold mb-4 uppercase tracking-widest">// 5M_SNAPSHOT_DATA</p>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-[9px] text-gray-600 uppercase">5m Candle Open</p>
+                        <div id="openPrice" class="text-xs font-mono text-gray-400">$0.00000000</div>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-600 uppercase">Current Live</p>
+                        <div id="livePrice" class="text-xs font-mono text-white">$0.00000000</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let priceBuffer = [];
+        let candleOpenPrice = null;
+        let lastReset = Date.now();
         const FIVE_MIN = 300000;
-        let lastScanMint = "";
 
-        async function igniteProtocol() {
+        async function startDeduScan() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            priceBuffer = [];
-            lastScanMint = mint;
-            runTick(mint);
-            setInterval(() => runTick(mint), 4000);
+            candleOpenPrice = null;
+            lastReset = Date.now();
+            tick(mint);
+            setInterval(() => tick(mint), 3000);
         }
 
-        async function runTick(mint) {
+        async function tick(mint) {
+            const now = Date.now();
+            const elapsed = now - lastReset;
+            document.getElementById('timerBar').style.width = (elapsed / FIVE_MIN) * 100 + "%";
+
+            // HARD RESET: Every 5 minutes, capture the NEW candle open price
+            if (elapsed >= FIVE_MIN || candleOpenPrice === null) {
+                await captureOpenPrice(mint);
+                lastReset = now;
+            }
+
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const price = parseFloat(pair.priceUsd);
-                const now = Date.now();
+                const live = parseFloat(pair.priceUsd);
 
-                priceBuffer.push({ price: price, time: now });
-                priceBuffer = priceBuffer.filter(p => (now - p.time) < FIVE_MIN);
-
-                const avgPrice = priceBuffer.reduce((a, b) => a + b.price, 0) / priceBuffer.length;
-                const delta = (((price - avgPrice) / avgPrice) * 100).toFixed(2);
-
-                document.getElementById('avgBuy').innerText = "$" + avgPrice.toFixed(10);
-                document.getElementById('liveTick').innerText = "$" + price.toFixed(10);
+                document.getElementById('livePrice').innerText = "$" + live.toFixed(10);
+                
+                const delta = (((live - candleOpenPrice) / candleOpenPrice) * 100).toFixed(2);
                 document.getElementById('deltaPct').innerText = (delta >= 0 ? "+" : "") + delta + "%";
-                document.getElementById('timerBar').style.width = (Math.min(priceBuffer.length / 75, 1) * 100) + "%";
 
-                updateCommand(parseFloat(delta));
-
-                if(priceBuffer.length === 1) auditDeployer(pair.baseToken.address);
-
-            } catch (e) { console.log("Logic recalibrating..."); }
+                updateDecision(parseFloat(delta));
+            } catch (e) { console.error("Oracle Lag"); }
         }
 
-        async function auditDeployer(mint) {
-            document.getElementById('auditLoader').classList.remove('hidden');
-            document.getElementById('auditContent').classList.add('hidden');
-
+        async function captureOpenPrice(mint) {
             try {
-                // DexScreener often hides deployer, using a more aggressive fallback search
-                const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-                const dexData = await dexRes.json();
+                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+                const data = await res.json();
+                candleOpenPrice = parseFloat(data.pairs[0].priceUsd);
+                document.getElementById('openPrice').innerText = "$" + candleOpenPrice.toFixed(10);
                 
-                // Fetch creator from Birdeye/SolanaTracker compatible endpoints
-                const trackerRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
-                const trackerData = await trackerRes.json();
-                const creator = trackerData.creator?.address;
+                // Scan deployer only when the candle opens/resets
+                scanDeployerWallet(data.pairs[0].baseToken.address);
+            } catch(e) {}
+        }
 
-                if (!creator) throw "No wallet data";
-
-                const historyRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
-                const history = await historyRes.json();
+        async function scanDeployerWallet(mint) {
+            try {
+                const meta = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = meta.creator?.address || meta.deployer;
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
 
                 const total = history.length;
                 const bonded = history.filter(t => t.graduated === true || t.liquidity > 50000).length;
                 const ratio = (bonded / total) * 100;
 
-                document.getElementById('statHistory').innerText = `${total} TOKENS`;
-                document.getElementById('statBonded').innerText = `${bonded} GRADUATED`;
+                document.getElementById('launchedCount').innerText = total;
+                document.getElementById('bondedCount').innerText = bonded;
                 
-                const verd = document.getElementById('verdictLabel');
+                const verd = document.getElementById('devVerdict');
                 if (ratio >= 60) {
-                    verd.innerText = "VERDICT: LEGIT DEV (60%+ BONDED)";
+                    verd.innerText = "LEGIT DEPLOYER";
                     verd.className = "text-xs font-black italic text-[#00ffa3]";
                 } else if (ratio < 30) {
-                    verd.innerText = "VERDICT: SUSPICIOUS (RUG RISK HIGH)";
+                    verd.innerText = "SUSPICIOUS DEV";
                     verd.className = "text-xs font-black italic text-red-500";
                 } else {
-                    verd.innerText = "VERDICT: AVERAGE FARMER";
+                    verd.innerText = "AVERAGE FARMER";
                     verd.className = "text-xs font-black italic text-yellow-500";
                 }
-
-                document.getElementById('auditLoader').classList.add('hidden');
-                document.getElementById('auditContent').classList.remove('hidden');
-
-            } catch (e) {
-                document.getElementById('auditLoader').innerText = "AUDIT_FAILED: WALLET_HIDDEN";
-            }
+            } catch (e) { document.getElementById('devVerdict').innerText = "SCAN_ERROR"; }
         }
 
-        function updateCommand(delta) {
-            const cmd = document.getElementById('decisionCmd');
-            const exp = document.getElementById('decisionExplainer');
-            const panel = document.getElementById('commandPanel');
+        function updateDecision(delta) {
+            const title = document.getElementById('decisionTitle');
+            const text = document.getElementById('decisionText');
+            const panel = document.getElementById('decisionBox');
             const pct = document.getElementById('deltaPct');
 
             if (delta >= 70) {
-                cmd.innerText = "DO NOT BUY / SELL";
-                cmd.className = "text-5xl font-black italic text-yellow-500";
-                exp.innerText = "Price is 70% ABOVE the 5-minute average. You are at the top of a wick. Wait for a -30% correction before entry.";
+                title.innerText = "DO NOT BUY";
+                title.className = "text-5xl font-black italic text-yellow-500";
+                text.innerText = "CRITICAL OVEREXTENSION. Price is +70% from the 5-minute open. You are buying the peak of the candle. Wait for a reset.";
                 panel.style.borderLeftColor = "#eab308";
                 pct.style.color = "#eab308";
             } else if (delta >= 30) {
-                cmd.innerText = "BUY / MOON";
-                cmd.className = "text-5xl font-black italic text-[#00ffa3]";
-                exp.innerText = "FOMO CONFIRMED. Buying volume is +30% above the 5-minute average. Momentum suggests a moon shot is active.";
+                title.innerText = "BUY / MOON";
+                title.className = "text-5xl font-black italic text-[#00ffa3]";
+                text.innerText = "FOMO ACTIVE. Current price is +30% above the 5-minute open. Momentum is confirmed for a moonshot run.";
                 panel.style.borderLeftColor = "#00ffa3";
                 pct.style.color = "#00ffa3";
             } else if (delta <= -70) {
-                cmd.innerText = "ABORT / RUG";
-                cmd.className = "text-5xl font-black italic text-red-600";
-                exp.innerText = "CRITICAL DROP. Price is -70% below average. Liquidity exit detected. Abandon all positions immediately.";
+                title.innerText = "ABORT / EXIT";
+                title.className = "text-5xl font-black italic text-red-600";
+                text.innerText = "RUG DETECTED. Price has collapsed 70% within this 5-minute candle. Liquidity exit is likely. Do not touch.";
                 panel.style.borderLeftColor = "#dc2626";
                 pct.style.color = "#dc2626";
             } else if (delta <= -30) {
-                cmd.innerText = "BUY / ACCUMULATE";
-                cmd.className = "text-5xl font-black italic text-blue-400";
-                exp.innerText = "DIP DETECTED. Price is -30% below the 5-minute average. This is a primary accumulation zone for a rebound pump.";
+                title.innerText = "BUY / ACCUMULATE";
+                title.className = "text-5xl font-black italic text-blue-500";
+                text.innerText = "DIP DETECTED. Price is -30% below the 5-minute open. This is a prime accumulation zone for a rebound play.";
                 panel.style.borderLeftColor = "#3b82f6";
                 pct.style.color = "#3b82f6";
             } else {
-                cmd.innerText = "HOLD / WATCH";
-                cmd.className = "text-5xl font-black italic text-gray-700";
-                exp.innerText = "Stable volatility. Price is currently at the 5-minute average. Wait for a +30% breakout or -30% dip.";
+                title.innerText = "WATCHING...";
+                title.className = "text-5xl font-black italic text-gray-700";
+                text.innerText = "The price is currently stable relative to the 5-minute candle open. Waiting for a +/- 30% volatility breakout.";
                 panel.style.borderLeftColor = "#1e1b4b";
                 pct.style.color = "white";
             }
