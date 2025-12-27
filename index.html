@@ -2,261 +2,187 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | CONTRARIAN V39</title>
+    <title>DEDU | AGGRESSIVE V40</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #050505; --panel: #0a0a0a; }
+        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #030303; }
         body { background-color: var(--bg); color: #e5e5e5; font-family: 'JetBrains Mono', monospace; }
-        .terminal-box { border: 1px solid #222; background: var(--panel); position: relative; }
-        .scan-btn { background: var(--neon); color: black; font-weight: 800; text-transform: uppercase; transition: 0.2s; }
-        .scan-btn:hover { background: white; box-shadow: 0 0 15px var(--neon); }
-        .metric-bar-bg { width: 100%; height: 8px; background: #222; margin-top: 8px; border-radius: 4px; overflow: hidden; }
-        .metric-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        /* Animation for the bar */
-        @keyframes pulse-green { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 10px #00ffa3; } 100% { opacity: 0.8; } }
-        .animate-pulse-green { animation: pulse-green 2s infinite; }
+        .terminal-box { border: 1px solid #222; background: #0d0d0d; position: relative; }
+        .scan-btn { background: var(--neon); color: black; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .scan-btn:hover { background: white; box-shadow: 0 0 20px var(--neon); }
+        .metric-bar-bg { width: 100%; height: 12px; background: #1a1a1a; border-radius: 2px; overflow: hidden; border: 1px solid #333; }
+        .metric-bar-fill { height: 100%; transition: all 0.4s ease; }
+        
+        /* Pulse for Active Buy Signal */
+        .buy-pulse { animation: buy-glow 1.5s infinite; }
+        @keyframes buy-glow { 0% { box-shadow: 0 0 5px #00ffa3; } 50% { box-shadow: 0 0 25px #00ffa3; } 100% { box-shadow: 0 0 5px #00ffa3; } }
+        
+        .glow-text-green { text-shadow: 0 0 10px rgba(0,255,163,0.5); }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3] bg-black shadow-[0_0_15px_rgba(0,255,163,0.2)]">D</div>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center text-3xl font-black text-[#00ffa3] bg-black">D</div>
             <div>
-                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_CONTRARIAN_V39</h1>
-                <p class="text-[9px] text-gray-500 tracking-[0.3em] uppercase">Dip_Buying_Logic_Active</p>
+                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_STRIKE_V40</h1>
+                <p class="text-[9px] text-[#00ffa3] font-bold tracking-[0.4em] uppercase animate-pulse">Aggressive_Dip_Hunter_Active</p>
             </div>
         </div>
         <div class="flex w-full md:w-auto gap-2">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold tracking-wider">
-            <button onclick="ignite()" class="scan-btn px-6 py-3 text-xs italic">RUN AUDIT</button>
+            <input id="tokenAddr" type="text" placeholder="ENTER SOL MINT..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
+            <button onclick="ignite()" class="scan-btn px-8 py-4 text-xs italic">EXECUTE SCAN</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-8 h-[600px] terminal-box border-t-4 border-t-[#00ffa3]">
-            <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
+        <div class="lg:col-span-8 h-[650px] terminal-box border-t-4 border-t-[#00ffa3]">
+            <iframe id="market-chart" class="w-full h-full opacity-80" src=""></iframe>
         </div>
 
         <div class="lg:col-span-4 space-y-6">
             
-            <div id="sentimentPanel" class="terminal-box p-6 border-l-8 border-l-gray-700 transition-colors duration-500">
-                <div class="flex justify-between items-end mb-2">
-                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// NET_SENTIMENT</p>
-                    <span id="marketState" class="text-[9px] font-bold text-gray-500">WAITING</span>
+            <div id="decisionPanel" class="terminal-box p-8 border-l-8 border-l-gray-800 transition-all duration-300">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[10px] text-gray-500 font-black tracking-widest uppercase">// ENTRY_LOGIC_v40</p>
+                    <span id="zoneBadge" class="text-[9px] px-2 py-1 rounded bg-gray-800 text-gray-400 font-bold">SCANNING</span>
                 </div>
                 
-                <div id="pressureDisplay" class="text-5xl font-black italic tracking-tighter text-white mb-2">0.00%</div>
+                <div class="flex items-baseline gap-2 mb-2">
+                    <div id="pressureDisplay" class="text-6xl font-black italic tracking-tighter text-white">0.00%</div>
+                    <span class="text-xs text-gray-500 font-bold uppercase italic">Pressure</span>
+                </div>
                 
-                <div class="metric-bar-bg relative">
-                    <div id="centerLine" class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/20 z-10"></div>
-                    <div id="pressureBar" class="metric-bar-fill bg-gray-500 relative z-0" style="width: 0%; margin-left: 50%;"></div>
+                <div class="metric-bar-bg mb-8 relative">
+                    <div id="pressureBar" class="metric-bar-fill bg-gray-600" style="width: 50%"></div>
+                    <div class="absolute inset-0 flex justify-between px-2 items-center pointer-events-none text-[8px] font-bold text-white/30">
+                        <span>DIP / BUY</span>
+                        <span>PUMP / WAIT</span>
+                    </div>
                 </div>
 
-                <div class="mt-6 pt-4 border-t border-gray-800">
-                    <div id="cmdLabel" class="text-3xl font-black italic uppercase text-white">READY</div>
-                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Calculating Contrarian Entry Points...</p>
+                <div class="bg-black/50 p-6 border border-white/5 rounded-lg">
+                    <div id="cmdLabel" class="text-4xl font-black italic uppercase text-white mb-2 leading-none">IDLE</div>
+                    <p id="cmdNote" class="text-sm text-gray-400 italic">Waiting for address input...</p>
                 </div>
             </div>
 
             <div class="terminal-box p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// DEPLOYER_INTEL</p>
-                    <span id="devRiskBadge" class="text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">SCANNING</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 text-center mb-4">
-                    <div class="bg-black p-3 border border-[#222]">
-                        <p class="text-[9px] text-gray-500">LAUNCHED</p>
-                        <p id="countLaunch" class="text-xl font-bold text-white">--</p>
+                <p class="text-[10px] text-gray-500 font-black tracking-widest mb-4 uppercase">// DEV_BOND_RECORD</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-black p-4 border border-[#222]">
+                        <p class="text-[9px] text-gray-500 uppercase">Total Launches</p>
+                        <p id="countLaunch" class="text-2xl font-bold text-white">--</p>
                     </div>
-                    <div class="bg-black p-3 border border-[#222]">
-                        <p class="text-[9px] text-gray-500">BONDED</p>
-                        <p id="countBond" class="text-xl font-bold text-blue-400">--</p>
+                    <div class="bg-black p-4 border border-[#222]">
+                        <p class="text-[9px] text-gray-500 uppercase">Bonded (Success)</p>
+                        <p id="countBond" class="text-2xl font-bold text-blue-400">--</p>
                     </div>
                 </div>
-
-                <div class="text-center pt-2">
-                     <p id="devVerdict" class="text-xs font-black italic text-gray-600">waiting for data...</p>
-                </div>
-            </div>
-
-            <div class="terminal-box p-6 space-y-3">
-                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// LIQUIDITY_DEPTH</p>
-                <div class="flex justify-between text-xs items-center">
-                    <span class="text-gray-400">POOL VALUE</span>
-                    <span id="liqVal" class="font-bold text-white">--</span>
-                </div>
-                <div class="flex justify-between text-xs items-center">
-                    <span class="text-gray-400">24H VOLUME</span>
-                    <span id="vol24" class="font-bold text-white">--</span>
-                </div>
+                <div id="devVerdict" class="mt-4 text-center text-xs font-bold italic text-gray-600 uppercase">---</div>
             </div>
 
         </div>
     </div>
 
     <script>
-        function formatVal(v) {
-            if (v >= 1000000) return (v / 1000000).toFixed(2) + "M";
-            if (v >= 1000) return (v / 1000).toFixed(1) + "K";
-            return "$" + v.toFixed(0);
-        }
-
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
-
-            // UI Reveal
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
-
-            // Start Loops
-            analyzeContrarian(mint);
-            setInterval(() => analyzeContrarian(mint), 4000);
-            scanDeployer(mint);
+            
+            runEngine(mint);
+            setInterval(() => runEngine(mint), 5000);
+            scanDev(mint);
         }
 
-        async function analyzeContrarian(mint) {
+        async function runEngine(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-
-                // --- CONTRARIAN LOGIC ---
-                // We calculate Net Pressure. 
-                // Positive = Buying = "Risk/Fomo" (RED)
-                // Negative = Selling = "Discount/Buy" (GREEN)
                 
-                const buys = pair.txns.h1.buys || 0;
-                const sells = pair.txns.h1.sells || 0;
-                const total = buys + sells;
-                
-                let netPercent = 0;
-                if(total > 0) {
-                    netPercent = ((buys - sells) / total) * 100;
-                }
+                const buys = pair.txns.h1.buys || 1;
+                const sells = pair.txns.h1.sells || 1;
+                const net = ((buys - sells) / (buys + sells)) * 100;
 
-                // UI Elements
+                const panel = document.getElementById('decisionPanel');
                 const disp = document.getElementById('pressureDisplay');
-                const panel = document.getElementById('sentimentPanel');
                 const bar = document.getElementById('pressureBar');
                 const cmd = document.getElementById('cmdLabel');
                 const note = document.getElementById('cmdNote');
-                const state = document.getElementById('marketState');
+                const badge = document.getElementById('zoneBadge');
 
-                // Update text
-                disp.innerText = (netPercent > 0 ? "+" : "") + netPercent.toFixed(2) + "%";
-                
-                // BAR LOGIC: 
-                // If Net is -50% (Selling), Bar grows Left (Green).
-                // If Net is +50% (Buying), Bar grows Right (Red).
-                if (netPercent < 0) {
-                    // Selling -> Growing Left
-                    const width = Math.abs(netPercent); 
-                    bar.style.marginLeft = `${50 - (width/2)}%`; 
-                    bar.style.width = `${width/2}%`;
-                } else {
-                    // Buying -> Growing Right
-                    bar.style.marginLeft = `50%`;
-                    bar.style.width = `${netPercent/2}%`;
-                }
+                disp.innerText = (net > 0 ? "+" : "") + net.toFixed(2) + "%";
+                bar.style.width = `${Math.max(5, Math.min(95, 50 + (net/2)))}%`;
 
-                // DECISION MATRIX (REVERSED)
-                if (netPercent <= -5) {
-                    // --- DIPPING (SELLING PRESSURE) ---
-                    if (netPercent >= -40) {
-                        // -5% to -40% (GOLDILOCKS BUY ZONE)
-                        panel.style.borderLeftColor = "#00ffa3"; // Neon Green
-                        disp.style.color = "#00ffa3";
-                        bar.className = "metric-bar-fill bg-[#00ffa3] animate-pulse-green";
-                        
-                        cmd.innerText = "BUY THE DIP";
-                        cmd.className = "text-3xl font-black italic text-[#00ffa3]";
-                        note.innerText = "Selling pressure indicates discount entry.";
-                        state.innerText = "OVERSOLD";
+                // --- AGGRESSIVE RECALIBRATION ---
+                if (net <= -2) { 
+                    // MARKET IS DIPPING (Sell Volume > Buy Volume)
+                    if (net > -50) {
+                        // HEALTHY DIP (-2% to -50%) -> STRONG BUY
+                        panel.className = "terminal-box p-8 border-l-8 border-l-[#00ffa3] buy-pulse transition-all";
+                        disp.className = "text-6xl font-black italic tracking-tighter text-[#00ffa3] glow-text-green";
+                        bar.className = "metric-bar-fill bg-[#00ffa3]";
+                        cmd.innerText = "STRONG BUY";
+                        cmd.className = "text-4xl font-black italic uppercase text-[#00ffa3] glow-text-green leading-none";
+                        note.innerText = "Accumulation phase. Holders are selling, creating an entry.";
+                        badge.innerText = "ENTRY ZONE";
+                        badge.className = "text-[9px] px-2 py-1 rounded bg-[#00ffa3] text-black font-bold";
                     } else {
-                        // <-40% (DANGER DIP / CRASH)
-                        panel.style.borderLeftColor = "#f59e0b"; // Orange
+                        // EXTREME CRASH (<-50%) -> CAUTION BUY
+                        panel.style.borderLeftColor = "#f59e0b";
                         disp.style.color = "#f59e0b";
                         bar.className = "metric-bar-fill bg-orange-500";
-                        
-                        cmd.innerText = "HIGH RISK BUY";
-                        cmd.className = "text-3xl font-black italic text-orange-500";
-                        note.innerText = "Heavy dumping (-40%+). Catching a knife?";
-                        state.innerText = "CAPITULATION";
+                        cmd.innerText = "RISKY ENTRY";
+                        cmd.className = "text-4xl font-black italic uppercase text-orange-500 leading-none";
+                        note.innerText = "Heavy sell-off detected. High reward, but check liquidity.";
+                        badge.innerText = "VOLATILE";
+                        badge.className = "text-[9px] px-2 py-1 rounded bg-orange-500 text-black font-bold";
                     }
-                } else if (netPercent >= 5) {
-                    // --- PUMPING (BUYING PRESSURE) ---
-                    panel.style.borderLeftColor = "#ef4444"; // Red
-                    disp.style.color = "#ef4444";
+                } else if (net > 10) {
+                    // MARKET IS PUMPING (FOMO) -> DO NOT BUY
+                    panel.className = "terminal-box p-8 border-l-8 border-l-red-500 transition-all";
+                    disp.className = "text-6xl font-black italic tracking-tighter text-red-500";
                     bar.className = "metric-bar-fill bg-red-500";
-                    
                     cmd.innerText = "DO NOT BUY";
-                    cmd.className = "text-3xl font-black italic text-red-500";
-                    note.innerText = "High buying pressure. FOMO risk is high.";
-                    state.innerText = "OVERBOUGHT";
+                    cmd.className = "text-4xl font-black italic uppercase text-red-500 leading-none";
+                    note.innerText = "Overbought. Wait for the dip to reset the entry level.";
+                    badge.innerText = "FOMO RISK";
+                    badge.className = "text-[9px] px-2 py-1 rounded bg-red-500 text-white font-bold";
                 } else {
-                    // --- NEUTRAL ---
-                    panel.style.borderLeftColor = "#6b7280";
-                    disp.style.color = "#9ca3af";
-                    bar.className = "metric-bar-fill bg-gray-500";
-                    
-                    cmd.innerText = "WAITING";
-                    cmd.className = "text-3xl font-black italic text-gray-500";
-                    note.innerText = "Market is undecided.";
-                    state.innerText = "NEUTRAL";
+                    // NEUTRAL CHOP
+                    panel.style.borderLeftColor = "#444";
+                    disp.style.color = "#888";
+                    bar.className = "metric-bar-fill bg-gray-600";
+                    cmd.innerText = "WATCHING";
+                    cmd.className = "text-4xl font-black italic uppercase text-gray-500 leading-none";
+                    note.innerText = "Sideways movement. Ready for dip capture.";
+                    badge.innerText = "NEUTRAL";
+                    badge.className = "text-[9px] px-2 py-1 rounded bg-gray-800 text-gray-400 font-bold";
                 }
-
-                // Liquidity Data
-                document.getElementById('liqVal').innerText = formatVal(pair.liquidity?.usd || 0);
-                document.getElementById('vol24').innerText = formatVal(pair.volume?.h24 || 0);
 
             } catch(e) {}
         }
 
-        async function scanDeployer(mint) {
-            const dVerdict = document.getElementById('devVerdict');
-            const dBadge = document.getElementById('devRiskBadge');
-            
+        async function scanDev(mint) {
             try {
-                // Fetch creator
                 const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
                 const creator = tRes.creator?.address;
-                if (!creator) throw new Error("No Creator");
-
-                // Fetch History
                 const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-                
-                const launched = hRes.length || 0;
-                // Bonded = Graduated OR Liquidity > $50k
-                const bonded = hRes.filter(t => t.graduated || (t.liquidity && t.liquidity.usd > 50000)).length;
-
+                const launched = hRes.length;
+                const bonded = hRes.filter(t => t.graduated || (t.liquidity?.usd > 40000)).length;
                 document.getElementById('countLaunch').innerText = launched;
                 document.getElementById('countBond').innerText = bonded;
-
-                // Verdict
-                if (launched === 0) {
-                    dVerdict.innerText = "FRESH / UNKNOWN";
-                    dBadge.innerText = "NO DATA";
-                } else {
-                    const ratio = bonded / launched;
-                    if (ratio >= 0.4) {
-                        dVerdict.innerText = "SAFE DEV";
-                        dVerdict.className = "text-xs font-black italic text-[#00ffa3]";
-                        dBadge.innerText = "VERIFIED"; dBadge.className = "text-[9px] bg-green-900 px-2 py-1 rounded text-green-300 font-bold";
-                    } else {
-                        dVerdict.innerText = "FARMER / RISKY";
-                        dVerdict.className = "text-xs font-black italic text-red-500";
-                        dBadge.innerText = "WARNING"; dBadge.className = "text-[9px] bg-red-900 px-2 py-1 rounded text-red-300 font-bold";
-                    }
-                }
-            } catch (e) {
-                dVerdict.innerText = "CANNOT SCAN";
-                dBadge.innerText = "API ERROR";
-            }
+                const ratio = bonded / launched;
+                const v = document.getElementById('devVerdict');
+                if(ratio > 0.3) { v.innerText = "TRUSTED DEVELOPER"; v.className = "mt-4 text-center text-xs font-bold italic text-[#00ffa3] uppercase"; }
+                else { v.innerText = "LOW SUCCESS RATE"; v.className = "mt-4 text-center text-xs font-bold italic text-red-500 uppercase"; }
+            } catch(e) {}
         }
     </script>
 </body>
