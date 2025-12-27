@@ -2,85 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | v48 ENFORCEMENT</title>
+    <title>DEDU_v51_UNIFIED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --bg: #050505; --warning: #ffaa00; }
+        :root { --neon: #00ffa3; --bg: #050505; --danger: #ff3131; --warning: #ffaa00; }
         body { background-color: var(--bg); color: #fff; font-family: 'Space Mono', monospace; overflow-x: hidden; }
-        .terminal-box { border: 1px solid #222; background: #0a0a0a; }
-        
-        /* Modal Overlay */
-        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; backdrop-filter: blur(10px); }
-        .modal-content { position: relative; width: 94%; height: 90%; margin: 2% auto; border: 1px solid #333; }
-        .close-btn { position: absolute; top: -35px; right: 0; color: var(--neon); font-weight: bold; cursor: pointer; font-size: 12px; }
-        
-        .glow-btn { border: 1px solid #333; color: #888; transition: 0.3s; cursor: pointer; }
-        .glow-btn:hover { border-color: var(--neon); color: var(--neon); box-shadow: 0 0 15px rgba(0, 255, 163, 0.1); }
-        
-        /* Risk Alert Box */
-        .risk-note { border-left: 3px solid var(--warning); background: rgba(255, 170, 0, 0.05); }
+        .terminal-box { border: 1px solid #222; background: #0a0a0a; position: relative; }
+        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; backdrop-filter: blur(15px); }
+        .modal-content { position: relative; width: 95%; height: 92%; margin: 1% auto; border: 1px solid #444; }
+        .close-btn { position: absolute; top: -30px; right: 0; color: var(--neon); cursor: pointer; font-size: 10px; font-weight: bold; }
+        .risk-note { border-left: 3px solid var(--warning); background: rgba(255, 170, 0, 0.03); }
+        .glow-green { color: var(--neon); text-shadow: 0 0 10px rgba(0,255,163,0.5); }
+        .glow-red { color: var(--danger); text-shadow: 0 0 10px rgba(255,49,49,0.5); }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
     <div id="bubbleModal">
         <div class="modal-content">
-            <span onclick="closeMap()" class="close-btn">[ ESCAPE_TO_DASHBOARD ]</span>
+            <span onclick="closeMap()" class="close-btn">[ RETURN_TO_SYSTEM ]</span>
             <iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-xl font-bold tracking-tighter uppercase italic">DEDU_v48_STRATEGY</h1>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Risk_Management_Rules_Enabled</p>
+                <h1 class="text-xl font-bold italic tracking-tighter">DEDU_v51_CORE</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Pump.fun_Bonding_Curve_Specialist</p>
             </div>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase">Ignite</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Strike</button>
         </div>
     </div>
 
-    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-8 h-[650px] terminal-box relative">
-            <iframe id="market-chart" class="w-full h-full" src=""></iframe>
+        <div class="lg:col-span-8 h-[680px] terminal-box overflow-hidden">
+            <iframe id="market-chart" class="w-full h-full opacity-80" src=""></iframe>
         </div>
 
-        <div class="lg:col-span-4 space-y-6">
+        <div class="lg:col-span-4 space-y-4">
             
-            <div id="signalPanel" class="terminal-box p-8">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// RETRACEMENT_LOGIC</p>
-                <div id="percDisplay" class="text-6xl font-black italic tracking-tighter mb-2 text-white">0.00%</div>
-                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4">WAITING</div>
+            <div id="signalPanel" class="terminal-box p-6 border-t-2 border-gray-800">
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// EXECUTION_LOGIC</p>
+                <div id="percDisplay" class="text-6xl font-black italic tracking-tighter mb-1">0.00%</div>
+                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 tracking-tighter">IDLE</div>
                 
-                <div class="risk-note p-4 mb-4">
-                    <p class="text-[10px] text-orange-400 font-bold uppercase mb-2">⚠️ Execution Protocol:</p>
-                    <p class="text-[10px] text-gray-300 leading-relaxed italic">
+                <div class="risk-note p-4 mb-4 border border-orange-500/20">
+                    <p class="text-[9px] text-orange-400 font-black uppercase mb-1">⚠️ MANDATORY PROTOCOL:</p>
+                    <p class="text-[9px] text-gray-300 leading-relaxed italic">
                         Verify the volume of market before executing & always use smart money rules of regulation with 50% to 2X profit taking & 35% maximum stoploss procedure.
                     </p>
                 </div>
-
-                <div class="p-3 bg-white/5 border border-white/10 rounded text-[11px] text-gray-400 italic" id="statusNote">
-                    Analyzing price delta...
-                </div>
+                <p id="statusNote" class="text-[10px] text-gray-500 italic">Waiting for mint data...</p>
             </div>
 
-            <div class="terminal-box p-8 border-t-4 border-t-purple-600">
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">// SUPPLY_CLUSTERS</p>
-                <button onclick="openMap()" class="glow-btn w-full py-4 text-xs font-black italic uppercase">Inspect Bubblemaps</button>
-            </div>
-
-            <div class="terminal-box p-6 border-l-4 border-l-blue-600 bg-blue-900/5">
-                <p class="text-[9px] text-gray-500 font-bold uppercase mb-2 italic">Deployer_Score</p>
-                <div class="flex justify-between items-center">
-                    <span id="devVerdict" class="text-xs font-black italic uppercase">Scanning...</span>
-                    <span id="bRatio" class="text-[10px] text-blue-400 font-bold tracking-widest">--/--</span>
+            <div class="terminal-box p-6 border-l-4 border-purple-600 bg-purple-900/5">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Pump.fun_History</p>
+                        <h4 id="devVerdict" class="text-lg font-black italic uppercase leading-tight">SCANNING...</h4>
+                    </div>
+                    <div class="text-right">
+                        <p id="bRatio" class="text-xl font-black text-purple-400">0/0</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase">BONDED_RATIO</p>
+                    </div>
                 </div>
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div class="bg-black border border-white/5 p-2">
+                        <p class="text-[8px] text-gray-600 uppercase">Launches</p>
+                        <p id="totalLaunches" class="text-sm font-bold tracking-widest">--</p>
+                    </div>
+                    <div class="bg-black border border-white/5 p-2">
+                        <p id="failLabel" class="text-[8px] text-gray-600 uppercase">Failed</p>
+                        <p id="failCount" class="text-sm font-bold text-red-500 tracking-widest">--</p>
+                    </div>
+                </div>
+                <button onclick="openMap()" class="w-full py-3 border border-purple-500/30 text-[10px] font-black uppercase text-purple-400 hover:bg-purple-500 hover:text-white transition-all italic">Inspect Bubble Clusters</button>
             </div>
 
         </div>
@@ -95,151 +98,85 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
-            updateLogic(currentMint);
-            setInterval(() => updateLogic(currentMint), 5000);
-            scanDeployer(currentMint);
+            runEngine();
+            setInterval(runEngine, 5000);
+            auditPumpDev();
         }
 
-        async function updateLogic(mint) {
+        async function runEngine() {
             try {
-                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${currentMint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const priceChange = parseFloat(pair.priceChange.m5 || 0);
+                const change = parseFloat(pair.priceChange.m5 || 0);
                 
                 const disp = document.getElementById('percDisplay');
                 const label = document.getElementById('statusLabel');
                 const note = document.getElementById('statusNote');
 
-                disp.innerText = (priceChange > 0 ? "+" : "") + priceChange.toFixed(2) + "%";
+                disp.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
 
-                if (priceChange < 0) {
-                    disp.className = "text-6xl font-black italic tracking-tighter text-[#00ffa3]";
+                if (change < 0) {
+                    disp.className = "text-6xl font-black italic tracking-tighter glow-green";
                     label.innerText = "BUY SIGNAL";
-                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase mb-4";
-                    note.innerText = "Market dipping. Logic confirmed. Check volume before Strike.";
+                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase mb-4 tracking-tighter";
+                    note.innerText = "Negative retracement detected. Entry window open.";
                 } else {
-                    disp.className = "text-6xl font-black italic tracking-tighter text-red-500";
+                    disp.className = "text-6xl font-black italic tracking-tighter glow-red";
                     label.innerText = "FOMO RISK";
-                    label.className = "text-2xl font-black italic text-red-500 uppercase mb-4";
-                    note.innerText = "Soaring. Retracement required. Do not chase top.";
+                    label.className = "text-2xl font-black italic text-red-500 uppercase mb-4 tracking-tighter";
+                    note.innerText = "Price pushing. Wait for technical pullback.";
                 }
             } catch(e) {}
         }
 
-        async function scanDeployer(mint) {
+        async function auditPumpDev() {
             try {
-                const tData = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const tData = await fetch(`https://api.solanatracker.io/v2/tokens/${currentMint}`).then(r => r.json());
                 const creator = tData.creator?.address;
                 if(!creator) return;
 
                 const hData = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-                const launched = hData.length || 0;
-                const bonded = hData.filter(t => t.graduated || (t.liquidity?.usd > 20000)).length;
+                
+                // PUMP.FUN SPECIFIC LOGIC
+                const pumpTokens = hData.filter(t => t.mint.endsWith('pump'));
+                const graduated = pumpTokens.filter(t => t.graduated || t.liquidity?.usd > 15000);
+                
+                const total = pumpTokens.length;
+                const bonds = graduated.length;
+                const fails = total - bonds;
+                const rate = total > 0 ? (bonds / total) * 100 : 0;
 
-                document.getElementById('bRatio').innerText = `${bonded}/${launched} BONDED`;
-                const v = document.getElementById('devVerdict');
-                if (launched > 0 && (bonded/launched) >= 0.3) {
-                    v.innerText = "LEGIT DEV"; v.style.color = "#00ffa3";
+                document.getElementById('bRatio').innerText = `${bonds} / ${total}`;
+                document.getElementById('totalLaunches').innerText = total;
+                document.getElementById('failCount').innerText = fails;
+
+                const verdict = document.getElementById('devVerdict');
+                if(total === 0) {
+                    verdict.innerText = "NON-PUMP TOKEN";
+                } else if(total === 1 && bonds === 0) {
+                    verdict.innerText = "FRESH_CREATOR";
+                    verdict.className = "text-lg font-black italic text-yellow-500 uppercase";
+                } else if(rate > 20) {
+                    verdict.innerText = "PUMP_MASTER";
+                    verdict.className = "text-lg font-black italic text-[#00ffa3] uppercase";
                 } else {
-                    v.innerText = "RISKY DEV"; v.style.color = "#ff3131";
+                    verdict.innerText = "SERIAL_RUGGER";
+                    verdict.className = "text-lg font-black italic text-red-600 uppercase";
                 }
             } catch(e) {}
         }
 
         function openMap() {
             if(!currentMint) return;
-            const frame = document.getElementById('bubbleFrame');
-            frame.src = `https://iframe.bubblemaps.io/map?address=${currentMint}&chain=solana&partnerId=demo`;
+            document.getElementById('bubbleFrame').src = `https://iframe.bubblemaps.io/map?address=${currentMint}&chain=solana&partnerId=demo`;
             document.getElementById('bubbleModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
         }
 
         function closeMap() {
             document.getElementById('bubbleModal').style.display = 'none';
             document.getElementById('bubbleFrame').src = "";
-            document.body.style.overflow = 'auto';
         }
     </script>
 </body>
 </html>
-<div class="terminal-box p-6 border-l-4 border-l-blue-600 bg-blue-900/5">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase italic tracking-widest">Deployer_Score</p>
-                        <h4 id="devVerdict" class="text-lg font-black italic uppercase leading-tight">Scanning...</h4>
-                    </div>
-                    <div class="text-right">
-                        <p id="bRatio" class="text-xl font-black text-blue-400">0 / 0</p>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase">Bonded Ratio</p>
-                    </div>
-                </div>
-                
-                <div id="devActivity" class="grid grid-cols-2 gap-2 mb-4 hidden">
-                    <div class="bg-black/40 p-2 border border-white/5">
-                        <p class="text-[8px] text-gray-600 uppercase">Total Tokens</p>
-                        <p id="totalTokens" class="text-sm font-bold">--</p>
-                    </div>
-                    <div class="bg-black/40 p-2 border border-white/5">
-                        <p class="text-[8px] text-gray-600 uppercase">Rug/Fail Count</p>
-                        <p id="failCount" class="text-sm font-bold text-red-500">--</p>
-                    </div>
-                </div>
-
-                <a id="solscanLink" target="_blank" class="block text-center p-2 border border-white/10 text-[9px] text-gray-400 hover:text-[#00ffa3] transition-all uppercase font-bold">
-                    View Creator Wallet History
-                </a>
-            </div>
-
-<script>
-    // ... [Previous ignite and updateLogic functions stay the same] ...
-
-    async function scanDeployer(mint) {
-        try {
-            // FIX: Direct fetch of token creator without relying on metadata blocks
-            const tData = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-            const creator = tData.creator?.address;
-            
-            if(!creator) {
-                document.getElementById('devVerdict').innerText = "ANONYMOUS DEV";
-                return;
-            }
-
-            document.getElementById('solscanLink').href = `https://solscan.io/account/${creator}`;
-            
-            // Fetch the full history of this creator's launches
-            const hData = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-            
-            const total = hData.length || 0;
-            // Define BONDED: Graduated status OR Liquidity > $20k
-            const bondedTokens = hData.filter(t => t.graduated || (t.liquidity?.usd > 20000));
-            const bondedCount = bondedTokens.length;
-            const rugCount = total - bondedCount;
-
-            // UI Update
-            document.getElementById('devActivity').classList.remove('hidden');
-            document.getElementById('bRatio').innerText = `${bondedCount} / ${total}`;
-            document.getElementById('totalTokens').innerText = total;
-            document.getElementById('failCount').innerText = rugCount;
-
-            const verdict = document.getElementById('devVerdict');
-            const ratio = (bondedCount / total) * 100;
-
-            if (total === 1 && bondedCount === 0) {
-                verdict.innerText = "FIRST LAUNCH";
-                verdict.className = "text-lg font-black italic uppercase text-yellow-500";
-            } else if (ratio >= 60) {
-                verdict.innerText = "ELITE DEVELOPER";
-                verdict.className = "text-lg font-black italic uppercase text-[#00ffa3]";
-            } else if (ratio >= 30) {
-                verdict.innerText = "PROFITABLE DEV";
-                verdict.className = "text-lg font-black italic uppercase text-blue-400";
-            } else {
-                verdict.innerText = "SERIAL RUGGER";
-                verdict.className = "text-lg font-black italic uppercase text-red-600";
-            }
-        } catch(e) {
-            console.error("Deployer Scan Failed", e);
-        }
-    }
-</script>
