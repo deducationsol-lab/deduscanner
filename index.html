@@ -2,33 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | SENTIMENT V38</title>
+    <title>DEDU | CONTRARIAN V39</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #030303; --panel: #0d0d0d; }
+        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #050505; --panel: #0a0a0a; }
         body { background-color: var(--bg); color: #e5e5e5; font-family: 'JetBrains Mono', monospace; }
         .terminal-box { border: 1px solid #222; background: var(--panel); position: relative; }
-        .stat-val { font-weight: 800; letter-spacing: -0.05em; }
         .scan-btn { background: var(--neon); color: black; font-weight: 800; text-transform: uppercase; transition: 0.2s; }
         .scan-btn:hover { background: white; box-shadow: 0 0 15px var(--neon); }
-        .metric-bar-bg { width: 100%; height: 6px; background: #222; margin-top: 4px; }
-        .metric-bar-fill { height: 100%; transition: width 0.5s ease; }
+        .metric-bar-bg { width: 100%; height: 8px; background: #222; margin-top: 8px; border-radius: 4px; overflow: hidden; }
+        .metric-bar-fill { height: 100%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Animation for the bar */
+        @keyframes pulse-green { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 10px #00ffa3; } 100% { opacity: 0.8; } }
+        .animate-pulse-green { animation: pulse-green 2s infinite; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3] bg-black">D</div>
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3] bg-black shadow-[0_0_15px_rgba(0,255,163,0.2)]">D</div>
             <div>
-                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_SENTIMENT_V38</h1>
-                <p class="text-[9px] text-gray-500 tracking-[0.3em]">VOLUME_WEIGHTED_HOLDER_ANALYSIS</p>
+                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_CONTRARIAN_V39</h1>
+                <p class="text-[9px] text-gray-500 tracking-[0.3em] uppercase">Dip_Buying_Logic_Active</p>
             </div>
         </div>
         <div class="flex w-full md:w-auto gap-2">
-            <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
-            <button onclick="ignite()" class="scan-btn px-6 py-3 text-xs italic">ANALYZE</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold tracking-wider">
+            <button onclick="ignite()" class="scan-btn px-6 py-3 text-xs italic">RUN AUDIT</button>
         </div>
     </div>
 
@@ -41,21 +43,28 @@
         <div class="lg:col-span-4 space-y-6">
             
             <div id="sentimentPanel" class="terminal-box p-6 border-l-8 border-l-gray-700 transition-colors duration-500">
-                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// HOLDER_PRESSURE (1H)</p>
+                <div class="flex justify-between items-end mb-2">
+                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// NET_SENTIMENT</p>
+                    <span id="marketState" class="text-[9px] font-bold text-gray-500">WAITING</span>
+                </div>
                 
                 <div id="pressureDisplay" class="text-5xl font-black italic tracking-tighter text-white mb-2">0.00%</div>
-                <div class="metric-bar-bg"><div id="pressureBar" class="metric-bar-fill bg-gray-500" style="width: 50%"></div></div>
+                
+                <div class="metric-bar-bg relative">
+                    <div id="centerLine" class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/20 z-10"></div>
+                    <div id="pressureBar" class="metric-bar-fill bg-gray-500 relative z-0" style="width: 0%; margin-left: 50%;"></div>
+                </div>
 
                 <div class="mt-6 pt-4 border-t border-gray-800">
-                    <div id="cmdLabel" class="text-2xl font-black italic uppercase text-white">READY</div>
-                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Calculating buy vs sell volume dominance...</p>
+                    <div id="cmdLabel" class="text-3xl font-black italic uppercase text-white">READY</div>
+                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Calculating Contrarian Entry Points...</p>
                 </div>
             </div>
 
             <div class="terminal-box p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// DEPLOYER_HISTORY</p>
-                    <span id="devRiskBadge" class="text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">UNSCANNED</span>
+                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// DEPLOYER_INTEL</p>
+                    <span id="devRiskBadge" class="text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">SCANNING</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 text-center mb-4">
@@ -70,19 +79,19 @@
                 </div>
 
                 <div class="text-center pt-2">
-                     <p id="devVerdict" class="text-xs font-black italic text-gray-600">WAITING FOR TARGET...</p>
+                     <p id="devVerdict" class="text-xs font-black italic text-gray-600">waiting for data...</p>
                 </div>
             </div>
 
             <div class="terminal-box p-6 space-y-3">
-                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// VOLUME_DELTA_1H</p>
-                <div class="flex justify-between text-xs">
-                    <span class="text-green-500">BUY VOL</span>
-                    <span id="volBuy" class="font-mono">--</span>
+                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// LIQUIDITY_DEPTH</p>
+                <div class="flex justify-between text-xs items-center">
+                    <span class="text-gray-400">POOL VALUE</span>
+                    <span id="liqVal" class="font-bold text-white">--</span>
                 </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-red-500">SELL VOL</span>
-                    <span id="volSell" class="font-mono">--</span>
+                <div class="flex justify-between text-xs items-center">
+                    <span class="text-gray-400">24H VOLUME</span>
+                    <span id="vol24" class="font-bold text-white">--</span>
                 </div>
             </div>
 
@@ -93,7 +102,7 @@
         function formatVal(v) {
             if (v >= 1000000) return (v / 1000000).toFixed(2) + "M";
             if (v >= 1000) return (v / 1000).toFixed(1) + "K";
-            return v.toFixed(0);
+            return "$" + v.toFixed(0);
         }
 
         async function ignite() {
@@ -104,96 +113,108 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
-            // 1. Run Sentiment Loop
-            analyzeSentiment(mint);
-            setInterval(() => analyzeSentiment(mint), 5000);
-
-            // 2. Run Deployer Scan (Once)
+            // Start Loops
+            analyzeContrarian(mint);
+            setInterval(() => analyzeContrarian(mint), 4000);
             scanDeployer(mint);
         }
 
-        async function analyzeSentiment(mint) {
+        async function analyzeContrarian(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
 
-                // Logic: Volume Weighted Pressure (Proxy for Whale/Holder Sentiment)
-                // We use 1H volume to determine the immediate trend of the "Top Holders" (Volume Movers)
-                const v1h = pair.volume.h1 || 0;
+                // --- CONTRARIAN LOGIC ---
+                // We calculate Net Pressure. 
+                // Positive = Buying = "Risk/Fomo" (RED)
+                // Negative = Selling = "Discount/Buy" (GREEN)
+                
                 const buys = pair.txns.h1.buys || 0;
                 const sells = pair.txns.h1.sells || 0;
+                const total = buys + sells;
                 
-                // Calculate Buy Volume vs Sell Volume approximate
-                // (DexScreener API doesn't separate BuyVOL vs SellVOL directly in basic JSON, 
-                // so we approximate using the ratio of Txns applied to the total Volume, 
-                // OR we use price change direction to weight it. 
-                // BETTER: Use Buy/Sell Txn Count Ratio as the "Crowd Sentiment" % 
-                // AND weight it by the price direction).
-                
-                // REFINED FORMULA: Net Order Flow %
-                const totalTxns = buys + sells;
-                let netFlow = 0;
-                
-                if (totalTxns > 0) {
-                    netFlow = ((buys - sells) / totalTxns) * 100;
+                let netPercent = 0;
+                if(total > 0) {
+                    netPercent = ((buys - sells) / total) * 100;
                 }
 
-                // UI Updates
-                const volShare = (v1h / 2); // Approximate split for display
-                document.getElementById('volBuy').innerText = "$" + formatVal(v1h * (buys/totalTxns));
-                document.getElementById('volSell').innerText = "$" + formatVal(v1h * (sells/totalTxns));
-
-                // Color Logic
-                const panel = document.getElementById('sentimentPanel');
+                // UI Elements
                 const disp = document.getElementById('pressureDisplay');
+                const panel = document.getElementById('sentimentPanel');
                 const bar = document.getElementById('pressureBar');
                 const cmd = document.getElementById('cmdLabel');
                 const note = document.getElementById('cmdNote');
+                const state = document.getElementById('marketState');
 
-                disp.innerText = (netFlow > 0 ? "+" : "") + netFlow.toFixed(2) + "%";
+                // Update text
+                disp.innerText = (netPercent > 0 ? "+" : "") + netPercent.toFixed(2) + "%";
+                
+                // BAR LOGIC: 
+                // If Net is -50% (Selling), Bar grows Left (Green).
+                // If Net is +50% (Buying), Bar grows Right (Red).
+                if (netPercent < 0) {
+                    // Selling -> Growing Left
+                    const width = Math.abs(netPercent); 
+                    bar.style.marginLeft = `${50 - (width/2)}%`; 
+                    bar.style.width = `${width/2}%`;
+                } else {
+                    // Buying -> Growing Right
+                    bar.style.marginLeft = `50%`;
+                    bar.style.width = `${netPercent/2}%`;
+                }
 
-                // Map -100 to +100 range to 0-100% bar width
-                // 0% net = 50% width
-                const barWidth = 50 + (netFlow / 2); 
-                bar.style.width = `${Math.max(0, Math.min(100, barWidth))}%`;
-
-                // MATRIX DECISION
-                if (netFlow >= 25) {
-                    // Strong Buying
-                    panel.style.borderLeftColor = "#00ffa3";
-                    disp.style.color = "#00ffa3";
-                    bar.className = "metric-bar-fill bg-[#00ffa3]";
-                    cmd.innerText = "ACCUMULATION";
-                    cmd.className = "text-2xl font-black italic text-[#00ffa3]";
-                    note.innerText = "Whales/Holders are Net Buying (+25%).";
-                } else if (netFlow >= 5) {
-                    // Mild Buying
-                    panel.style.borderLeftColor = "#facc15"; // Yellow
-                    disp.style.color = "#facc15";
-                    bar.className = "metric-bar-fill bg-yellow-400";
-                    cmd.innerText = "HOLD / WATCH";
-                    cmd.className = "text-2xl font-black italic text-yellow-400";
-                    note.innerText = "Slight buy pressure. Wait for confirmation.";
-                } else if (netFlow <= -25) {
-                    // Strong Selling
-                    panel.style.borderLeftColor = "#ef4444";
+                // DECISION MATRIX (REVERSED)
+                if (netPercent <= -5) {
+                    // --- DIPPING (SELLING PRESSURE) ---
+                    if (netPercent >= -40) {
+                        // -5% to -40% (GOLDILOCKS BUY ZONE)
+                        panel.style.borderLeftColor = "#00ffa3"; // Neon Green
+                        disp.style.color = "#00ffa3";
+                        bar.className = "metric-bar-fill bg-[#00ffa3] animate-pulse-green";
+                        
+                        cmd.innerText = "BUY THE DIP";
+                        cmd.className = "text-3xl font-black italic text-[#00ffa3]";
+                        note.innerText = "Selling pressure indicates discount entry.";
+                        state.innerText = "OVERSOLD";
+                    } else {
+                        // <-40% (DANGER DIP / CRASH)
+                        panel.style.borderLeftColor = "#f59e0b"; // Orange
+                        disp.style.color = "#f59e0b";
+                        bar.className = "metric-bar-fill bg-orange-500";
+                        
+                        cmd.innerText = "HIGH RISK BUY";
+                        cmd.className = "text-3xl font-black italic text-orange-500";
+                        note.innerText = "Heavy dumping (-40%+). Catching a knife?";
+                        state.innerText = "CAPITULATION";
+                    }
+                } else if (netPercent >= 5) {
+                    // --- PUMPING (BUYING PRESSURE) ---
+                    panel.style.borderLeftColor = "#ef4444"; // Red
                     disp.style.color = "#ef4444";
                     bar.className = "metric-bar-fill bg-red-500";
-                    cmd.innerText = "DISTRIBUTION";
-                    cmd.className = "text-2xl font-black italic text-red-500";
-                    note.innerText = "Heavy dumping detected. DO NOT BUY.";
+                    
+                    cmd.innerText = "DO NOT BUY";
+                    cmd.className = "text-3xl font-black italic text-red-500";
+                    note.innerText = "High buying pressure. FOMO risk is high.";
+                    state.innerText = "OVERBOUGHT";
                 } else {
-                    // Neutral
+                    // --- NEUTRAL ---
                     panel.style.borderLeftColor = "#6b7280";
                     disp.style.color = "#9ca3af";
                     bar.className = "metric-bar-fill bg-gray-500";
-                    cmd.innerText = "CHOPPY";
-                    cmd.className = "text-2xl font-black italic text-gray-400";
-                    note.innerText = "Volume is neutral. No clear direction.";
+                    
+                    cmd.innerText = "WAITING";
+                    cmd.className = "text-3xl font-black italic text-gray-500";
+                    note.innerText = "Market is undecided.";
+                    state.innerText = "NEUTRAL";
                 }
 
-            } catch(e) { console.log(e); }
+                // Liquidity Data
+                document.getElementById('liqVal').innerText = formatVal(pair.liquidity?.usd || 0);
+                document.getElementById('vol24').innerText = formatVal(pair.volume?.h24 || 0);
+
+            } catch(e) {}
         }
 
         async function scanDeployer(mint) {
@@ -201,51 +222,40 @@
             const dBadge = document.getElementById('devRiskBadge');
             
             try {
-                // 1. Get Creator
+                // Fetch creator
                 const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
                 const creator = tRes.creator?.address;
+                if (!creator) throw new Error("No Creator");
 
-                if (!creator) {
-                    dVerdict.innerText = "UNKNOWN CREATOR";
-                    return;
-                }
-
-                // 2. Scan History (Launch vs Bond)
+                // Fetch History
                 const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
                 
                 const launched = hRes.length || 0;
-                // 'Graduated' checks if it hit Raydium (Bonded)
-                const bonded = hRes.filter(t => t.graduated === true || t.liquidity?.usd > 60000).length;
+                // Bonded = Graduated OR Liquidity > $50k
+                const bonded = hRes.filter(t => t.graduated || (t.liquidity && t.liquidity.usd > 50000)).length;
 
                 document.getElementById('countLaunch').innerText = launched;
                 document.getElementById('countBond').innerText = bonded;
 
-                // Verdict Logic
+                // Verdict
                 if (launched === 0) {
-                    dVerdict.innerText = "FRESH WALLET";
-                    dBadge.innerText = "NO DATA"; dBadge.className = "text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold";
+                    dVerdict.innerText = "FRESH / UNKNOWN";
+                    dBadge.innerText = "NO DATA";
                 } else {
-                    const ratio = (bonded / launched);
-                    
-                    if (ratio >= 0.5) { // >50% Success
-                        dVerdict.innerText = "PROVEN DEV (SAFE)";
+                    const ratio = bonded / launched;
+                    if (ratio >= 0.4) {
+                        dVerdict.innerText = "SAFE DEV";
                         dVerdict.className = "text-xs font-black italic text-[#00ffa3]";
-                        dBadge.innerText = "HIGH TIER"; dBadge.className = "text-[9px] bg-green-900 px-2 py-1 rounded text-green-300 font-bold";
-                    } else if (ratio >= 0.2) {
-                        dVerdict.innerText = "MID TIER DEV";
-                        dVerdict.className = "text-xs font-black italic text-yellow-500";
-                        dBadge.innerText = "MID TIER"; dBadge.className = "text-[9px] bg-yellow-900 px-2 py-1 rounded text-yellow-300 font-bold";
+                        dBadge.innerText = "VERIFIED"; dBadge.className = "text-[9px] bg-green-900 px-2 py-1 rounded text-green-300 font-bold";
                     } else {
-                        dVerdict.innerText = "RUG FARMER";
+                        dVerdict.innerText = "FARMER / RISKY";
                         dVerdict.className = "text-xs font-black italic text-red-500";
-                        dBadge.innerText = "AVOID"; dBadge.className = "text-[9px] bg-red-900 px-2 py-1 rounded text-red-300 font-bold";
+                        dBadge.innerText = "WARNING"; dBadge.className = "text-[9px] bg-red-900 px-2 py-1 rounded text-red-300 font-bold";
                     }
                 }
-
             } catch (e) {
-                dVerdict.innerText = "API LIMIT / HIDDEN";
-                document.getElementById('countLaunch').innerText = "?";
-                document.getElementById('countBond').innerText = "?";
+                dVerdict.innerText = "CANNOT SCAN";
+                dBadge.innerText = "API ERROR";
             }
         }
     </script>
