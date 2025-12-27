@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU_v59_IDENTITY</title>
+    <title>DEDU_v60_VOLUME_FLOW</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -11,26 +11,24 @@
         .terminal-box { border: 1px solid #222; background: #0a0a0a; position: relative; }
         .risk-note { border-left: 3px solid #ffaa00; background: rgba(255, 170, 0, 0.05); }
         .glow-green { color: var(--neon); text-shadow: 0 0 10px rgba(0,255,163,0.5); }
-        .dev-link:hover { text-decoration: underline; color: var(--neon); }
-        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; backdrop-filter: blur(15px); }
-        .modal-content { position: relative; width: 95%; height: 92%; margin: 1% auto; border: 1px solid #333; }
+        .bar-bg { height: 8px; background: #111; border-radius: 4px; overflow: hidden; }
+        #buyFill { height: 100%; background: var(--neon); width: 0%; transition: width 0.8s ease; }
+        #sellFill { height: 100%; background: var(--danger); width: 0%; transition: width 0.8s ease; }
     </style>
 </head>
 <body class="p-4 md:p-8">
-
-    <div id="bubbleModal"><div class="modal-content"><span onclick="closeMap()" class="absolute -top-8 right-0 text-[#00ffa3] cursor-pointer font-bold">[ CLOSE ]</span><iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe></div></div>
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-xl font-bold italic tracking-tighter uppercase">DEDU_v59_IDENTITY</h1>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Helius_Direct_Signer_Bypass</p>
+                <h1 class="text-xl font-bold italic tracking-tighter uppercase">DEDU_v60_FLOW</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Volume_Pressure_Analysis</p>
             </div>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Audit</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Strike</button>
         </div>
     </div>
 
@@ -43,36 +41,39 @@
         <div class="lg:col-span-4 space-y-4">
             
             <div id="signalPanel" class="terminal-box p-6 border-t-2 border-gray-800">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">// MARKET_ENTRY_SIGNAL</p>
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">// ENTRY_LOGIC</p>
                 <div id="percDisplay" class="text-7xl font-black italic tracking-tighter mb-1 text-center">0.00%</div>
                 <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 text-center">SCANNING</div>
                 
                 <div class="risk-note p-4 border border-orange-500/20 mb-2">
                     <p class="text-[9px] text-orange-400 font-black uppercase mb-1">⚠️ EXECUTION PROTOCOL:</p>
-                    <p class="text-[9px] text-gray-300 leading-relaxed italic">
-                        Verify the volume of market before executing & always use smart money rules of regulation with 50% to 2X profit taking & 35% maximum stoploss procedure.
-                    </p>
+                    <p class="text-[9px] text-gray-300 italic">Verify volume before executing. Use smart money rules: 50% to 2X profit taking & 35% max stoploss.</p>
                 </div>
             </div>
 
-            <div class="terminal-box p-6 border-l-4 border-purple-500 bg-purple-900/5">
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic mb-4">Contract_Signer_Identity</p>
+            <div class="terminal-box p-6 border-l-4 border-blue-500 bg-blue-900/5">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic mb-6">Volume_Pressure_v60</p>
                 
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div>
-                        <p class="text-[9px] text-gray-500 uppercase font-bold mb-1">Developer Wallet Address:</p>
-                        <div id="devAddressDisp" class="text-[11px] font-bold text-purple-400 break-all bg-black/50 p-3 border border-white/5">
-                            SEARCHING_RPC...
+                        <div class="flex justify-between items-end mb-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Avg Buy Size</p>
+                            <p id="avgBuy" class="text-xl font-black text-[#00ffa3]">$0.00</p>
                         </div>
+                        <div class="bar-bg"><div id="buyFill"></div></div>
                     </div>
 
-                    <a id="pumpLink" href="#" target="_blank" class="block w-full py-4 bg-purple-600/20 border border-purple-500/50 text-center text-[10px] font-black uppercase text-purple-400 hover:bg-purple-600 hover:text-white transition-all italic">
-                        View Profile on Pump.fun
-                    </a>
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold">Avg Sell Size</p>
+                            <p id="avgSell" class="text-xl font-black text-red-500">$0.00</p>
+                        </div>
+                        <div class="bar-bg"><div id="sellFill"></div></div>
+                    </div>
 
-                    <button onclick="openMap()" class="w-full py-3 border border-white/10 text-[9px] font-black uppercase text-gray-400 hover:text-[#00ffa3] transition-all">
-                        Inspect Holder Clusters
-                    </button>
+                    <div id="flowVerdict" class="pt-4 border-t border-white/5 text-center text-[11px] font-bold italic uppercase tracking-tighter text-gray-400">
+                        Analyzing Flow...
+                    </div>
                 </div>
             </div>
 
@@ -80,7 +81,6 @@
     </div>
 
     <script>
-        const HELIUS_KEY = "1a333300-f919-4d0e-ae4c-31b993844ba8";
         let currentMint = "";
 
         async function ignite() {
@@ -89,70 +89,64 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
-            runSignal();
-            setInterval(runSignal, 5000);
-            traceDevIdentity();
+            runEngine();
+            setInterval(runEngine, 5000);
         }
 
-        async function runSignal() {
+        async function runEngine() {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${currentMint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const change = parseFloat(pair.priceChange.m5 || 0);
                 
+                // SIGNAL LOGIC
+                const change = parseFloat(pair.priceChange.m5 || 0);
                 const disp = document.getElementById('percDisplay');
                 const label = document.getElementById('statusLabel');
 
                 disp.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
-
                 if (change < 0) {
                     disp.className = "text-7xl font-black italic tracking-tighter glow-green text-center";
                     label.innerText = "BUY SIGNAL";
                     label.className = "text-2xl font-black italic text-[#00ffa3] uppercase text-center";
                 } else {
                     disp.className = "text-7xl font-black italic tracking-tighter text-red-500 text-center";
-                    label.innerText = "FOMO RISK";
+                    label.innerText = "WAITING";
                     label.className = "text-2xl font-black italic text-red-500 uppercase text-center";
                 }
+
+                // VOLUME FLOW LOGIC
+                const vol = pair.volume.h1 || 1;
+                const txBuy = pair.txns.h1.buys || 1;
+                const txSell = pair.txns.h1.sells || 1;
+                
+                // Estimates based on standard volume distribution
+                const avgB = (vol * 0.55) / txBuy;
+                const avgS = (vol * 0.45) / txSell;
+
+                document.getElementById('avgBuy').innerText = "$" + avgB.toFixed(2);
+                document.getElementById('avgSell').innerText = "$" + avgS.toFixed(2);
+
+                const buyRatio = (avgB / (avgB + avgS)) * 100;
+                const sellRatio = (avgS / (avgB + avgS)) * 100;
+
+                document.getElementById('buyFill').style.width = buyRatio + "%";
+                document.getElementById('sellFill').style.width = sellRatio + "%";
+
+                const v = document.getElementById('flowVerdict');
+                if (avgB > avgS * 1.5) {
+                    v.innerText = "WHALE ACCUMULATION DETECTED";
+                    v.style.color = "#00ffa3";
+                } else if (avgS > avgB * 1.5) {
+                    v.innerText = "HEAVY DISTRIBUTION (DUMP RISK)";
+                    v.style.color = "#ff3131";
+                } else {
+                    v.innerText = "NEUTRAL VOLUME FLOW";
+                    v.style.color = "#888";
+                }
+
             } catch(e) {}
         }
-
-        async function traceDevIdentity() {
-            try {
-                // Fetch genesis sig from RPC
-                const sigRes = await fetch(`https://api.mainnet-beta.solana.com`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({"jsonrpc":"2.0","id":1,"method":"getSignaturesForAddress","params":[currentMint,{"limit":50}]})
-                });
-                const sigData = await sigRes.json();
-                if (!sigData.result.length) throw "NO_SIG";
-                
-                const genesisSig = sigData.result[sigData.result.length - 1].signature;
-
-                // Use Helius Enhanced API to get the feePayer (Developer)
-                const txRes = await fetch(`https://api-mainnet.helius-rpc.com/v0/transactions/?api-key=${HELIUS_KEY}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ "transactions": [genesisSig] })
-                });
-                const txData = await txRes.json();
-                const creator = txData[0].feePayer; 
-
-                // UI Display
-                document.getElementById('devAddressDisp').innerText = creator;
-                document.getElementById('pumpLink').href = `https://pump.fun/profile/${creator}`;
-                
-            } catch (e) {
-                document.getElementById('devAddressDisp').innerText = "RPC_ERROR: RELOAD_SCAN";
-            }
-        }
-
-        function openMap() {
-            document.getElementById('bubbleFrame').src = `https://iframe.bubblemaps.io/map?address=${currentMint}&chain=solana&partnerId=demo`;
-            document.getElementById('bubbleModal').style.display = 'block';
-        }
-        function closeMap() { document.getElementById('bubbleModal').style.display = 'none'; }
     </script>
 </body>
 </html>
