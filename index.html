@@ -2,28 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | DEFI PROTOCOL</title>
+    <title>DEDU | DEFI PROTOCOL V16</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --dark-bg: #020105; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
-        .timer-progress { height: 4px; background: #3b82f6; transition: width 1s linear; }
-        .decision-box { border-left: 10px solid #1e1b4b; transition: all 0.4s ease; }
+        .timer-progress { height: 4px; background: #00ffa3; transition: width 1s linear; }
+        .decision-box { border-left: 12px solid #1e1b4b; transition: all 0.4s ease; background: linear-gradient(90deg, #050510 0%, #000 100%); }
         iframe { width: 100%; height: 500px; border: none; }
+        .wallet-tag { font-size: 8px; color: #3b82f6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-5">
-            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU DEFI V1.4.1</h1>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl shadow-[0_0_15px_rgba(0,255,163,0.3)]">D</div>
+            <div>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU DEFI V1.6.1</h1>
+                <p class="text-[9px] text-blue-500 tracking-[0.3em]">TRUE WALLET DEPLOYER SCAN</p>
+            </div>
         </div>
         <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
-            <button onclick="startDeduProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="startProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-black text-xs hover:bg-white transition-all uppercase italic">Start Scan</button>
         </div>
     </div>
 
@@ -38,9 +42,9 @@
                         <div id="logicPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// DECISION LOGIC</p>
-                        <div id="decisionLabel" class="text-5xl font-black italic uppercase text-gray-700">SYNCING</div>
-                        <p id="decisionReason" class="text-xs text-gray-400 mt-3 italic leading-relaxed">Waiting for 1-minute candle data to formulate entry advice.</p>
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// ACTION DECISION</p>
+                        <div id="decisionLabel" class="text-5xl font-black italic uppercase text-gray-700">ANALYZING</div>
+                        <p id="decisionReason" class="text-xs text-gray-400 mt-3 italic">Collecting 5-minute data averages...</p>
                     </div>
                 </div>
             </div>
@@ -50,139 +54,161 @@
 
         <div class="space-y-6">
             <div id="depCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
-                <p class="text-[10px] text-purple-400 font-bold mb-6 uppercase tracking-widest">// DEPLOYER_SCAN</p>
-                <div class="space-y-4">
+                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER WALLET SCAN</p>
+                
+                <div id="walletDisplay" class="wallet-tag mb-4 italic">IDENTIFYING CREATOR...</div>
+
+                <div id="depStats" class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-sm">
                         <span class="text-gray-500">LAUNCHED</span>
-                        <span id="depTotal" class="font-black">--</span>
+                        <span id="depTotal" class="font-black text-white">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-sm">
                         <span class="text-[#00ffa3]">BONDED</span>
                         <span id="depBonded" class="font-black text-[#00ffa3]">--</span>
                     </div>
-                    <div id="depStatus" class="text-[10px] text-center font-black mt-4 uppercase italic text-gray-600">Awaiting Creator Info...</div>
+                    <div id="depStatus" class="text-[10px] text-center font-black mt-4 uppercase italic text-gray-600">PENDING ON CHAIN DATA</div>
                 </div>
             </div>
 
             <div class="terminal-border p-6 border-t-4 border-t-blue-900">
-                <p class="text-[10px] text-blue-400 font-bold mb-4 uppercase tracking-widest">// DATA_REF</p>
-                <div class="space-y-2">
-                    <p class="text-[9px] text-gray-600 uppercase">1m Baseline</p>
-                    <div id="basePrice" class="text-xs font-mono text-gray-300">$0.00...</div>
+                <p class="text-[10px] text-blue-400 font-bold mb-4 uppercase tracking-widest">// DATA REF</p>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-[9px] text-gray-600 uppercase">5m Open</p>
+                        <div id="basePrice" class="text-xs font-mono text-gray-400">$0.00...</div>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-600 uppercase">Live Price</p>
+                        <div id="livePrice" class="text-xs font-mono text-white">$0.00...</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let baselinePrice = null;
-        let lastReset = Date.now();
+        let base5mPrice = null;
+        let lastResetTime = Date.now();
+        const FIVE_MIN_MS = 300000;
 
-        async function startDeduProtocol() {
+        async function startProtocol() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            baselinePrice = null;
-            lastReset = Date.now();
-            update(mint);
-            setInterval(() => update(mint), 3000);
+            base5mPrice = null;
+            lastResetTime = Date.now();
+            
+            updateLoop(mint);
+            setInterval(() => updateLoop(mint), 3000);
         }
 
-        async function update(mint) {
+        async function updateLoop(mint) {
             const now = Date.now();
-            const elapsed = now - lastReset;
-            document.getElementById('timerBar').style.width = (elapsed / 60000) * 100 + "%";
+            const elapsed = now - lastResetTime;
+            document.getElementById('timerBar').style.width = (elapsed / FIVE_MIN_MS) * 100 + "%";
 
-            if (elapsed >= 60000) { baselinePrice = null; lastReset = now; }
+            if (elapsed >= FIVE_MIN_MS) { base5mPrice = null; lastResetTime = now; }
 
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const livePrice = parseFloat(pair.priceUsd);
+                const price = parseFloat(pair.priceUsd);
 
-                if (!baselinePrice) {
-                    baselinePrice = livePrice;
-                    document.getElementById('basePrice').innerText = "$" + baselinePrice.toFixed(10);
-                    scanDeployer(pair.baseToken.address);
+                if (!base5mPrice) {
+                    base5mPrice = price;
+                    document.getElementById('basePrice').innerText = "$" + base5mPrice.toFixed(10);
+                    // Critical: Identify and Scan the Creator Wallet
+                    scanTrueDeployer(mint);
                 }
 
-                const delta = (((livePrice - baselinePrice) / baselinePrice) * 100).toFixed(2);
+                document.getElementById('livePrice').innerText = "$" + price.toFixed(10);
+                const delta = (((price - base5mPrice) / base5mPrice) * 100).toFixed(2);
                 document.getElementById('logicPct').innerText = (delta >= 0 ? "+" : "") + delta + "%";
                 
-                runDecisionLogic(parseFloat(delta));
-            } catch (e) { console.error("Sync Offline"); }
+                decisionEngine(parseFloat(delta));
+            } catch (e) { console.error("Sync Error"); }
         }
 
-        async function scanDeployer(mint) {
+        async function scanTrueDeployer(mint) {
             try {
+                // 1. Get Token Metadata to find the Creator Wallet
                 const meta = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-                const creator = meta.creator.address;
-                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-
-                const total = history.length;
-                const bonded = history.filter(t => t.graduated === true || t.liquidity > 55000).length;
-                const ratio = (bonded / total) * 100;
-
-                document.getElementById('depTotal').innerText = total;
-                document.getElementById('depBonded').innerText = bonded;
-
-                const status = document.getElementById('depStatus');
-                if (ratio >= 60) {
-                    status.innerText = "LEGIT DEPLOYER: PROCEED";
-                    status.classList.add('text-[#00ffa3]');
-                } else if (ratio < 30) {
-                    status.innerText = "SUSPICIOUS: AVOID";
-                    status.classList.add('text-red-500');
-                } else {
-                    status.innerText = "AVERAGE REPUTATION";
-                    status.classList.add('text-yellow-500');
+                const creatorWallet = meta.creator?.address || meta.deployer;
+                
+                if (!creatorWallet) {
+                    document.getElementById('walletDisplay').innerText = "CREATOR_HIDDEN_OR_UNAVAILABLE";
+                    return;
                 }
-            } catch (e) { document.getElementById('depStatus').innerText = "SCAN ERROR"; }
+
+                document.getElementById('walletDisplay').innerText = `WALLET: ${creatorWallet}`;
+
+                // 2. Query all tokens launched by this SPECIFIC wallet
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creatorWallet}/tokens`).then(r => r.json());
+                
+                const launched = history.length;
+                const bonded = history.filter(t => t.graduated === true || t.liquidity > 50000).length;
+                const ratio = (bonded / launched) * 100;
+
+                document.getElementById('depTotal').innerText = launched;
+                document.getElementById('depBonded').innerText = bonded;
+                
+                const status = document.getElementById('depStatus');
+                const card = document.getElementById('depCard');
+
+                if (ratio >= 60) {
+                    status.innerText = "LEGIT DEPLOYER";
+                    status.className = "text-[10px] text-center font-black mt-4 uppercase italic text-[#00ffa3]";
+                    card.style.borderTopColor = "#00ffa3";
+                } else if (ratio < 30) {
+                    status.innerText = "SUSPICIOUS RATIO";
+                    status.className = "text-[10px] text-center font-black mt-4 uppercase italic text-red-500";
+                    card.style.borderTopColor = "#ef4444";
+                } else {
+                    status.innerText = "MID-TIER FARMER";
+                    status.className = "text-[10px] text-center font-black mt-4 uppercase italic text-yellow-500";
+                    card.style.borderTopColor = "#eab308";
+                }
+
+            } catch (e) {
+                document.getElementById('depStatus').innerText = "WALLET_SCAN_FAILED";
+            }
         }
 
-        function runDecisionLogic(delta) {
+        function decisionEngine(delta) {
             const label = document.getElementById('decisionLabel');
             const reason = document.getElementById('decisionReason');
             const panel = document.getElementById('decisionPanel');
-            const pctDisplay = document.getElementById('logicPct');
+            const pctText = document.getElementById('logicPct');
 
             if (delta >= 70) {
                 label.innerText = "DO NOT BUY";
                 label.className = "text-5xl font-black italic uppercase text-yellow-500";
-                reason.innerText = "Price is OVERBOUGHT (+70% in 1m). Wait for a dip to the 1m baseline to avoid getting dumped on.";
+                reason.innerText = "Overbought (+70% vs 5m Open). Entry risky. Wait for dip to baseline.";
                 panel.style.borderLeftColor = "#eab308";
-                pctDisplay.style.color = "#eab308";
-            } 
-            else if (delta >= 30) {
-                label.innerText = "BUY / SCALP";
+            } else if (delta >= 30) {
+                label.innerText = "BUY / MOON";
                 label.className = "text-5xl font-black italic uppercase text-[#00ffa3]";
-                reason.innerText = "FOMO IS KICKING IN (+30% in 1m). Momentum is confirmed. Suitable for moon shot scalp.";
+                reason.innerText = "Fomo kicking in (+30% vs 5m Open). Momentum confirmed. Moon shot likely.";
                 panel.style.borderLeftColor = "#00ffa3";
-                pctDisplay.style.color = "#00ffa3";
-            } 
-            else if (delta <= -70) {
-                label.innerText = "ABORT / EXIT";
+            } else if (delta <= -70) {
+                label.innerText = "RUGGED_EXIT";
                 label.className = "text-5xl font-black italic uppercase text-red-600";
-                reason.innerText = "THIS ONE'S RUGGED (-70% in 1m). Dev or whales have exited. Next ticker immediately.";
+                reason.innerText = "Rugged (-70% vs 5m Open). Liquidity or whale dump. Next ticker immediately.";
                 panel.style.borderLeftColor = "#dc2626";
-                pctDisplay.style.color = "#dc2626";
-            } 
-            else if (delta <= -30) {
+            } else if (delta <= -30) {
                 label.innerText = "ACCUMULATE";
                 label.className = "text-5xl font-black italic uppercase text-blue-500";
-                reason.innerText = "COULD PUMP (-30% in 1m). Price has pulled back significantly from the 1m open. High rebound potential.";
+                reason.innerText = "Could Pump (-30% vs 5m Open). Accumulation zone relative to 5m trend.";
                 panel.style.borderLeftColor = "#3b82f6";
-                pctDisplay.style.color = "#3b82f6";
-            } 
-            else {
+            } else {
                 label.innerText = "NEUTRAL";
-                label.className = "text-5xl font-black italic uppercase text-gray-600";
-                reason.innerText = "Price is stable within the 1-minute window. Monitoring for breakout signal.";
+                label.className = "text-5xl font-black italic uppercase text-gray-700";
+                reason.innerText = "Market stable relative to 5-minute candle open.";
                 panel.style.borderLeftColor = "#1e1b4b";
-                pctDisplay.style.color = "white";
             }
         }
     </script>
