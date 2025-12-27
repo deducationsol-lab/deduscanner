@@ -2,32 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | ATH COMMANDER V20</title>
+    <title>DEDU | ATH COMMANDER V21</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --dark-bg: #020105; --faggot-pink: #ff00ff; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
-        .command-panel { border-left: 15px solid #1e1b4b; transition: all 0.3s ease; }
-        iframe { width: 100%; height: 600px; border: none; }
+        .command-panel { border-left: 15px solid #1e1b4b; transition: all 0.3s ease; background: linear-gradient(90deg, #050510 0%, #000 100%); }
+        iframe { width: 100%; height: 550px; border: none; }
         .stat-label { font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; }
         .ath-glow { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .5em 0 0 rgba(0,0,0,0), 1em 0 0 rgba(0,0,0,0); } 40% { color: #00ffa3; text-shadow: .5em 0 0 rgba(0,0,0,0), 1em 0 0 rgba(0,0,0,0); } 60% { text-shadow: .5em 0 0 #00ffa3, 1em 0 0 rgba(0,0,0,0); } 80%, 100% { text-shadow: .5em 0 0 #00ffa3, 1em 0 0 #00ffa3; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-5">
-            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl shadow-[0_0_15px_rgba(0,255,163,0.3)]">D</div>
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_ATH_V20</h1>
-                <p class="text-[9px] text-yellow-500 tracking-[0.3em]">ATH_RELATIVE_DECISION_ENGINE</p>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_DEFI_V21</h1>
+                <p class="text-[9px] text-[#00ffa3] tracking-[0.3em]">ATH_COMPARISON_ENGINE</p>
             </div>
         </div>
         <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-10 py-4 font-black text-xs hover:bg-white transition-all uppercase italic">Execute Scan</button>
+            <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-10 py-4 font-black text-xs hover:bg-white transition-all uppercase italic">Initiate Scan</button>
         </div>
     </div>
 
@@ -37,49 +39,50 @@
             <div id="decisionPanel" class="terminal-border p-10 command-panel relative overflow-hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <p class="stat-label">// %_FROM_ATH</p>
+                        <p class="stat-label">// CURRENT_RETRACEMENT_FROM_ATH</p>
                         <div id="deltaDisplay" class="text-8xl font-black italic tracking-tighter">0.00%</div>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="stat-label">// TRADER_COMMAND</p>
-                        <div id="cmdLabel" class="text-5xl font-black italic uppercase leading-none mb-3">SCANNING</div>
-                        <p id="cmdNote" class="text-sm text-gray-400 italic max-w-sm ml-auto">Calculating current price position relative to All-Time High.</p>
+                        <p class="stat-label">// COMMAND_LOGIC</p>
+                        <div id="cmdLabel" class="text-5xl font-black italic uppercase leading-none mb-3">WAITING</div>
+                        <p id="cmdNote" class="text-xs text-gray-400 italic max-w-sm ml-auto leading-relaxed">Analyzing current price position against session highs to determine entry safety.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border overflow-hidden"><iframe id="market-chart" src=""></iframe></div>
+            <div class="terminal-border overflow-hidden shadow-2xl"><iframe id="market-chart" src=""></iframe></div>
         </div>
 
         <div class="space-y-6">
-            <div id="auditCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
-                <p class="stat-label mb-4 text-purple-400 font-bold">// DEPLOYER_AUDIT</p>
-                <div class="space-y-4">
+            <div id="auditCard" class="terminal-border p-6 border-t-4 border-t-purple-600">
+                <p class="stat-label mb-4 text-purple-400 font-bold tracking-widest">// DEPLOYER_WALLET_AUDIT</p>
+                <div id="auditLoading" class="text-[10px] italic text-gray-500 loading-dots">SCANNING_SOLANA_HISTORY</div>
+                <div id="auditStats" class="hidden space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-xs">LAUNCHED</span>
-                        <span id="launchCount" class="font-bold">--</span>
+                        <span class="text-[10px] text-gray-500 font-bold">LAUNCHED</span>
+                        <span id="launchCount" class="font-black text-white italic">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-[#00ffa3] text-xs">BONDED</span>
-                        <span id="bondCount" class="font-bold text-[#00ffa3]">--</span>
+                        <span class="text-[10px] text-[#00ffa3] font-bold">BONDED</span>
+                        <span id="bondCount" class="font-black text-[#00ffa3] italic">--</span>
                     </div>
                     <div class="pt-2">
-                        <p class="stat-label mb-1">DEV_REPUTATION</p>
-                        <div id="devTag" class="text-xs font-black italic uppercase text-gray-600 tracking-tighter">WAITING...</div>
+                        <p class="stat-label mb-1">DEV_CLASSIFICATION</p>
+                        <div id="devTag" class="text-xs font-black italic uppercase tracking-tighter">--</div>
                     </div>
                 </div>
             </div>
 
             <div class="terminal-border p-6 border-t-4 border-t-yellow-600">
-                <p class="stat-label mb-4 text-yellow-500 font-bold">// ATH_DATA</p>
+                <p class="stat-label mb-4 text-yellow-500 font-bold tracking-widest">// PRICE_ORACLE</p>
                 <div class="space-y-4">
                     <div>
                         <p class="stat-label">Session ATH</p>
-                        <div id="athRef" class="text-xs font-mono ath-glow">$0.00000000</div>
+                        <div id="athPrice" class="text-xs font-mono ath-glow">$0.00000000</div>
                     </div>
                     <div>
-                        <p class="stat-label">Current Price</p>
-                        <div id="liveTick" class="text-xs font-mono text-white">$0.00000000</div>
+                        <p class="stat-label">Live Price</p>
+                        <div id="livePrice" class="text-xs font-mono text-white">$0.00000000</div>
                     </div>
                 </div>
             </div>
@@ -87,7 +90,8 @@
     </div>
 
     <script>
-        let sessionATH = 0;
+        let currentATH = 0;
+        let auditActive = false;
 
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
@@ -95,7 +99,11 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            sessionATH = 0;
+            currentATH = 0;
+            auditActive = false;
+            document.getElementById('auditLoading').classList.remove('hidden');
+            document.getElementById('auditStats').classList.add('hidden');
+            
             updateLoop(mint);
             setInterval(() => updateLoop(mint), 3000);
         }
@@ -107,43 +115,51 @@
                 const pair = data.pairs[0];
                 const live = parseFloat(pair.priceUsd);
                 
-                // Track Session ATH
-                if (live > sessionATH) {
-                    sessionATH = live;
-                    document.getElementById('athRef').innerText = "$" + sessionATH.toFixed(10);
+                // Track the highest price seen since scanning
+                if (live > currentATH) {
+                    currentATH = live;
+                    document.getElementById('athPrice').innerText = "$" + currentATH.toFixed(10);
                 }
 
-                document.getElementById('liveTick').innerText = "$" + live.toFixed(10);
+                document.getElementById('livePrice').innerText = "$" + live.toFixed(10);
 
-                // Percentage difference from ATH
-                const delta = (((live - sessionATH) / sessionATH) * 100).toFixed(2);
+                // Calculate current price relative to ATH
+                const delta = (((live - currentATH) / currentATH) * 100).toFixed(2);
                 document.getElementById('deltaDisplay').innerText = delta + "%";
 
-                runAthLogic(parseFloat(delta));
+                runTraderLogic(parseFloat(delta));
                 
-                // Trigger wallet audit once
-                if (document.getElementById('launchCount').innerText === "--") {
-                    runWalletAudit(pair.baseToken.address);
+                // Fixed Deployer Scan: Runs only once per mint
+                if (!auditActive) {
+                    auditActive = true;
+                    runDeployerAudit(mint);
                 }
 
-            } catch (e) {}
+            } catch (e) { console.error("Oracle Syncing..."); }
         }
 
-        async function runWalletAudit(mint) {
+        async function runDeployerAudit(mint) {
             try {
-                const meta = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-                const creator = meta.creator?.address || meta.deployer;
-                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+                // Fetching token data to find creator from SolanaTracker (Stable Public API)
+                const trackerRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
+                const trackerData = await trackerRes.json();
+                const creator = trackerData.creator?.address;
 
-                const launched = history.length;
-                const bonded = history.filter(t => t.graduated === true || t.liquidity > 55000).length;
-                const ratio = (bonded / launched) * 100;
+                if (!creator) throw new Error("Creator Invisible");
 
-                document.getElementById('launchCount').innerText = launched;
-                document.getElementById('bondCount').innerText = bonded;
+                // Fetching all tokens ever created by this specific wallet
+                const historyRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
+                const history = await historyRes.json();
+
+                const totalLaunched = history.length;
+                const totalBonded = history.filter(t => t.graduated === true || (t.liquidity?.usd > 50000)).length;
+                const ratio = (totalBonded / totalLaunched) * 100;
+
+                document.getElementById('launchCount').innerText = totalLaunched;
+                document.getElementById('bondCount').innerText = totalBonded;
 
                 const tag = document.getElementById('devTag');
-                if (launched > 0 && bonded === 0) {
+                if (totalLaunched > 0 && totalBonded === 0) {
                     tag.innerText = "FAGGOT DEV";
                     tag.className = "text-xs font-black italic text-[#ff00ff]";
                 } else if (ratio >= 70) {
@@ -153,13 +169,19 @@
                     tag.innerText = "FARMER DEV";
                     tag.className = "text-xs font-black italic text-red-500";
                 } else {
-                    tag.innerText = "MID-TIER DEV";
+                    tag.innerText = "AVERAGE DEV";
                     tag.className = "text-xs font-black italic text-yellow-500";
                 }
-            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_ERROR"; }
+
+                document.getElementById('auditLoading').classList.add('hidden');
+                document.getElementById('auditStats').classList.remove('hidden');
+
+            } catch (e) {
+                document.getElementById('auditLoading').innerText = "AUDIT_ERROR: WALLET_PROTECTED";
+            }
         }
 
-        function runAthLogic(delta) {
+        function runTraderLogic(delta) {
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
             const panel = document.getElementById('decisionPanel');
@@ -168,31 +190,31 @@
             if (delta <= -60) {
                 cmd.innerText = "LIQUIDITY TRAP";
                 cmd.className = "text-5xl font-black italic text-red-600";
-                note.innerText = "ABORT. Price crashed -60% from ATH. Likely a drain or distribution trap. Avoid entry.";
+                note.innerText = "CRITICAL: Current price is 60%+ below ATH. This is likely a distribution drain or a liquidity trap. AVOID.";
                 panel.style.borderLeftColor = "#dc2626";
                 disp.style.color = "#dc2626";
             } else if (delta <= -30) {
                 cmd.innerText = "ENTRY LEVEL";
                 cmd.className = "text-5xl font-black italic text-[#00ffa3]";
-                note.innerText = "BUY OPPORTUNITY. Healthy retracement (-30% from ATH). Look for rebound to new highs.";
+                note.innerText = "IDEAL ENTRY: 30% retracement from ATH confirmed. Healthy correction zone for a rebound play.";
                 panel.style.borderLeftColor = "#00ffa3";
                 disp.style.color = "#00ffa3";
-            } else if (delta >= -5 && delta < 0) {
+            } else if (delta >= -10 && delta < -1) {
                 cmd.innerText = "OVERBOUGHT";
                 cmd.className = "text-5xl font-black italic text-yellow-500";
-                note.innerText = "DANGER ZONE. Price is near ATH. Top holders will farm (sell) soon. High risk of local top.";
+                note.innerText = "DANGER: Price is hugging the ATH. Top holders will likely farm (sell) here. Local top incoming.";
                 panel.style.borderLeftColor = "#eab308";
                 disp.style.color = "#eab308";
-            } else if (delta === 0) {
-                cmd.innerText = "NEW ATH / FOMO";
+            } else if (delta >= -1) {
+                cmd.innerText = "FOMO ENTRY";
                 cmd.className = "text-5xl font-black italic text-orange-500";
-                note.innerText = "EXTREME FOMO. Price is currently at All-Time High. Entry is extremely high risk.";
+                note.innerText = "HIGH RISK: Price is at or near All-Time High. Chasing here is dangerous. Entry is high-risk.";
                 panel.style.borderLeftColor = "#f97316";
                 disp.style.color = "#f97316";
             } else {
                 cmd.innerText = "CONSOLIDATING";
                 cmd.className = "text-5xl font-black italic text-gray-700";
-                note.innerText = "Price is drifting between zones. Wait for -30% dip or breakout to 0%.";
+                note.innerText = "Current price is drifting. Wait for -30% (Entry) or 0% (Breakout) to act.";
                 panel.style.borderLeftColor = "#1e1b4b";
                 disp.style.color = "white";
             }
