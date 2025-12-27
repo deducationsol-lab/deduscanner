@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU_v51_UNIFIED</title>
+    <title>DEDU PROTOCOL V1.6.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -15,13 +15,15 @@
         .risk-note { border-left: 3px solid var(--warning); background: rgba(255, 170, 0, 0.03); }
         .glow-green { color: var(--neon); text-shadow: 0 0 10px rgba(0,255,163,0.5); }
         .glow-red { color: var(--danger); text-shadow: 0 0 10px rgba(255,49,49,0.5); }
+        .progress-bar { height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+        #fillRate { height: 100%; background: var(--neon); width: 0%; transition: width 1.5s ease; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div id="bubbleModal">
         <div class="modal-content">
-            <span onclick="closeMap()" class="close-btn">[ RETURN_TO_SYSTEM ]</span>
+            <span onclick="closeMap()" class="close-btn">[ ESCAPE_TERMINAL ]</span>
             <iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
         </div>
     </div>
@@ -30,60 +32,56 @@
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-xl font-bold italic tracking-tighter">DEDU_v51_CORE</h1>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Pump.fun_Bonding_Curve_Specialist</p>
+                <h1 class="text-xl font-bold italic tracking-tighter">DEDU_v53_CORE</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Bonding_Curve_Specialist</p>
             </div>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Strike</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white">Ignite</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <div class="lg:col-span-8 h-[680px] terminal-box overflow-hidden">
-            <iframe id="market-chart" class="w-full h-full opacity-80" src=""></iframe>
+            <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
         </div>
 
         <div class="lg:col-span-4 space-y-4">
             
-            <div id="signalPanel" class="terminal-box p-6 border-t-2 border-gray-800">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// EXECUTION_LOGIC</p>
+            <div id="signalPanel" class="terminal-box p-6">
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// RETrACEMENT_SIGNAL</p>
                 <div id="percDisplay" class="text-6xl font-black italic tracking-tighter mb-1">0.00%</div>
-                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 tracking-tighter">IDLE</div>
+                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4">IDLE</div>
                 
                 <div class="risk-note p-4 mb-4 border border-orange-500/20">
-                    <p class="text-[9px] text-orange-400 font-black uppercase mb-1">⚠️ MANDATORY PROTOCOL:</p>
+                    <p class="text-[9px] text-orange-400 font-black uppercase mb-1">⚠️ EXECUTION PROTOCOL:</p>
                     <p class="text-[9px] text-gray-300 leading-relaxed italic">
                         Verify the volume of market before executing & always use smart money rules of regulation with 50% to 2X profit taking & 35% maximum stoploss procedure.
                     </p>
                 </div>
-                <p id="statusNote" class="text-[10px] text-gray-500 italic">Waiting for mint data...</p>
             </div>
 
-            <div class="terminal-box p-6 border-l-4 border-purple-600 bg-purple-900/5">
-                <div class="flex justify-between items-start mb-4">
+            <div class="terminal-box p-6 border-l-4 border-[#00ffa3] bg-emerald-900/5">
+                <div class="flex justify-between items-start mb-6">
                     <div>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Pump.fun_History</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest italic">Dev_Bond_History</p>
                         <h4 id="devVerdict" class="text-lg font-black italic uppercase leading-tight">SCANNING...</h4>
                     </div>
                     <div class="text-right">
-                        <p id="bRatio" class="text-xl font-black text-purple-400">0/0</p>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase">BONDED_RATIO</p>
+                        <p id="bRatio" class="text-2xl font-black text-[#00ffa3]">0/0</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase">BONDED / LAUNCHED</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    <div class="bg-black border border-white/5 p-2">
-                        <p class="text-[8px] text-gray-600 uppercase">Launches</p>
-                        <p id="totalLaunches" class="text-sm font-bold tracking-widest">--</p>
-                    </div>
-                    <div class="bg-black border border-white/5 p-2">
-                        <p id="failLabel" class="text-[8px] text-gray-600 uppercase">Failed</p>
-                        <p id="failCount" class="text-sm font-bold text-red-500 tracking-widest">--</p>
-                    </div>
+                
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between text-[10px]"><span class="text-gray-500">PUMP.FUN LAUNCHES:</span><span id="statLaunch" class="font-bold">--</span></div>
+                    <div class="flex justify-between text-[10px]"><span class="text-gray-500">RAYDIUM BONDED:</span><span id="statBond" class="font-bold text-[#00ffa3]">--</span></div>
+                    <div class="progress-bar"><div id="fillRate"></div></div>
                 </div>
-                <button onclick="openMap()" class="w-full py-3 border border-purple-500/30 text-[10px] font-black uppercase text-purple-400 hover:bg-purple-500 hover:text-white transition-all italic">Inspect Bubble Clusters</button>
+
+                <button onclick="openMap()" class="w-full py-4 border border-[#00ffa3]/30 text-[10px] font-black uppercase text-[#00ffa3] hover:bg-[#00ffa3] hover:text-black transition-all italic">Inspect Supply Clusters</button>
             </div>
 
         </div>
@@ -98,12 +96,12 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
-            runEngine();
-            setInterval(runEngine, 5000);
-            auditPumpDev();
+            runSignal();
+            setInterval(runSignal, 5000);
+            auditDevHistory();
         }
 
-        async function runEngine() {
+        async function runSignal() {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${currentMint}`);
                 const data = await res.json();
@@ -112,25 +110,22 @@
                 
                 const disp = document.getElementById('percDisplay');
                 const label = document.getElementById('statusLabel');
-                const note = document.getElementById('statusNote');
 
                 disp.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
 
                 if (change < 0) {
                     disp.className = "text-6xl font-black italic tracking-tighter glow-green";
                     label.innerText = "BUY SIGNAL";
-                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase mb-4 tracking-tighter";
-                    note.innerText = "Negative retracement detected. Entry window open.";
+                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase";
                 } else {
                     disp.className = "text-6xl font-black italic tracking-tighter glow-red";
                     label.innerText = "FOMO RISK";
-                    label.className = "text-2xl font-black italic text-red-500 uppercase mb-4 tracking-tighter";
-                    note.innerText = "Price pushing. Wait for technical pullback.";
+                    label.className = "text-2xl font-black italic text-red-500 uppercase";
                 }
             } catch(e) {}
         }
 
-        async function auditPumpDev() {
+        async function auditDevHistory() {
             try {
                 const tData = await fetch(`https://api.solanatracker.io/v2/tokens/${currentMint}`).then(r => r.json());
                 const creator = tData.creator?.address;
@@ -138,31 +133,25 @@
 
                 const hData = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
                 
-                // PUMP.FUN SPECIFIC LOGIC
+                // FILTER: Only count tokens ending in 'pump'
                 const pumpTokens = hData.filter(t => t.mint.endsWith('pump'));
-                const graduated = pumpTokens.filter(t => t.graduated || t.liquidity?.usd > 15000);
-                
+                // BONDED = Graduated flag OR Liquidity > $15k
+                const bonded = pumpTokens.filter(t => t.graduated || (t.liquidity?.usd > 15000)).length;
                 const total = pumpTokens.length;
-                const bonds = graduated.length;
-                const fails = total - bonds;
-                const rate = total > 0 ? (bonds / total) * 100 : 0;
+                const rate = total > 0 ? (bonded / total) * 100 : 0;
 
-                document.getElementById('bRatio').innerText = `${bonds} / ${total}`;
-                document.getElementById('totalLaunches').innerText = total;
-                document.getElementById('failCount').innerText = fails;
+                document.getElementById('bRatio').innerText = `${bonded} / ${total}`;
+                document.getElementById('statLaunch').innerText = total;
+                document.getElementById('statBond').innerText = bonded;
+                document.getElementById('fillRate').style.width = rate + "%";
 
-                const verdict = document.getElementById('devVerdict');
-                if(total === 0) {
-                    verdict.innerText = "NON-PUMP TOKEN";
-                } else if(total === 1 && bonds === 0) {
-                    verdict.innerText = "FRESH_CREATOR";
-                    verdict.className = "text-lg font-black italic text-yellow-500 uppercase";
-                } else if(rate > 20) {
-                    verdict.innerText = "PUMP_MASTER";
-                    verdict.className = "text-lg font-black italic text-[#00ffa3] uppercase";
+                const v = document.getElementById('devVerdict');
+                if(total > 5 && bonded === 0) {
+                    v.innerText = "SERIAL RUGGER"; v.style.color = "#ff3131";
+                } else if(rate > 15) {
+                    v.innerText = "BONDING MASTER"; v.style.color = "#00ffa3";
                 } else {
-                    verdict.innerText = "SERIAL_RUGGER";
-                    verdict.className = "text-lg font-black italic text-red-600 uppercase";
+                    v.innerText = "ACTIVE CREATOR"; v.style.color = "#ffaa00";
                 }
             } catch(e) {}
         }
@@ -175,7 +164,6 @@
 
         function closeMap() {
             document.getElementById('bubbleModal').style.display = 'none';
-            document.getElementById('bubbleFrame').src = "";
         }
     </script>
 </body>
