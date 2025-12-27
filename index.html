@@ -19,7 +19,7 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-5">
             <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_DEFI_PROTOCOL</h1>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU DEFI PROTOCOL</h1>
         </div>
         <div class="flex gap-2">
             <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
@@ -33,11 +33,11 @@
                 <div id="timerBar" class="timer-progress absolute top-0 left-0" style="width: 0%"></div>
                 <div class="flex flex-col lg:flex-row justify-between items-center gap-8">
                     <div>
-                        <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-[0.3em]">// PRICE REFERENCE</p>
+                        <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-[0.3em]">// 1M CANDLE REFERENCE</p>
                         <div id="logicPct" class="text-9xl font-black italic tracking-tighter">0.00%</div>
                     </div>
                     <div class="text-center lg:text-right">
-                        <h2 id="logicTitle" class="text-3xl font-black uppercase italic mb-2 text-gray-400 tracking-tighter">WAITING FOR TICK</h2>
+                        <h2 id="logicTitle" class="text-3xl font-black uppercase italic mb-2 text-gray-400 tracking-tighter">WAITING_FOR_TICK</h2>
                         <p id="logicSub" class="text-sm italic text-gray-500 max-w-sm ml-auto">Establishing 1-minute candle baseline. Syncing relative price action...</p>
                     </div>
                 </div>
@@ -68,12 +68,12 @@
             </div>
 
             <div class="terminal-border p-6">
-                <p class="text-[10px] text-blue-400 font-bold mb-2 uppercase tracking-widest">// 1M BASE PRICE</p>
+                <p class="text-[10px] text-blue-400 font-bold mb-2 uppercase tracking-widest">// 1M_BASE_PRICE</p>
                 <div id="basePriceDisp" class="text-sm font-mono text-gray-400">$0.000000...</div>
             </div>
 
             <div class="p-4 bg-red-950/20 border border-red-900/40 rounded italic text-[10px] text-red-500 font-bold text-center">
-                DEDU V11 PROTOCOL <br> FLOW MONITOR
+                DEDU PROTOCOL <br> FLOW MONITORING
             </div>
         </div>
     </div>
@@ -84,5 +84,124 @@
         let protocolActive = false;
 
         async function igniteOracle() {
-            const mint =
+            const mint = document.getElementById('tokenAddr').value.trim();
+            if(!mint) return;
+
+            document.getElementById('ui').classList.remove('hidden');
+            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+            
+            base1mPrice = null;
+            lastResetTime = Date.now();
+            protocolActive = true;
+
+            runTick(mint);
+            setInterval(() => runTick(mint), 3000);
+        }
+
+        async function runTick(mint) {
+            const now = Date.now();
+            const elapsed = now - lastResetTime;
+            
+            document.getElementById('timerBar').style.width = (elapsed / 60000) * 100 + "%";
+
+            // HARD RESET LOGIC: Every 60 seconds, clear baseline
+            if (elapsed >= 60000) {
+                base1mPrice = null;
+                lastResetTime = now;
+            }
+
+            try {
+                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+                const data = await res.json();
+                const pair = data.pairs[0];
+                const currentPrice = parseFloat(pair.priceUsd);
+
+                if (!base1mPrice) {
+                    base1mPrice = currentPrice;
+                    document.getElementById('basePriceDisp').innerText = "$" + base1mPrice.toFixed(10);
+                }
+
+                const delta = (((currentPrice - base1mPrice) / base1mPrice) * 100).toFixed(2);
+                updateLogicUI(parseFloat(delta));
+
+                // Scan deployer only on first successful load
+                if (elapsed < 5000) scanDeployer(mint);
+
+            } catch (e) { console.error("Oracle Error"); }
+        }
+
+        async function scanDeployer(mint) {
+            try {
+                // Use SolanaTracker or Helius to get creator
+                const res = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
+                const data = await res.json();
+                const creator = data.creator.address;
                 
+                // Get creator's total tokens
+                const cRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
+                const tokens = await cRes.json();
+                
+                const launched = tokens.length;
+                const bonded = tokens.filter(t => t.graduated === true || t.liquidity > 55000).length;
+                const ratio = (bonded / launched) * 100;
+
+                document.getElementById('depLaunched').innerText = launched;
+                document.getElementById('depBonded').innerText = bonded;
+
+                const status = document.getElementById('depStatus');
+                const card = document.getElementById('deployerCard');
+
+                if (ratio >= 60) {
+                    status.innerText = "LEGIT DEPLOYER";
+                    status.className = "text-sm font-black italic uppercase text-[#00ffa3]";
+                    card.style.borderTopColor = "#00ffa3";
+                } else if (ratio <= 30) {
+                    status.innerText = "SUSPICIOUS_RATIO";
+                    status.className = "text-sm font-black italic uppercase text-red-500";
+                    card.style.borderTopColor = "#ef4444";
+                } else {
+                    status.innerText = "MID_TIER_FARMER";
+                    status.className = "text-sm font-black italic uppercase text-yellow-500";
+                    card.style.borderTopColor = "#eab308";
+                }
+            } catch (e) { console.error("Deployer Scan Fail"); }
+        }
+
+        function updateLogicUI(delta) {
+            const val = document.getElementById('logicPct');
+            const tit = document.getElementById('logicTitle');
+            const sub = document.getElementById('logicSub');
+            const panel = document.getElementById('logicPanel');
+
+            val.innerText = (delta >= 0 ? "+" : "") + delta + "%";
+
+            if (delta >= 70) {
+                val.className = "text-9xl font-black italic tracking-tighter text-yellow-500";
+                tit.innerText = "OVERBOUGHT, WAIT FOR DIP";
+                sub.innerText = "Candle is +70% from 1m open. Extreme local peak. Entry not advised.";
+                panel.style.borderLeftColor = "#eab308";
+            } else if (delta >= 30) {
+                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3]";
+                tit.innerText = "FOMO IS KICKING IN, LET'S MOON";
+                sub.innerText = "Positive breakout confirmed. Candle is +30% from reset baseline.";
+                panel.style.borderLeftColor = "#00ffa3";
+            } else if (delta <= -70) {
+                val.className = "text-9xl font-black italic tracking-tighter text-red-700";
+                tit.innerText = "THIS ONE'S RUGGED, NEXT";
+                sub.innerText = "Total price collapse. -70% threshold reached. Abort protocol.";
+                panel.style.borderLeftColor = "#b91c1c";
+            } else if (delta <= -30) {
+                val.className = "text-9xl font-black italic tracking-tighter text-blue-500";
+                tit.innerText = "COULD PUMP: ACCUMULATION";
+                sub.innerText = "Healthy pullback detected. -30% from 1m baseline. Entry for rebound potential.";
+                panel.style.borderLeftColor = "#3b82f6";
+            } else {
+                val.className = "text-9xl font-black italic tracking-tighter text-white";
+                tit.innerText = "CANDLE_STABLE";
+                sub.innerText = "Price within neutral 1-minute range. Monitoring for breakout...";
+                panel.style.borderLeftColor = "#1f2937";
+            }
+        }
+    </script>
+</body>
+</html>
