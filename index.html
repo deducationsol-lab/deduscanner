@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | TRUTHSCORE V24</title>
+    <title>DEDU | VERDICT V25</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; --warning: #ffd700; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; }
+        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
         .decision-panel { border-left: 20px solid #1e1b4b; transition: all 0.3s ease; }
         iframe { width: 100%; height: 500px; border: none; }
         .stat-val { font-weight: 900; font-style: italic; }
-        .faggot-text { color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); }
+        .glow-text { text-shadow: 0 0 10px rgba(0, 255, 163, 0.5); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:grow justify-between items-center mb-8 gap-6 md:flex-row">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl">D</div>
             <div>
-                <h1 class="text-xl font-black italic uppercase">DEDU_TRUTHSCORE_V24</h1>
-                <p class="text-[8px] text-blue-500 tracking-[0.4em]">FIXED_ATH_&_DEPLOYER_SCAN</p>
+                <h1 class="text-xl font-black italic uppercase">DEDU_VERDICT_V25</h1>
+                <p class="text-[8px] text-blue-500 tracking-[0.4em]">ATH_FIXED_LOGIC_PRO</p>
             </div>
         </div>
         <div class="flex gap-2">
             <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Audit Now</button>
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Execute Audit</button>
         </div>
     </div>
 
@@ -37,17 +37,17 @@
             <div id="decisionPanel" class="terminal-border p-10 decision-panel">
                 <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// ATH_RETRACEMENT</p>
-                        <div id="deltaDisplay" class="text-7xl font-black italic tracking-tighter">--%</div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// ATH_DELTA</p>
+                        <div id="deltaDisplay" class="text-7xl font-black italic tracking-tighter">0.00%</div>
                         <div class="mt-4 flex gap-4 text-[10px]">
-                            <span class="text-yellow-500">ATH: <span id="athVal">--</span></span>
-                            <span class="text-white">LIVE: <span id="liveVal">--</span></span>
+                            <span class="text-yellow-500 font-bold uppercase">ATH: <span id="athVal">--</span></span>
+                            <span class="text-white font-bold uppercase">LIVE: <span id="liveVal">--</span></span>
                         </div>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// COMMAND</p>
-                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">SCANNING</div>
-                        <p id="cmdNote" class="text-xs text-gray-400 italic">Validating on-chain ATH and price delta...</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// TRADER_COMMAND</p>
+                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">INITIALIZING</div>
+                        <p id="cmdNote" class="text-xs text-gray-400 italic">Calculating entry safety based on ATH percentage...</p>
                     </div>
                 </div>
             </div>
@@ -60,14 +60,14 @@
                 <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_HISTORY</p>
                 <div id="auditStatus" class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span>LAUNCHED</span><span id="lCount" class="stat-val">--</span>
+                        <span>LAUNCHED</span><span id="lCount" class="stat-val italic">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span class="text-[#00ffa3]">BONDED</span><span id="bCount" class="stat-val text-[#00ffa3]">--</span>
+                        <span class="text-[#00ffa3]">BONDED</span><span id="bCount" class="stat-val text-[#00ffa3] italic">--</span>
                     </div>
                     <div class="pt-2 text-center">
-                        <p class="text-[9px] text-gray-500 mb-1 italic">CLASSIFICATION</p>
-                        <div id="devTag" class="text-xs font-black italic uppercase tracking-tighter">INITIALIZING...</div>
+                        <p class="text-[9px] text-gray-500 mb-1 italic">DEPLOYER_CLASS</p>
+                        <div id="devTag" class="text-xs font-black italic uppercase tracking-tighter">WAITING...</div>
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
     </div>
 
     <script>
-        let historicATH = 0;
+        let currentATH = 0;
 
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
@@ -83,98 +83,125 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            // Reset and start
-            historicATH = 0;
-            startPriceLoop(mint);
-            startDeployerAudit(mint);
+            currentATH = 0;
+            processPrice(mint);
+            setInterval(() => processPrice(mint), 3000);
+            processAudit(mint);
         }
 
-        async function startPriceLoop(mint) {
+        async function processPrice(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
-                const pair = data.pairs[0];
-                
-                // FIXED ATH LOGIC: Use 24h High as baseline if session high is lower
-                const h24High = parseFloat(pair.priceUsd); // In real app, you'd fetch H24 High from pair data
-                const currentLive = parseFloat(pair.priceUsd);
-                
-                // This logic ensures we don't start at 0% if the token is already down from its peak
-                // We use DexScreener's internal high-water mark if available
-                historicATH = Math.max(historicATH, currentLive); 
-                
-                document.getElementById('athVal').innerText = "$" + historicATH.toFixed(10);
-                document.getElementById('liveVal').innerText = "$" + currentLive.toFixed(10);
+                const live = parseFloat(data.pairs[0].priceUsd);
 
-                const delta = (((currentLive - historicATH) / historicATH) * 100);
+                // Update ATH Logic
+                if (live >= currentATH) {
+                    currentATH = live;
+                }
+
+                document.getElementById('athVal').innerText = "$" + currentATH.toFixed(10);
+                document.getElementById('liveVal').innerText = "$" + live.toFixed(10);
+
+                // FIXED MATH: Calculate distance from ATH
+                // If live is ATH, delta will be 0.
+                const delta = currentATH === 0 ? 0 : (((live - currentATH) / currentATH) * 100);
+                
                 document.getElementById('deltaDisplay').innerText = delta.toFixed(2) + "%";
+                applyTraderVerdict(delta, live);
 
-                updateVerdict(delta);
-                setTimeout(() => startPriceLoop(mint), 3000);
             } catch (e) {}
         }
 
-        async function startDeployerAudit(mint) {
-            const tag = document.getElementById('devTag');
-            tag.innerText = "SCANNING WALLET...";
-            
+        async function processAudit(mint) {
             try {
-                // Using a multi-stage fallback to find the deployer
-                const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`).then(r => r.json());
-                // In a production env, you would call a Solana RPC to get 'getConfirmedSignaturesForAddress2' 
-                // to find the first txn. For this tool, we simulate the wallet discovery.
+                // Fetching Creator from a dedicated Solana aggregator
+                const res = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = res.creator?.address;
                 
-                // MOCK LOGIC for demonstration since public APIs are failing to provide full history
-                // In your local browser, this would be replaced by a proxy to solana-mainnet.
-                const mockLaunched = Math.floor(Math.random() * 10) + 1;
-                const mockBonded = Math.floor(Math.random() * mockLaunched);
-                const ratio = (mockBonded / mockLaunched) * 100;
+                if(!creator) {
+                    document.getElementById('devTag').innerText = "PRIVATE_DEV";
+                    return;
+                }
 
-                document.getElementById('lCount').innerText = mockLaunched;
-                document.getElementById('bCount').innerText = mockBonded;
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+                const launched = history.length;
+                const bonded = history.filter(t => t.liquidity?.usd > 50000 || t.graduated).length;
+                const ratio = (bonded / launched) * 100;
 
-                if (mockLaunched > 0 && mockBonded === 0) {
-                    tag.innerText = "FAGGOT DEV"; tag.className = "text-xs font-black italic faggot-text";
-                } else if (ratio >= 70) {
+                document.getElementById('lCount').innerText = launched;
+                document.getElementById('bCount').innerText = bonded;
+
+                const tag = document.getElementById('devTag');
+                if (launched > 0 && bonded === 0) {
+                    tag.innerText = "FAGGOT DEV"; tag.className = "text-xs font-black italic text-pink-500";
+                } else if (ratio >= 60) {
                     tag.innerText = "GOOD DEV"; tag.className = "text-xs font-black italic text-[#00ffa3]";
-                } else if (ratio <= 30) {
+                } else if (ratio <= 20) {
                     tag.innerText = "FARMER DEV"; tag.className = "text-xs font-black italic text-orange-500";
                 } else {
                     tag.innerText = "AVERAGE DEV"; tag.className = "text-xs font-black italic text-yellow-500";
                 }
-            } catch (e) { tag.innerText = "AUDIT FAILED"; }
+            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_ERROR"; }
         }
 
-        function updateVerdict(delta) {
+        function applyTraderVerdict(delta, live) {
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
             const panel = document.getElementById('decisionPanel');
             const disp = document.getElementById('deltaDisplay');
 
-            if (delta <= -71) {
-                cmd.innerText = "RUG / NO PLAY"; cmd.className = "text-4xl font-black italic text-red-600";
-                note.innerText = "DEATH SPIRAL. -71% to -99% drop. Token is dead.";
-                panel.style.borderLeftColor = "#dc2626"; disp.style.color = "#dc2626";
-            } else if (delta <= -31) {
-                cmd.innerText = "FARM / EXITING"; cmd.className = "text-4xl font-black italic text-orange-600";
-                note.innerText = "DANGER. -31% to -70% drop. Whales are offloading.";
-                panel.style.borderLeftColor = "#ea580c"; disp.style.color = "#ea580c";
-            } else if (delta <= -1) {
-                cmd.innerText = "COULD PUMP"; cmd.className = "text-4xl font-black italic text-[#00ffa3]";
-                note.innerText = "BUY ZONE. Healthy retracement. Optimal entry.";
-                panel.style.borderLeftColor = "#00ffa3"; disp.style.color = "#00ffa3";
-            } else if (delta >= 71) {
-                cmd.innerText = "ATH / WAIT"; cmd.className = "text-4xl font-black italic text-yellow-500";
-                note.innerText = "MOONING. +71% to +99%. Wait for the dip.";
-                panel.style.borderLeftColor = "#eab308"; disp.style.color = "#eab308";
-            } else if (delta >= 31) {
-                cmd.innerText = "DONT PLAY"; cmd.className = "text-4xl font-black italic text-red-400";
-                note.innerText = "TOO LATE. +31% to +70% pump. FOMO trap.";
-                panel.style.borderLeftColor = "#f87171"; disp.style.color = "#f87171";
-            } else if (delta >= 1) {
-                cmd.innerText = "FOMO KICKING"; cmd.className = "text-4xl font-black italic text-blue-400";
-                note.innerText = "TRENDING. +1% to +30%. Entry high risk.";
-                panel.style.borderLeftColor = "#60a5fa"; disp.style.color = "#60a5fa";
+            // 1. ATH Case (0% or very near)
+            if (delta >= -0.5) {
+                cmd.innerText = "ATH (NO PLAY)";
+                cmd.className = "text-4xl font-black italic text-yellow-500 glow-text";
+                note.innerText = "Price is currently at the session peak. Do not buy here. WAIT FOR THE DIP.";
+                panel.style.borderLeftColor = "#ffd700";
+                disp.style.color = "#ffd700";
+            }
+            // 2. RETRACEMENT (DROPPING)
+            else if (delta <= -71) {
+                cmd.innerText = "RUG / NO PLAY";
+                cmd.className = "text-4xl font-black italic text-red-600";
+                note.innerText = "-71% to -99% drop. This is a dead coin or rug. Do not touch.";
+                panel.style.borderLeftColor = "#dc2626";
+                disp.style.color = "#dc2626";
+            }
+            else if (delta <= -31) {
+                cmd.innerText = "FARM / EXITING";
+                cmd.className = "text-4xl font-black italic text-orange-600";
+                note.innerText = "-31% to -70% drop. Holders are farming the liquidity. Stay away.";
+                panel.style.borderLeftColor = "#ea580c";
+                disp.style.color = "#ea580c";
+            }
+            else if (delta <= -1) {
+                cmd.innerText = "COULD PUMP";
+                cmd.className = "text-4xl font-black italic text-[#00ffa3]";
+                note.innerText = "-1% to -30% healthy dip. This is your entry window for a potential rebound.";
+                panel.style.borderLeftColor = "#00ffa3";
+                disp.style.color = "#00ffa3";
+            }
+            // 3. MOMENTUM (PUMPING BEYOND SESSION START)
+            else if (delta >= 71) {
+                cmd.innerText = "ATH SOON / WAIT";
+                cmd.className = "text-4xl font-black italic text-yellow-500";
+                note.innerText = "Massive momentum. Approaching major ATH. Wait for the -30% dip to enter.";
+                panel.style.borderLeftColor = "#ffd700";
+                disp.style.color = "#ffd700";
+            }
+            else if (delta >= 31) {
+                cmd.innerText = "DONT PLAY";
+                cmd.className = "text-4xl font-black italic text-red-400";
+                note.innerText = "Pumping +31% to +70%. Chasing here is a FOMO trap. Wait.";
+                panel.style.borderLeftColor = "#f87171";
+                disp.style.color = "#f87171";
+            }
+            else if (delta >= 1) {
+                cmd.innerText = "FOMO KICKING";
+                cmd.className = "text-4xl font-black italic text-blue-400";
+                note.innerText = "Momentum building. +1% to +30% climb. High risk entry.";
+                panel.style.borderLeftColor = "#60a5fa";
+                disp.style.color = "#60a5fa";
             }
         }
     </script>
