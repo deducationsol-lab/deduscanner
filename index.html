@@ -2,195 +2,213 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | FINAL PATCH V36</title>
+    <title>DEDU | PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --bg: #020105; }
-        body { background-color: var(--bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
-        .decision-panel { border-left: 20px solid #1e1b4b; transition: all 0.5s ease; }
-        .stat-val { font-weight: 900; color: var(--neon); text-shadow: 0 0 10px rgba(0, 255, 163, 0.4); }
+        :root { --neon: #00ffa3; --bg: #050505; --panel: #0a0a0a; }
+        body { background-color: var(--bg); color: #e5e5e5; font-family: 'Space+Mono', monospace; }
+        .terminal-box { border: 1px solid #333; background: var(--panel); position: relative; }
+        .glitch-text { text-shadow: 2px 0 #fff, -2px 0 #00ffa3; }
+        .btn-scan { background: var(--neon); color: black; font-weight: 900; text-transform: uppercase; transition: all 0.2s; }
+        .btn-scan:hover { background: white; box-shadow: 0 0 15px var(--neon); }
+        .audit-link { border: 1px solid #333; color: #888; padding: 8px; text-align: center; font-size: 10px; text-transform: uppercase; transition: 0.2s; cursor: pointer; display: block; text-decoration: none; }
+        .audit-link:hover { border-color: var(--neon); color: var(--neon); background: #00ffa311; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl shadow-[0_0_20px_#00ffa344]">D</div>
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3] bg-black">D</div>
             <div>
-                <h1 class="text-xl font-black italic uppercase">DEDU_FINAL_V36</h1>
-                <p class="text-[8px] text-blue-500 tracking-[0.4em]">FIXED_ATH_RECOVERY_&_DEPLOYER_TRACKER</p>
+                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU PROTOCOL</h1>
+                <p class="text-[9px] text-gray-500 tracking-[0.3em]">MULTI TIMEFRAME PEAK ANALYSIS</p>
             </div>
         </div>
-        <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Audit Now</button>
+        <div class="flex w-full md:w-auto gap-2">
+            <input id="tokenAddr" type="text" placeholder="ENTER TOKEN ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
+            <button onclick="ignite()" class="btn-scan px-6 py-3 text-xs italic">RUN SCAN</button>
         </div>
     </div>
 
-    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div class="lg:col-span-3 space-y-6">
-            
-            <div id="decisionPanel" class="terminal-border p-10 decision-panel">
-                <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
-                    <div>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// GLOBAL_ATH_DELTA (RECOVERED)</p>
-                        <div id="deltaDisplay" class="text-7xl font-black italic tracking-tighter">0.00%</div>
-                        <div class="mt-4 flex gap-6 text-[10px] font-bold">
-                            <span class="text-yellow-500 uppercase">24H PEAK: <span id="athMcap">--</span></span>
-                            <span class="text-white uppercase">CURRENT: <span id="liveMcap">--</span></span>
-                        </div>
-                    </div>
-                    <div class="text-center md:text-right">
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// COMMAND</p>
-                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">SCANNING</div>
-                        <p id="cmdNote" class="text-xs text-gray-400 italic">Syncing historical blockchain highs...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="terminal-border overflow-hidden h-[500px] bg-black">
-                <iframe id="market-chart" class="w-full h-full" src=""></iframe>
-            </div>
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-8 h-[600px] terminal-box border-t-4 border-t-[#00ffa3]">
+            <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
         </div>
 
-        <div class="space-y-6">
-            <div id="auditCard" class="terminal-border p-6 border-t-2 border-t-purple-600">
-                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_INTEL_V2</p>
-                <div class="space-y-4">
-                    <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span>LAUNCHED</span><span id="lCount" class="stat-val italic">--</span>
+        <div class="lg:col-span-4 space-y-4">
+            
+            <div id="athPanel" class="terminal-box p-6 border-l-8 border-l-gray-700 transition-colors duration-500">
+                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// GLOBAL_PEAK_DELTA</p>
+                <div id="deltaDisplay" class="text-6xl font-black italic tracking-tighter text-white mb-2">0.00%</div>
+                
+                <div class="grid grid-cols-2 gap-4 text-[10px] uppercase font-bold text-gray-400 border-t border-gray-800 pt-4">
+                    <div>
+                        <span class="block text-gray-600">TRUE PEAK (ATH)</span>
+                        <span id="athMcap" class="text-[#00ffa3] text-lg">--</span>
                     </div>
-                    <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span class="text-blue-400 font-bold">BONDED</span><span id="bCount" class="stat-val italic text-blue-400">--</span>
-                    </div>
-                    <div class="pt-2 text-center">
-                        <p class="text-[9px] text-gray-600 mb-1 italic">ON-CHAIN REP</p>
-                        <div id="devTag" class="text-xs font-black italic uppercase">FETCHING...</div>
+                    <div>
+                        <span class="block text-gray-600">LIVE MCAP</span>
+                        <span id="liveMcap" class="text-white text-lg">--</span>
                     </div>
                 </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-800">
+                    <div id="cmdLabel" class="text-2xl font-black italic uppercase text-white">INITIALIZING</div>
+                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Comparing 1h, 6h, and 24h peaks...</p>
+                </div>
             </div>
+
+            <div class="terminal-box p-6">
+                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-4">// DEPLOYER_DEEP_SEARCH</p>
+                <p class="text-[10px] text-gray-600 mb-4 italic">
+                    ⚠ AUTOMATED HISTORY API IS RESTRICTED.<br>
+                    USE THESE DIRECT LINKS TO CHECK DEV HISTORY:
+                </p>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <a id="linkGmgn" target="_blank" class="audit-link">GMGN.AI CHECK</a>
+                    <a id="linkBullx" target="_blank" class="audit-link">BULLX NEO</a>
+                    <a id="linkSolscan" target="_blank" class="audit-link">SOLSCAN ACCT</a>
+                    <a id="linkRugcheck" target="_blank" class="audit-link">RUGCHECK.XYZ</a>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-800 flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-gray-500">LIQUIDITY STATUS</span>
+                    <span id="liqStatus" class="text-xs font-black text-white italic">SCANNING...</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        let trueATH = 0;
+        let globalPeak = 0;
 
-        function formatM(val) {
-            if (val >= 1000000) return (val / 1000000).toFixed(2) + "M";
-            if (val >= 1000) return (val / 1000).toFixed(1) + "K";
-            return val.toFixed(0);
+        function formatVal(v) {
+            if (v >= 1000000) return (v / 1000000).toFixed(2) + "M";
+            if (v >= 1000) return (v / 1000).toFixed(1) + "K";
+            return v.toFixed(0);
         }
 
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
+
+            // UI Setup
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
-            
-            trueATH = 0;
-            updateLoop(mint);
-            setInterval(() => updateLoop(mint), 4000);
-            runHardenedAudit(mint);
+
+            // Setup External Links
+            document.getElementById('linkGmgn').href = `https://gmgn.ai/sol/token/${mint}`;
+            document.getElementById('linkBullx').href = `https://bullx.io/terminal?chainId=1399811149&address=${mint}`;
+            document.getElementById('linkSolscan').href = `https://solscan.io/token/${mint}`;
+            document.getElementById('linkRugcheck').href = `https://rugcheck.xyz/tokens/${mint}`;
+
+            // Start Analysis Loop
+            globalPeak = 0;
+            analyze(mint);
+            setInterval(() => analyze(mint), 3000);
         }
 
-        async function updateLoop(mint) {
+        async function analyze(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
                 const liveMcap = pair.fdv;
+                
+                // --- MULTI-TIMEFRAME PEAK RECOVERY ---
+                // We calculate what the price WAS based on the change percentage for h1, h6, and h24.
+                // Formula: OriginalPrice = CurrentPrice / (1 + (Change% / 100))
+                
+                const changes = pair.priceChange;
+                
+                // 1. Calculate Implied Highs
+                const impliedH1 = changes.h1 ? liveMcap / (1 + (changes.h1 / 100)) : 0;
+                const impliedH6 = changes.h6 ? liveMcap / (1 + (changes.h6 / 100)) : 0;
+                const impliedH24 = changes.h24 ? liveMcap / (1 + (changes.h24 / 100)) : 0;
+                
+                // 2. Find the Absolute Maximum among implied highs and current live price
+                // We assume the peak is at least the highest of these reconstructed values
+                let calculatedPeak = Math.max(liveMcap, impliedH1, impliedH6, impliedH24);
 
-                // FIX: Recover ATH from 24h Change Metadata
-                const h24Change = pair.priceChange.h24 || 0;
-                let calculatedHigh = liveMcap;
-                if (h24Change < 0) {
-                    calculatedHigh = liveMcap / (1 + (h24Change / 100));
-                }
+                // 3. Persistent Storage (Never let ATH drop during session)
+                if (calculatedPeak > globalPeak) globalPeak = calculatedPeak;
 
-                // Never let the ATH drop during session
-                if (calculatedHigh > trueATH) trueATH = calculatedHigh;
-                if (liveMcap > trueATH) trueATH = liveMcap;
+                // --- UPDATE UI ---
+                document.getElementById('athMcap').innerText = "$" + formatVal(globalPeak);
+                document.getElementById('liveMcap').innerText = "$" + formatVal(liveMcap);
 
-                document.getElementById('athMcap').innerText = "$" + formatM(trueATH);
-                document.getElementById('liveMcap').innerText = "$" + formatM(liveMcap);
-
-                const delta = (((liveMcap - trueATH) / trueATH) * 100);
+                // Calculate Delta from the RECONSTRUCTED Global Peak
+                const delta = ((liveMcap - globalPeak) / globalPeak) * 100;
+                
                 document.getElementById('deltaDisplay').innerText = delta.toFixed(2) + "%";
+                
+                updateDecisionMatrix(delta);
+                updateLiquidityStatus(pair);
 
-                applyMatrix(delta);
-            } catch (e) {}
+            } catch (e) { console.error("Stream Error", e); }
         }
 
-        function applyMatrix(delta) {
+        function updateDecisionMatrix(delta) {
+            const panel = document.getElementById('athPanel');
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
-            const panel = document.getElementById('decisionPanel');
             const disp = document.getElementById('deltaDisplay');
 
-            if (delta >= -0.7) {
-                cmd.innerText = "ATH (WAIT)"; cmd.className = "text-4xl font-black italic text-yellow-500";
-                note.innerText = "Global Peak. Wait for the -30% entry zone.";
-                panel.style.borderLeftColor = "#ffd700"; disp.style.color = "#ffd700";
+            // EXACT TRADING ZONES
+            if (delta >= -5) {
+                // Near ATH (0% to -5%)
+                panel.style.borderLeftColor = "#fbbf24"; // Yellow
+                disp.style.color = "#fbbf24";
+                cmd.innerText = "WAIT / ATH";
+                cmd.className = "text-2xl font-black italic text-yellow-500";
+                note.innerText = "Price is at peak. Do not buy.";
+            } 
+            else if (delta <= -80) {
+                // Dead Zone (-80% to -99%)
+                panel.style.borderLeftColor = "#ef4444"; // Red
+                disp.style.color = "#ef4444";
+                cmd.innerText = "RUGGED / DEAD";
+                cmd.className = "text-2xl font-black italic text-red-500";
+                note.innerText = "Loss > 80%. High probability of abandonment.";
             }
-            else if (delta >= 1) { // CLIMBING Logic
-                if (delta <= 30) {
-                    cmd.innerText = "FOMO KICKING"; cmd.className = "text-4xl font-black italic text-blue-400";
-                    note.innerText = "Trend starting (+1% to +30%). Risky entry.";
-                } else if (delta <= 69) {
-                    cmd.innerText = "WILL FARM SOON"; cmd.className = "text-4xl font-black italic text-orange-500";
-                    note.innerText = "Upward pump (+31% to +69%). Expect distribution.";
-                } else {
-                    cmd.innerText = "DONT BUY"; cmd.className = "text-4xl font-black italic text-red-500";
-                    note.innerText = "Limit reached (+70%+). High dump risk.";
-                }
+            else if (delta <= -30 && delta >= -60) {
+                // Goldilocks Zone (-30% to -60%)
+                panel.style.borderLeftColor = "#00ffa3"; // Green
+                disp.style.color = "#00ffa3";
+                cmd.innerText = "ENTRY ZONE";
+                cmd.className = "text-2xl font-black italic text-[#00ffa3]";
+                note.innerText = "Optimal dip retracement. Check Liquidity.";
             }
-            else { // DIPPING Logic
-                if (delta >= -30) {
-                    cmd.innerText = "CONSIDER BUYING"; cmd.className = "text-4xl font-black italic text-[#00ffa3]";
-                    note.innerText = "Healthy dip (-1% to -30%). Primary Entry Zone.";
-                    panel.style.borderLeftColor = "#00ffa3"; disp.style.color = "#00ffa3";
-                } else if (delta >= -69) {
-                    cmd.innerText = "HIGH RISK BUY"; cmd.className = "text-4xl font-black italic text-orange-400";
-                    note.innerText = "Deep dip (-31% to -69%). High risk of farming.";
-                    panel.style.borderLeftColor = "#fb923c"; disp.style.color = "#fb923c";
-                } else {
-                    cmd.innerText = "RUG / NO PLAY"; cmd.className = "text-4xl font-black italic text-red-600";
-                    note.innerText = "90%+ MCAP loss. Most likely a dead project.";
-                    panel.style.borderLeftColor = "#dc2626"; disp.style.color = "#dc2626";
-                }
+            else {
+                // No Man's Land
+                panel.style.borderLeftColor = "#6b7280"; // Gray
+                disp.style.color = "#9ca3af";
+                cmd.innerText = "OBSERVE";
+                cmd.className = "text-2xl font-black italic text-gray-400";
+                note.innerText = "Price is moving. Wait for signal.";
             }
         }
 
-        async function runHardenedAudit(mint) {
-            const tag = document.getElementById('devTag');
-            tag.innerText = "PROBING...";
-            try {
-                // Step 1: Get Creator Wallet from Token Metadata
-                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-                const creator = tRes.creator?.address;
-                if(!creator) { tag.innerText = "PRIVATE_DEV"; return; }
+        function updateLiquidityStatus(pair) {
+            const el = document.getElementById('liqStatus');
+            const isRaydium = pair.dexId === 'raydium';
+            const isPump = pair.dexId === 'pump'; // pump.fun usually labeled 'pump' or custom
 
-                // Step 2: Fetch full creator history
-                const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-                const launched = hRes.length;
-                
-                // Count Bonded as tokens that reached Raydium or have substantial liquidity
-                const bonded = hRes.filter(t => t.graduated || (t.liquidity && t.liquidity.usd > 55000)).length;
-
-                document.getElementById('lCount').innerText = launched;
-                document.getElementById('bCount').innerText = bonded;
-
-                const ratio = (bonded / launched) * 100;
-                if (launched > 0 && bonded === 0) {
-                    tag.innerText = "FAGGOT DEV"; tag.className = "text-xs font-black italic text-pink-500";
-                } else if (ratio >= 50) {
-                    tag.innerText = "GOOD DEV"; tag.className = "text-xs font-black italic text-[#00ffa3]";
-                } else {
-                    tag.innerText = "FARMER DEV"; tag.className = "text-xs font-black italic text-orange-500";
-                }
-            } catch (e) { tag.innerText = "INDEXER_OFFLINE"; }
+            if (isRaydium) {
+                el.innerText = "GRADUATED (RAYDIUM)";
+                el.className = "text-xs font-black italic text-[#00ffa3]";
+            } else if (pair.labels && pair.labels.includes("pump")) {
+                el.innerText = "BONDING CURVE (PUMP)";
+                el.className = "text-xs font-black italic text-orange-500";
+            } else {
+                el.innerText = pair.dexId.toUpperCase();
+                el.className = "text-xs font-black italic text-blue-500";
+            }
         }
     </script>
 </body>
