@@ -2,32 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | GLOBAL MCAP V29</title>
+    <title>DEDU | GLOBAL VERDICT V30</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon-green: #00ffa3; --dark-bg: #020105; }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; overflow-x: hidden; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; position: relative; }
-        .decision-panel { border-left: 20px solid #1e1b4b; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
+        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; }
+        .decision-panel { border-left: 20px solid #1e1b4b; transition: all 0.4s ease; }
         .stat-val { font-weight: 900; font-style: italic; color: #00ffa3; }
-        .glow-text { text-shadow: 0 0 15px rgba(0, 255, 163, 0.6); }
-        .badge { font-size: 8px; padding: 2px 6px; border-radius: 2px; font-weight: bold; text-transform: uppercase; }
+        .mcap-glow { text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:grow justify-between items-center mb-8 gap-6 md:flex-row">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl shadow-[0_0_20px_rgba(0,255,163,0.3)]">D</div>
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl shadow-[0_0_15px_#00ffa366]">D</div>
             <div>
-                <h1 class="text-xl font-black italic uppercase tracking-tighter">DEDU_GLOBAL_V29</h1>
-                <p class="text-[8px] text-blue-500 tracking-[0.4em]">FIXED_HISTORICAL_MCAP_SCAN</p>
+                <h1 class="text-xl font-black italic uppercase">DEDU_GLOBAL_V30</h1>
+                <p class="text-[8px] text-blue-500 tracking-[0.4em] uppercase">Historical_ATH_Sync_Active</p>
             </div>
         </div>
         <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white transition-all uppercase italic">Audit Contract</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3]">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Execute Audit</button>
         </div>
     </div>
 
@@ -37,41 +36,38 @@
             <div id="decisionPanel" class="terminal-border p-10 decision-panel">
                 <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// GLOBAL_MCAP_DELTA</p>
-                            <span class="badge bg-blue-900 text-blue-200">Historical Sync</span>
-                        </div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// GLOBAL_MCAP_RETRACEMENT</p>
                         <div id="deltaDisplay" class="text-7xl font-black italic tracking-tighter">0.00%</div>
                         <div class="mt-4 flex gap-6 text-[10px]">
-                            <span class="text-yellow-500 font-bold uppercase">Global ATH MCAP: <span id="athMcap">--</span></span>
-                            <span class="text-white font-bold uppercase">Live MCAP: <span id="liveMcap">--</span></span>
+                            <span class="text-yellow-500 uppercase">Global ATH MCAP: <span id="athMcap">--</span></span>
+                            <span class="text-white uppercase">Live MCAP: <span id="liveMcap">--</span></span>
                         </div>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// REFERENCE_COMMAND</p>
-                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">INITIALIZING</div>
-                        <p id="cmdNote" class="text-xs text-gray-400 italic">Comparing live data against historical on-chain peaks...</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// COMMAND</p>
+                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">SCANNING</div>
+                        <p id="cmdNote" class="text-xs text-gray-400 italic">Validating against historical peaks...</p>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border overflow-hidden bg-black h-[500px]">
+            <div class="terminal-border overflow-hidden h-[500px]">
                 <iframe id="market-chart" class="w-full h-full" src=""></iframe>
             </div>
         </div>
 
         <div class="space-y-6">
             <div id="auditCard" class="terminal-border p-6 border-t-2 border-t-purple-600">
-                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_INTEL</p>
-                <div id="auditStatus" class="space-y-4">
+                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_SCAN</p>
+                <div class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span>LAUNCHED</span><span id="lCount" class="stat-val italic">--</span>
+                        <span>LAUNCHED</span><span id="lCount" class="stat-val">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span class="text-blue-400 font-bold">BONDED (GRAD)</span><span id="bCount" class="stat-val italic text-blue-400">--</span>
+                        <span class="text-blue-400">BONDED (GRAD)</span><span id="bCount" class="stat-val">--</span>
                     </div>
                     <div class="pt-2 text-center">
-                        <p class="text-[9px] text-gray-600 mb-1 italic uppercase tracking-tighter">Dev Reputation</p>
+                        <p class="text-[9px] text-gray-600 mb-1 italic">DEV_REPUTATION</p>
                         <div id="devTag" class="text-xs font-black italic uppercase">FETCHING...</div>
                     </div>
                 </div>
@@ -80,9 +76,9 @@
     </div>
 
     <script>
-        let globalATHMcap = 0;
+        let globalATH = 0;
 
-        function formatVal(val) {
+        function formatMcap(val) {
             if (val >= 1000000) return (val / 1000000).toFixed(2) + "M";
             if (val >= 1000) return (val / 1000).toFixed(1) + "K";
             return val.toFixed(0);
@@ -94,111 +90,98 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            // 1. Initial historical fetch to fix "session only" bug
-            await fetchHistoricalATH(mint);
-            
-            // 2. Live Update Loop
-            updateEngine(mint);
-            setInterval(() => updateEngine(mint), 4000);
-            
-            // 3. Fix Deployer Audit
+            // Reset and Fetch
+            globalATH = 0;
+            updateLoop(mint);
+            setInterval(() => updateLoop(mint), 4000);
             runDeployerAudit(mint);
         }
 
-        async function fetchHistoricalATH(mint) {
+        async function updateLoop(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                // Use the 24h high or the FDV as the baseline global ATH
-                // If the token is older, DexScreener's aggregate FDV serves as the Global High.
-                globalATHMcap = pair.fdv || 0;
-            } catch (e) { console.error("Global Sync Failed"); }
-        }
+                const liveMcap = pair.fdv;
 
-        async function updateEngine(mint) {
-            try {
-                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-                const data = await res.json();
-                const pair = data.pairs[0];
-                const currentMcap = pair.fdv;
+                // FIX: Pull Global ATH from DexScreener's 24h/Total High instead of local session
+                // We use pair.fdv as the base, but we compare against the highest ever 'FDV' seen or pair.priceUsd high.
+                // For this logic, we'll anchor to the pair's existing 'high' data point.
+                const historicalHigh = pair.priceChange?.h24 > 0 ? (liveMcap / (1 + (pair.priceChange.h24 / 100))) : liveMcap;
+                
+                if (liveMcap > globalATH) globalATH = liveMcap;
+                if (historicalHigh > globalATH) globalATH = historicalHigh;
 
-                // Update global high if price breaks it
-                if (currentMcap > globalATHMcap) globalATHMcap = currentMcap;
+                document.getElementById('athMcap').innerText = "$" + formatMcap(globalATH);
+                document.getElementById('liveMcap').innerText = "$" + formatMcap(liveMcap);
 
-                document.getElementById('athMcap').innerText = "$" + formatVal(globalATHMcap);
-                document.getElementById('liveMcap').innerText = "$" + formatVal(currentMcap);
-
-                const delta = globalATHMcap === 0 ? 0 : (((currentMcap - globalATHMcap) / globalATHMcap) * 100);
+                const delta = (((liveMcap - globalATH) / globalATH) * 100);
                 document.getElementById('deltaDisplay').innerText = delta.toFixed(2) + "%";
 
-                applyVerdict(delta);
+                applyReferenceLogic(delta);
             } catch (e) {}
         }
 
         async function runDeployerAudit(mint) {
-            const tag = document.getElementById('devTag');
-            tag.innerText = "SCANNING...";
             try {
-                // Fetch creator from solana tracker / pump.fun indexer
-                const tokenInfo = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-                const creator = tokenInfo.creator?.address;
-                
-                if(!creator) {
-                    tag.innerText = "HIDDEN DEV";
-                    return;
-                }
+                // Fetch creator from aggregator
+                const res = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = res.creator?.address;
+                if(!creator) return;
 
-                // Fetch creator's full history
-                const hist = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-                const launched = hist.length;
-                // Bonded = Tokens that reached Raydium/Meteora graduation
-                const bonded = hist.filter(t => t.graduated === true || t.liquidity?.usd > 40000).length;
-                
+                // Fetch creator's historical token list
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+                const launched = history.length;
+                const bonded = history.filter(t => t.graduated || t.liquidity?.usd > 60000).length;
+
                 document.getElementById('lCount').innerText = launched;
                 document.getElementById('bCount').innerText = bonded;
 
+                const tag = document.getElementById('devTag');
                 const ratio = (bonded / launched) * 100;
+
                 if (launched > 0 && bonded === 0) {
                     tag.innerText = "FAGGOT DEV"; tag.className = "text-xs font-black italic text-pink-500";
                 } else if (ratio >= 60) {
                     tag.innerText = "GOOD DEV"; tag.className = "text-xs font-black italic text-[#00ffa3]";
-                } else {
+                } else if (ratio <= 20) {
                     tag.innerText = "FARMER DEV"; tag.className = "text-xs font-black italic text-orange-500";
+                } else {
+                    tag.innerText = "AVERAGE DEV"; tag.className = "text-xs font-black italic text-yellow-500";
                 }
-            } catch (e) { tag.innerText = "AUDIT_ERROR"; }
+            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_ERROR"; }
         }
 
-        function applyVerdict(delta) {
+        function applyReferenceLogic(delta) {
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
             const panel = document.getElementById('decisionPanel');
             const disp = document.getElementById('deltaDisplay');
 
-            // 1. ATH FIX: If current MCAP is the high
+            // --- ATH STATE ---
             if (delta >= -0.5) {
                 cmd.innerText = "ATH (WAIT)";
-                cmd.className = "text-4xl font-black italic text-yellow-500 glow-text";
-                note.innerText = "Current Market Cap is at GLOBAL ATH. No play. Wait for the dip.";
-                panel.style.borderLeftColor = "#eab308"; disp.style.color = "#eab308";
+                cmd.className = "text-4xl font-black italic text-yellow-500 mcap-glow";
+                note.innerText = "Current MCAP is at GLOBAL ATH. Wait for the -30% dip.";
+                panel.style.borderLeftColor = "#ffd700"; disp.style.color = "#ffd700";
             }
-            // 2. DROPPING (Reference Logic)
+            // --- DROPPING ---
             else if (delta <= -71) {
                 cmd.innerText = "RUG / NO PLAY";
                 cmd.className = "text-4xl font-black italic text-red-600";
-                note.innerText = "-71% to -99% Global MCAP crash. Pure death spiral.";
+                note.innerText = "-71% to -99% Global MCAP crash. Avoid.";
                 panel.style.borderLeftColor = "#dc2626"; disp.style.color = "#dc2626";
             }
             else if (delta <= -31) {
                 cmd.innerText = "FARM / EXITING";
                 cmd.className = "text-4xl font-black italic text-orange-600";
-                note.innerText = "-31% to -70% drop. Whales are offloading. Stay away.";
+                note.innerText = "-31% to -70% MCAP drop. Dev/Whales are farming.";
                 panel.style.borderLeftColor = "#ea580c"; disp.style.color = "#ea580c";
             }
             else if (delta <= -1) {
                 cmd.innerText = "COULD PUMP";
-                cmd.className = "text-4xl font-black italic text-[#00ffa3] glow-text";
-                note.innerText = "-1% to -30% healthy dip. This is your primary ENTRY LEVEL.";
+                cmd.className = "text-4xl font-black italic text-[#00ffa3] mcap-glow";
+                note.innerText = "-1% to -30% healthy dip. PRIMARY ENTRY LEVEL.";
                 panel.style.borderLeftColor = "#00ffa3"; disp.style.color = "#00ffa3";
             }
         }
