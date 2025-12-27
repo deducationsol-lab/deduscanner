@@ -6,60 +6,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; --logic-blue: #3b82f6; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; }
-        .progress-bar-15m { height: 4px; background: var(--logic-blue); transition: width 1s linear; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        iframe { width: 100%; height: 500px; border: none; border-radius: 8px; }
-        .glow-text { text-shadow: 0 0 15px rgba(0, 255, 163, 0.4); }
+        .progress-bar-15m { height: 4px; background: #3b82f6; transition: width 1s linear; }
+        iframe { width: 100%; height: 500px; border: none; }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
         <div class="flex items-center gap-5">
-            <div class="w-16 h-16 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-3xl shadow-[0_0_20px_rgba(0,255,163,0.2)]">D</div>
-            <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase text-white">DEDU_DEFI_PROTOCOL</h1>
-                <p class="text-blue-500 text-[10px] uppercase tracking-[0.5em] flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                    </span>
-                    CANDLE ALIGMENT ACTIVE
-                </p>
-            </div>
+            <div class="w-16 h-16 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-3xl">D</div>
+            <h1 class="text-3xl font-black italic tracking-tighter uppercase text-white">DEDU_DEFI_PROTOCOL</h1>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="ENTER MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs flex-1 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3] transition-all">
-            <button onclick="start15mProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic tracking-widest">Connect Feed</button>
+            <input id="tokenAddr" type="text" placeholder="ENTER MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs flex-1 md:w-96 outline-none text-[#00ffa3]">
+            <button onclick="start15mProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Connect Feed</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
         <div class="lg:col-span-3 space-y-6">
             <div class="terminal-border rounded-xl overflow-hidden shadow-2xl">
                 <div class="flex justify-between items-center bg-[#0d0d1a] p-3 px-6 border-b border-blue-900/30">
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Protocol Visualizer (15M)</span>
-                    <span id="timerTxt" class="text-[10px] text-gray-400 font-mono">CYCLE: 900s</span>
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">15M Logic Aligner</span>
+                    <span id="timerTxt" class="text-[10px] text-gray-400 font-mono">SYNCING...</span>
                 </div>
                 <div id="candleProgress" class="progress-bar-15m" style="width: 100%"></div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
 
             <div class="terminal-border p-10 rounded-xl bg-gradient-to-br from-[#0a0a1f] to-black border-l-4 border-l-[#00ffa3]">
-                <h3 class="text-gray-500 text-[11px] font-bold mb-6 uppercase tracking-[0.4em]">// LOGIC REFERENCE SYSTEM</h3>
                 <div class="flex flex-col lg:flex-row items-center gap-12">
                     <div class="text-center lg:text-left">
-                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter text-white glow-text leading-none">0.00%</div>
-                        <p class="text-[10px] text-blue-400 mt-4 font-bold tracking-[0.2em]">RELATIVE CHANGE</p>
+                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter text-white leading-none">0.00%</div>
+                        <p class="text-[10px] text-blue-400 mt-4 font-bold tracking-[0.2em]">CANDLE_RELATIVE_CHANGE</p>
                     </div>
                     <div class="flex-1 space-y-4">
-                        <div id="logicLabel" class="text-2xl font-black uppercase text-gray-600 tracking-tighter italic">Initializing Oracle...</div>
-                        <p id="logicSub" class="text-sm text-gray-400 italic leading-relaxed">
-                            The protocol is establishing a baseline price from candle opening. 
-                        </p>
+                        <div id="logicLabel" class="text-2xl font-black uppercase text-gray-600 tracking-tighter italic">Initializing...</div>
+                        <p id="logicSub" class="text-sm text-gray-400 italic leading-relaxed">Awaiting live price confirmation from the Solana cluster.</p>
                         <div class="pt-6 flex gap-6 border-t border-gray-900">
                             <span class="text-red-500 text-[10px] font-black underline italic">DYOR</span>
                             <span class="text-red-500 text-[10px] font-black underline italic">NFA</span>
@@ -68,31 +54,10 @@
                 </div>
             </div>
         </div>
-
-        <div class="space-y-6">
-            <div class="terminal-border p-6 rounded-xl">
-                <p class="text-[10px] text-gray-500 font-bold mb-5 uppercase tracking-widest border-b border-gray-800 pb-2">// 15M_SNAPSHOT</p>
-                <div class="space-y-6">
-                    <div>
-                        <p class="text-[10px] text-blue-400 uppercase mb-1">CANDLE OPEN (15m)</p>
-                        <div id="openPrice" class="text-xl font-bold font-mono text-gray-300">$0.00...</div>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-[#00ffa3] uppercase mb-1">LIVE TICK</p>
-                        <div id="currentPrice" class="text-xl font-bold font-mono text-white">$0.00...</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="alertBox" class="p-6 border-2 border-red-900/20 bg-red-950/5 rounded-xl text-[11px] font-bold text-red-500 text-center uppercase italic leading-tight animate-pulse">
-                Awaiting market volatility for threshold confirmation.
-            </div>
-        </div>
     </div>
 
     <script>
         let candleOpenPrice = null;
-        let secondsLeft = 900; // 15 Minutes
         let protocolTimer = null;
 
         async function start15mProtocol() {
@@ -100,25 +65,30 @@
             if(!mint) return;
 
             document.getElementById('ui').classList.remove('hidden');
-            // Improved DexScreener routing for 15m view
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
             if(protocolTimer) clearInterval(protocolTimer);
             candleOpenPrice = null;
-            secondsLeft = 900;
 
             runProtocolTick(mint);
-            protocolTimer = setInterval(() => runProtocolTick(mint), 2000); 
+            protocolTimer = setInterval(() => runProtocolTick(mint), 3000); 
         }
 
         async function runProtocolTick(mint) {
-            secondsLeft -= 2;
-            document.getElementById('timerTxt').innerText = `CYCLE: ${Math.round(secondsLeft)}s`;
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Calculate time left in 15m block
+            const nextReset = 15 - (minutes % 15);
+            const secondsLeft = (nextReset * 60) - seconds;
+            
+            document.getElementById('timerTxt').innerText = `NEXT RESET: ${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
             document.getElementById('candleProgress').style.width = `${(secondsLeft / 900) * 100}%`;
 
-            if (secondsLeft <= 0) {
-                candleOpenPrice = null; 
-                secondsLeft = 900;
+            // Reset baseline on the 15m mark
+            if (minutes % 15 === 0 && seconds < 5) {
+                candleOpenPrice = null;
             }
 
             try {
@@ -129,59 +99,43 @@
                     const price = parseFloat(data.pairs[0].priceUsd);
                     if (!candleOpenPrice) candleOpenPrice = price;
 
-                    document.getElementById('openPrice').innerText = "$" + candleOpenPrice.toFixed(8);
-                    document.getElementById('currentPrice').innerText = "$" + price.toFixed(8);
-
                     const delta = (((price - candleOpenPrice) / candleOpenPrice) * 100).toFixed(2);
                     applyDeduLogic(parseFloat(delta));
                 }
-            } catch(e) { 
-                console.error("DEDU Protocol: Connection Error"); 
-            }
+            } catch(e) { console.error("Sync Error"); }
         }
 
         function applyDeduLogic(pct) {
             const val = document.getElementById('logicPct');
             const tit = document.getElementById('logicLabel');
             const sub = document.getElementById('logicSub');
-            const alert = document.getElementById('alertBox');
 
             val.innerText = (pct >= 0 ? "+" : "") + pct + "%";
 
             if (pct >= 80) {
-                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3] glow-text leading-none";
+                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3]";
                 tit.innerText = "OVERBOUGHT: MIGHT FARM SOON";
-                sub.innerText = "Price is +80% above the 15m open. Momentum is overextended; expect developer or whale farming (take profits).";
-                alert.innerText = "CRITICAL: OVERBOUGHT TERRITORY";
+                sub.innerText = "Extreme momentum detected (+80%). Expect profit-taking or farming.";
             } else if (pct >= 30) {
-                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3] leading-none";
+                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3]";
                 tit.innerText = "FOMO SESSION ACTIVE";
-                sub.innerText = "15m trend confirmed at +30%. Fomo session is officially in progress.";
-                alert.innerText = "NOTICE: FOMO INITIATED";
+                sub.innerText = "15m trend confirmed. FOMO session is in progress.";
             } else if (pct <= -99) {
-                val.className = "text-9xl font-black italic tracking-tighter text-red-700 leading-none";
+                val.className = "text-9xl font-black italic tracking-tighter text-red-700";
                 tit.innerText = "ABANDON ALL HOPE";
-                sub.innerText = "Total value collapse (-99%). No recovery expected. Exit protocol immediately.";
-                alert.innerText = "TERMINATED: TOTAL LOSS";
+                sub.innerText = "Total value collapse. Protocol terminated.";
             } else if (pct <= -60) {
-                val.className = "text-9xl font-black italic tracking-tighter text-red-500 leading-none";
+                val.className = "text-9xl font-black italic tracking-tighter text-red-500";
                 tit.innerText = "RUG_SIGNAL: WAIT FOR CALLER";
-                sub.innerText = "Severe drop (-60%). Rugging detected; wait for another farmer/caller to confirm recovery play.";
-                alert.innerText = "WARNING: RUG_DETECTED - WAIT FOR CALL";
+                sub.innerText = "Severe drop (-60%). Wait for another farmer/caller to confirm recovery.";
             } else if (pct <= -30) {
-                val.className = "text-9xl font-black italic tracking-tighter text-yellow-500 leading-none";
+                val.className = "text-9xl font-black italic tracking-tighter text-yellow-500";
                 tit.innerText = "COULD PUMP: ACCUMULATION";
-                sub.innerText = "15m candle is -30% down. Rebound potential is high; look for accumulation buy signals.";
-                alert.innerText = "OPPORTUNITY: ACCUMULATION ZONE";
-            } else if (pct === 0) {
-                val.className = "text-9xl font-black italic tracking-tighter text-gray-700 leading-none";
-                tit.innerText = "NO ACTIVITY DETECTED";
-                sub.innerText = "Neutral flow. Stagnant price action relative to the 15m candle open.";
-                alert.innerText = "STATUS: STAGNANT_FLOW";
+                sub.innerText = "Price is -30% from open. Rebound potential is high.";
             } else {
-                val.className = "text-9xl font-black italic tracking-tighter text-white leading-none";
-                tit.innerText = "SYNCING_FLOW_ORACLE...";
-                alert.innerText = "MONITORING VOLATILITY...";
+                val.className = "text-9xl font-black italic tracking-tighter text-white";
+                tit.innerText = "MONITORING FLOW...";
+                sub.innerText = "Tracking fluctuations relative to the 15-minute candle open.";
             }
         }
     </script>
