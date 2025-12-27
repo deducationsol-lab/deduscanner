@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | DEFI PROTOCOL V1.6.3</title>
+    <title>DEDU | ATH COMMANDER V20</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -10,9 +10,9 @@
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
         .command-panel { border-left: 15px solid #1e1b4b; transition: all 0.3s ease; }
-        .timer-progress { height: 4px; background: #3b82f6; transition: width 1s linear; }
-        iframe { width: 100%; height: 500px; border: none; }
+        iframe { width: 100%; height: 600px; border: none; }
         .stat-label { font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em; }
+        .ath-glow { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -21,8 +21,8 @@
         <div class="flex items-center gap-5">
             <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU PROTOCOL V1.6.3</h1>
-                <p class="text-[9px] text-blue-500 tracking-[0.3em]">1M CLOSE THRESHOLD LOGIC</p>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_ATH_V20</h1>
+                <p class="text-[9px] text-yellow-500 tracking-[0.3em]">ATH_RELATIVE_DECISION_ENGINE</p>
             </div>
         </div>
         <div class="flex gap-2">
@@ -35,16 +35,15 @@
         <div class="lg:col-span-3 space-y-6">
             
             <div id="decisionPanel" class="terminal-border p-10 command-panel relative overflow-hidden">
-                <div id="timerBar" class="timer-progress absolute top-0 left-0" style="width: 0%"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <p class="stat-label">// DELTA_VS_1M_CLOSE</p>
+                        <p class="stat-label">// %_FROM_ATH</p>
                         <div id="deltaDisplay" class="text-8xl font-black italic tracking-tighter">0.00%</div>
                     </div>
                     <div class="text-center md:text-right">
                         <p class="stat-label">// TRADER_COMMAND</p>
-                        <div id="cmdLabel" class="text-5xl font-black italic uppercase leading-none mb-3">SYNCING</div>
-                        <p id="cmdNote" class="text-sm text-gray-400 italic max-w-sm ml-auto">Establishing reference from the last closed 1-minute candle.</p>
+                        <div id="cmdLabel" class="text-5xl font-black italic uppercase leading-none mb-3">SCANNING</div>
+                        <p id="cmdNote" class="text-sm text-gray-400 italic max-w-sm ml-auto">Calculating current price position relative to All-Time High.</p>
                     </div>
                 </div>
             </div>
@@ -54,7 +53,7 @@
 
         <div class="space-y-6">
             <div id="auditCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
-                <p class="stat-label mb-4 text-purple-400 font-bold">// DEPLOYER_REPUTATION</p>
+                <p class="stat-label mb-4 text-purple-400 font-bold">// DEPLOYER_AUDIT</p>
                 <div class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2">
                         <span class="text-xs">LAUNCHED</span>
@@ -65,21 +64,21 @@
                         <span id="bondCount" class="font-bold text-[#00ffa3]">--</span>
                     </div>
                     <div class="pt-2">
-                        <p class="stat-label mb-1">DEV_CLASSIFICATION</p>
-                        <div id="devTag" class="text-xs font-black italic uppercase text-gray-600 tracking-tighter">PENDING_DATA</div>
+                        <p class="stat-label mb-1">DEV_REPUTATION</p>
+                        <div id="devTag" class="text-xs font-black italic uppercase text-gray-600 tracking-tighter">WAITING...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border p-6 border-t-4 border-t-blue-900">
-                <p class="stat-label mb-4 text-blue-400 font-bold">// PRICE_SNAPSHOT</p>
+            <div class="terminal-border p-6 border-t-4 border-t-yellow-600">
+                <p class="stat-label mb-4 text-yellow-500 font-bold">// ATH_DATA</p>
                 <div class="space-y-4">
                     <div>
-                        <p class="stat-label">Last 1M Close</p>
-                        <div id="closeRef" class="text-xs font-mono text-gray-400">$0.00000000</div>
+                        <p class="stat-label">Session ATH</p>
+                        <div id="athRef" class="text-xs font-mono ath-glow">$0.00000000</div>
                     </div>
                     <div>
-                        <p class="stat-label">Live Tick</p>
+                        <p class="stat-label">Current Price</p>
                         <div id="liveTick" class="text-xs font-mono text-white">$0.00000000</div>
                     </div>
                 </div>
@@ -88,9 +87,7 @@
     </div>
 
     <script>
-        let lastClosedPrice = null;
-        let lastReset = Date.now();
-        const ONE_MIN_MS = 60000;
+        let sessionATH = 0;
 
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
@@ -98,46 +95,38 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            lastClosedPrice = null;
-            lastReset = Date.now();
+            sessionATH = 0;
             updateLoop(mint);
             setInterval(() => updateLoop(mint), 3000);
         }
 
         async function updateLoop(mint) {
-            const now = Date.now();
-            const elapsed = now - lastReset;
-            document.getElementById('timerBar').style.width = (elapsed / ONE_MIN_MS) * 100 + "%";
-
-            // At every 1 minute mark, update the closed price reference
-            if (elapsed >= ONE_MIN_MS || lastClosedPrice === null) {
-                await fetchSnapshot(mint);
-                lastReset = now;
-            }
-
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
-                const live = parseFloat(data.pairs[0].priceUsd);
+                const pair = data.pairs[0];
+                const live = parseFloat(pair.priceUsd);
+                
+                // Track Session ATH
+                if (live > sessionATH) {
+                    sessionATH = live;
+                    document.getElementById('athRef').innerText = "$" + sessionATH.toFixed(10);
+                }
+
                 document.getElementById('liveTick').innerText = "$" + live.toFixed(10);
 
-                const delta = (((live - lastClosedPrice) / lastClosedPrice) * 100).toFixed(2);
-                document.getElementById('deltaDisplay').innerText = (delta >= 0 ? "+" : "") + delta + "%";
+                // Percentage difference from ATH
+                const delta = (((live - sessionATH) / sessionATH) * 100).toFixed(2);
+                document.getElementById('deltaDisplay').innerText = delta + "%";
 
-                runCommanderLogic(parseFloat(delta));
-            } catch (e) {}
-        }
-
-        async function fetchSnapshot(mint) {
-            try {
-                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-                const data = await res.json();
-                lastClosedPrice = parseFloat(data.pairs[0].priceUsd);
-                document.getElementById('closeRef').innerText = "$" + lastClosedPrice.toFixed(10);
+                runAthLogic(parseFloat(delta));
                 
-                // One-time deployer scan on startup
-                runWalletAudit(data.pairs[0].baseToken.address);
-            } catch(e) {}
+                // Trigger wallet audit once
+                if (document.getElementById('launchCount').innerText === "--") {
+                    runWalletAudit(pair.baseToken.address);
+                }
+
+            } catch (e) {}
         }
 
         async function runWalletAudit(mint) {
@@ -164,13 +153,13 @@
                     tag.innerText = "FARMER DEV";
                     tag.className = "text-xs font-black italic text-red-500";
                 } else {
-                    tag.innerText = "AVERAGE DEV";
+                    tag.innerText = "MID-TIER DEV";
                     tag.className = "text-xs font-black italic text-yellow-500";
                 }
-            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_OFFLINE"; }
+            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_ERROR"; }
         }
 
-        function runCommanderLogic(delta) {
+        function runAthLogic(delta) {
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
             const panel = document.getElementById('decisionPanel');
@@ -179,31 +168,31 @@
             if (delta <= -60) {
                 cmd.innerText = "LIQUIDITY TRAP";
                 cmd.className = "text-5xl font-black italic text-red-600";
-                note.innerText = "HIGH RISK. Price is -60% from 1M close. This is likely a drain or rug in progress. Do not enter.";
+                note.innerText = "ABORT. Price crashed -60% from ATH. Likely a drain or distribution trap. Avoid entry.";
                 panel.style.borderLeftColor = "#dc2626";
                 disp.style.color = "#dc2626";
             } else if (delta <= -30) {
                 cmd.innerText = "ENTRY LEVEL";
                 cmd.className = "text-5xl font-black italic text-[#00ffa3]";
-                note.innerText = "DIP DETECTED. Price is -30% from 1M close. Consider this a prime entry for a rebound.";
+                note.innerText = "BUY OPPORTUNITY. Healthy retracement (-30% from ATH). Look for rebound to new highs.";
                 panel.style.borderLeftColor = "#00ffa3";
                 disp.style.color = "#00ffa3";
-            } else if (delta >= 70) {
+            } else if (delta >= -5 && delta < 0) {
                 cmd.innerText = "OVERBOUGHT";
                 cmd.className = "text-5xl font-black italic text-yellow-500";
-                note.innerText = "TOP DETECTED. +70% from 1M close. Holders will farm (sell) soon. Exit now or wait.";
+                note.innerText = "DANGER ZONE. Price is near ATH. Top holders will farm (sell) soon. High risk of local top.";
                 panel.style.borderLeftColor = "#eab308";
                 disp.style.color = "#eab308";
-            } else if (delta >= 30) {
-                cmd.innerText = "FOMO ENTRY";
+            } else if (delta === 0) {
+                cmd.innerText = "NEW ATH / FOMO";
                 cmd.className = "text-5xl font-black italic text-orange-500";
-                note.innerText = "HIGH RISK FOMO. Price is +30% above 1M close. Entry is dangerous; trend is over-extended.";
+                note.innerText = "EXTREME FOMO. Price is currently at All-Time High. Entry is extremely high risk.";
                 panel.style.borderLeftColor = "#f97316";
                 disp.style.color = "#f97316";
             } else {
-                cmd.innerText = "WATCHING";
+                cmd.innerText = "CONSOLIDATING";
                 cmd.className = "text-5xl font-black italic text-gray-700";
-                note.innerText = "Price stable relative to last 1-minute close. Waiting for threshold trigger.";
+                note.innerText = "Price is drifting between zones. Wait for -30% dip or breakout to 0%.";
                 panel.style.borderLeftColor = "#1e1b4b";
                 disp.style.color = "white";
             }
