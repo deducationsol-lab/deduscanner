@@ -2,221 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEDU | DEFI PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; overflow-x: hidden; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; position: relative; }
-        .logic-glow { text-shadow: 0 0 20px currentColor; }
-        .reset-bar { height: 4px; background: #3b82f6; transition: width 1s linear; box-shadow: 0 0 10px #3b82f6; }
-        iframe { width: 100%; height: 550px; border: none; filter: grayscale(0.2) contrast(1.1); }
-        input::placeholder { color: #1e1b4b; }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; --logic-blue: #3b82f6; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
+        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
+        .logic-card { transition: all 0.3s ease; }
+        iframe { width: 100%; height: 500px; border: none; }
+        .timer-progress { height: 4px; background: #3b82f6; transition: width 1s linear; box-shadow: 0 0 10px #3b82f6; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center mb-8 gap-6">
-        <div class="flex items-center gap-6">
-            <div class="w-16 h-16 border-4 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-4xl shadow-[0_0_20px_rgba(0,255,163,0.4)]">D</div>
-            <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none">DEDU_DEFI_PROTOCOL</h1>
-                <div class="flex items-center mt-2">
-                    <span class="status-dot bg-[#00ffa3] animate-pulse"></span>
-                    <p class="text-blue-500 text-[10px] uppercase tracking-[0.4em]">VOLATILITY ORACLE ACTIVE</p>
-                </div>
-            </div>
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+        <div class="flex items-center gap-5">
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_DEFI_PROTOCOL</h1>
         </div>
-        <div class="flex gap-2 w-full lg:w-auto">
-            <input id="tokenAddr" type="text" placeholder="ENTER SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/40 p-5 text-xs flex-1 lg:w-[450px] outline-none text-[#00ffa3] focus:border-[#00ffa3] font-bold tracking-widest">
-            <button onclick="igniteProtocol()" class="bg-[#00ffa3] text-black px-10 py-5 font-black text-xs hover:bg-white transition-all uppercase italic tracking-tighter">Sync Terminal</button>
+        <div class="flex gap-2">
+            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
+            <button onclick="igniteOracle()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Ignite Oracle</button>
         </div>
     </div>
 
-    <div id="dashboard" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3 space-y-6">
-            
-            <div id="logicPanel" class="terminal-border p-12 bg-gradient-to-br from-[#050510] to-black border-l-[12px] border-l-blue-900">
-                <div id="timerBar" class="reset-bar absolute top-0 left-0" style="width: 0%"></div>
-                
-                <div class="flex flex-col lg:flex-row justify-between items-center gap-10">
-                    <div class="text-center lg:text-left">
-                        <p class="text-[11px] text-gray-500 font-bold mb-2 tracking-[0.4em] uppercase">Relative Change (1m)</p>
-                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter leading-none text-white transition-all duration-500">0.00%</div>
+            <div id="logicPanel" class="terminal-border p-10 logic-card border-l-8 border-l-gray-800 relative">
+                <div id="timerBar" class="timer-progress absolute top-0 left-0" style="width: 0%"></div>
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-8">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-[0.3em]">// PRICE REFERENCE</p>
+                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter">0.00%</div>
                     </div>
-                    <div class="flex-1 text-center lg:text-right">
-                        <div id="logicTitle" class="text-4xl font-black uppercase italic mb-4 text-gray-600 leading-tight">INITIALIZING...</div>
-                        <p id="logicSub" class="text-sm text-gray-500 italic max-w-md ml-auto">Establishing a 60-second baseline. Volatility tracking will commence shortly.</p>
-                        <div class="mt-8 flex justify-center lg:justify-end gap-4">
-                            <span class="px-3 py-1 bg-red-900/20 text-red-500 text-[9px] font-bold border border-red-900/50 uppercase italic">Rug Protection: On</span>
-                            <span class="px-3 py-1 bg-blue-900/20 text-blue-400 text-[9px] font-bold border border-blue-900/50 uppercase italic">HOLDER_SCAN: ON</span>
-                        </div>
+                    <div class="text-center lg:text-right">
+                        <h2 id="logicTitle" class="text-3xl font-black uppercase italic mb-2 text-gray-400 tracking-tighter">WAITING FOR TICK</h2>
+                        <p id="logicSub" class="text-sm italic text-gray-500 max-w-sm ml-auto">Establishing 1-minute candle baseline. Syncing relative price action...</p>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border rounded-lg overflow-hidden border-blue-900/20">
-                <div class="bg-[#0a0a1a] p-3 flex justify-between items-center border-b border-blue-900/30">
-                    <span id="tokenTitle" class="text-[10px] text-blue-400 font-black uppercase tracking-widest italic">LOADING_TICKER...</span>
-                    <span id="fdvLive" class="text-[11px] text-white font-mono font-bold">$0.00 FDV</span>
-                </div>
+            <div class="terminal-border overflow-hidden">
                 <iframe id="market-chart" src=""></iframe>
             </div>
         </div>
 
         <div class="space-y-6">
-            
-            <div class="terminal-border p-6 border-t-4 border-t-blue-500">
-                <p class="text-[10px] text-blue-400 font-bold mb-6 uppercase tracking-widest">// ORACLE REF</p>
-                <div class="space-y-6">
-                    <div>
-                        <p class="text-[9px] text-gray-600 uppercase mb-1 font-bold">Base Entry (1m Ago)</p>
-                        <div id="basePrice" class="text-xl font-bold font-mono text-gray-400">$0.00000000</div>
+            <div id="deployerCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
+                <p class="text-[10px] text-purple-400 font-bold mb-6 uppercase tracking-widest">// DEPLOYER_SCAN</p>
+                <div class="space-y-5">
+                    <div class="flex justify-between border-b border-gray-900 pb-2">
+                        <span class="text-[10px] text-gray-500 font-bold">LAUNCHED</span>
+                        <span id="depLaunched" class="font-black text-white italic text-xl">0</span>
                     </div>
-                    <div>
-                        <p class="text-[9px] text-[#00ffa3] uppercase mb-1 font-bold">Current Live Price</p>
-                        <div id="currentPrice" class="text-xl font-bold font-mono text-white">$0.00000000</div>
+                    <div class="flex justify-between border-b border-gray-900 pb-2">
+                        <span class="text-[10px] text-[#00ffa3] font-bold">BONDED</span>
+                        <span id="depBonded" class="font-black text-[#00ffa3] italic text-xl">0</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="terminal-border p-6 border-t-4 border-t-purple-600">
-                <p class="text-[10px] text-purple-400 font-bold mb-6 uppercase tracking-widest">// DEPLOYER_INTEL</p>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] text-gray-500">TOTAL LAUNCHES</span>
-                        <span id="totalLaunch" class="font-black text-white italic">0</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] text-[#00ffa3]">BONDED_RATIO</span>
-                        <span id="bondedRatio" class="font-black text-[#00ffa3] italic">0</span>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-900">
-                        <div id="deployerTrust" class="text-[10px] font-black italic text-gray-600 text-center uppercase">Awaiting Scan...</div>
+                    <div class="pt-4 text-center">
+                        <p class="text-[9px] text-gray-500 mb-2 uppercase">DEPLOYER_STATUS</p>
+                        <div id="depStatus" class="text-sm font-black italic uppercase text-gray-600">PENDING_SCAN...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border p-6 border-t-4 border-t-orange-500">
-                <p class="text-[10px] text-orange-400 font-bold mb-4 uppercase tracking-widest">// WHALE_DISTRIBUTION</p>
-                <div id="whalePct" class="text-5xl font-black text-white italic">0.0%</div>
-                <p class="text-[9px] text-gray-500 mt-2 uppercase">Supply Held by Top 50</p>
+            <div class="terminal-border p-6">
+                <p class="text-[10px] text-blue-400 font-bold mb-2 uppercase tracking-widest">// 1M BASE PRICE</p>
+                <div id="basePriceDisp" class="text-sm font-mono text-gray-400">$0.000000...</div>
+            </div>
+
+            <div class="p-4 bg-red-950/20 border border-red-900/40 rounded italic text-[10px] text-red-500 font-bold text-center">
+                DEDU V11 PROTOCOL <br> FLOW MONITOR
             </div>
         </div>
     </div>
 
     <script>
-        let baseEntryPrice = null;
+        let base1mPrice = null;
         let lastResetTime = Date.now();
-        let rpcKey = "1a333300-f919-4d0e-ae4c-31b993844ba8"; // Public Key Placeholder
+        let protocolActive = false;
 
-        async function igniteProtocol() {
-            const mint = document.getElementById('tokenAddr').value.trim();
-            if(!mint) return;
-
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
-            
-            // Hard Reset
-            baseEntryPrice = null;
-            lastResetTime = Date.now();
-
-            runProtocolTick(mint);
-            setInterval(() => runProtocolTick(mint), 3000);
-        }
-
-        async function runProtocolTick(mint) {
-            const now = Date.now();
-            const elapsed = now - lastResetTime;
-            
-            // Update the 1m countdown bar
-            document.getElementById('timerBar').style.width = (elapsed / 60000) * 100 + "%";
-
-            // If 60 seconds passed, hard reset the baseline
-            if (elapsed >= 60000) {
-                baseEntryPrice = null;
-                lastResetTime = now;
-            }
-
-            try {
-                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-                const data = await res.json();
-                const pair = data.pairs[0];
-                const price = parseFloat(pair.priceUsd);
-
-                if (!baseEntryPrice) baseEntryPrice = price;
-
-                const delta = (((price - baseEntryPrice) / baseEntryPrice) * 100).toFixed(2);
+        async function igniteOracle() {
+            const mint =
                 
-                // UI Refresh
-                document.getElementById('tokenTitle').innerText = `${pair.baseToken.symbol} / ${pair.quoteToken.symbol}`;
-                document.getElementById('fdvLive').innerText = `$${pair.fdv.toLocaleString()} FDV`;
-                document.getElementById('basePrice').innerText = "$" + baseEntryPrice.toFixed(10);
-                document.getElementById('currentPrice').innerText = "$" + price.toFixed(10);
-                document.getElementById('logicPct').innerText = (delta >= 0 ? "+" : "") + delta + "%";
-
-                // Sidebar Intelligence Update (Whale Scan)
-                scanWhales(mint);
-                // Mock Deployer Data
-                document.getElementById('totalLaunch').innerText = Math.floor(Math.random() * 20);
-                document.getElementById('bondedRatio').innerText = Math.floor(Math.random() * 5);
-
-                applyDeduLogic(parseFloat(delta));
-
-            } catch (e) { console.log("Logic Offline"); }
-        }
-
-        async function scanWhales(mint) {
-            try {
-                const rpcRes = await fetch(`https://mainnet.helius-rpc.com/?api-key=${rpcKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTokenLargestAccounts", params: [mint] })
-                });
-                const rpcData = await rpcRes.json();
-                let top50Sum = 0;
-                rpcData.result.value.slice(0, 50).forEach(acc => top50Sum += acc.uiAmount);
-                document.getElementById('whalePct').innerText = ((top50Sum / 1000000000) * 100).toFixed(1) + "%";
-            } catch(e) {}
-        }
-
-        function applyDeduLogic(pct) {
-            const val = document.getElementById('logicPct');
-            const tit = document.getElementById('logicTitle');
-            const sub = document.getElementById('logicSub');
-            const panel = document.getElementById('logicPanel');
-
-            if (pct >= 70) {
-                val.className = "text-9xl font-black italic tracking-tighter leading-none text-yellow-500 logic-glow";
-                tit.innerText = "OVERBOUGHT: WAIT FOR DIP";
-                sub.innerText = "Extreme 1m volatility (+70%). High risk of local top. Do not chase green candles.";
-                panel.style.borderLeftColor = "#eab308";
-            } else if (pct >= 30) {
-                val.className = "text-9xl font-black italic tracking-tighter leading-none text-[#00ffa3] logic-glow";
-                tit.innerText = "FOMO IS KICKING IN, LET'S MOON";
-                sub.innerText = "Bullish momentum detected (+30%). Retail buyers are saturating the volume. Moon mission active.";
-                panel.style.borderLeftColor = "#00ffa3";
-            } else if (pct <= -70) {
-                val.className = "text-9xl font-black italic tracking-tighter leading-none text-red-600 logic-glow";
-                tit.innerText = "THIS ONE'S RUGGED, NEXT";
-                sub.innerText = "Liquidity pull or whale exit detected (-70%). Project terminated. Discard ticker.";
-                panel.style.borderLeftColor = "#dc2626";
-            } else if (pct <= -30) {
-                val.className = "text-9xl font-black italic tracking-tighter leading-none text-blue-400 logic-glow";
-                tit.innerText = "COULD PUMP: ACCUMULATION";
-                sub.innerText = "Healthy 1m pullback (-30%). Potential accumulation zone for a rebound play.";
-                panel.style.borderLeftColor = "#3b82f6";
-            } else {
-                val.className = "text-9xl font-black italic tracking-tighter leading-none text-white";
-                tit.innerText = "MONITORING_FLOW...";
-                sub.innerText = "Tracking trade activity relative to the 60-second baseline reset.";
-                panel.style.borderLeftColor = "#1e1b4b";
-            }
-        }
-    </script>
-</body>
-</html>
