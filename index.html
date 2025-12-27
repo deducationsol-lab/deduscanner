@@ -163,3 +163,83 @@
     </script>
 </body>
 </html>
+<div class="terminal-box p-6 border-l-4 border-l-blue-600 bg-blue-900/5">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase italic tracking-widest">Deployer_Score</p>
+                        <h4 id="devVerdict" class="text-lg font-black italic uppercase leading-tight">Scanning...</h4>
+                    </div>
+                    <div class="text-right">
+                        <p id="bRatio" class="text-xl font-black text-blue-400">0 / 0</p>
+                        <p class="text-[8px] text-gray-500 font-bold uppercase">Bonded Ratio</p>
+                    </div>
+                </div>
+                
+                <div id="devActivity" class="grid grid-cols-2 gap-2 mb-4 hidden">
+                    <div class="bg-black/40 p-2 border border-white/5">
+                        <p class="text-[8px] text-gray-600 uppercase">Total Tokens</p>
+                        <p id="totalTokens" class="text-sm font-bold">--</p>
+                    </div>
+                    <div class="bg-black/40 p-2 border border-white/5">
+                        <p class="text-[8px] text-gray-600 uppercase">Rug/Fail Count</p>
+                        <p id="failCount" class="text-sm font-bold text-red-500">--</p>
+                    </div>
+                </div>
+
+                <a id="solscanLink" target="_blank" class="block text-center p-2 border border-white/10 text-[9px] text-gray-400 hover:text-[#00ffa3] transition-all uppercase font-bold">
+                    View Creator Wallet History
+                </a>
+            </div>
+
+<script>
+    // ... [Previous ignite and updateLogic functions stay the same] ...
+
+    async function scanDeployer(mint) {
+        try {
+            // FIX: Direct fetch of token creator without relying on metadata blocks
+            const tData = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+            const creator = tData.creator?.address;
+            
+            if(!creator) {
+                document.getElementById('devVerdict').innerText = "ANONYMOUS DEV";
+                return;
+            }
+
+            document.getElementById('solscanLink').href = `https://solscan.io/account/${creator}`;
+            
+            // Fetch the full history of this creator's launches
+            const hData = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+            
+            const total = hData.length || 0;
+            // Define BONDED: Graduated status OR Liquidity > $20k
+            const bondedTokens = hData.filter(t => t.graduated || (t.liquidity?.usd > 20000));
+            const bondedCount = bondedTokens.length;
+            const rugCount = total - bondedCount;
+
+            // UI Update
+            document.getElementById('devActivity').classList.remove('hidden');
+            document.getElementById('bRatio').innerText = `${bondedCount} / ${total}`;
+            document.getElementById('totalTokens').innerText = total;
+            document.getElementById('failCount').innerText = rugCount;
+
+            const verdict = document.getElementById('devVerdict');
+            const ratio = (bondedCount / total) * 100;
+
+            if (total === 1 && bondedCount === 0) {
+                verdict.innerText = "FIRST LAUNCH";
+                verdict.className = "text-lg font-black italic uppercase text-yellow-500";
+            } else if (ratio >= 60) {
+                verdict.innerText = "ELITE DEVELOPER";
+                verdict.className = "text-lg font-black italic uppercase text-[#00ffa3]";
+            } else if (ratio >= 30) {
+                verdict.innerText = "PROFITABLE DEV";
+                verdict.className = "text-lg font-black italic uppercase text-blue-400";
+            } else {
+                verdict.innerText = "SERIAL RUGGER";
+                verdict.className = "text-lg font-black italic uppercase text-red-600";
+            }
+        } catch(e) {
+            console.error("Deployer Scan Failed", e);
+        }
+    }
+</script>
