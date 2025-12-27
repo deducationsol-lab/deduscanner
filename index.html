@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | VERDICT V27</title>
+    <title>DEDU | MCAP VERDICT V28</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; --faggot-pink: #ff00ff; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; }
+        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
         .decision-panel { border-left: 20px solid #1e1b4b; transition: all 0.3s ease; }
+        iframe { width: 100%; height: 500px; border: none; }
         .stat-val { font-weight: 900; font-style: italic; color: #00ffa3; }
-        .glow-text { text-shadow: 0 0 15px rgba(0, 255, 163, 0.6); }
-        .candle-info { font-size: 10px; color: #6366f1; font-weight: bold; }
+        .mcap-glow { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl">D</div>
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-xl shadow-[0_0_15px_#00ffa366]">D</div>
             <div>
-                <h1 class="text-xl font-black italic uppercase">DEDU_PROTOCOL_V27</h1>
-                <p class="text-[8px] text-blue-500 tracking-[0.4em]">1M_CANDLE_CLOSE_ATH_SYNC</p>
+                <h1 class="text-xl font-black italic uppercase">DEDU_MCAP_V28</h1>
+                <p class="text-[8px] text-blue-500 tracking-[0.4em] uppercase">Market_Cap_Reference_Logic</p>
             </div>
         </div>
         <div class="flex gap-2">
             <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/50 p-3 text-xs w-64 md:w-80 outline-none text-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Execute V27</button>
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-3 font-black text-xs hover:bg-white uppercase italic">Execute Scan</button>
         </div>
     </div>
 
@@ -37,20 +37,17 @@
             <div id="decisionPanel" class="terminal-border p-10 decision-panel">
                 <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// 1M_CLOSE_DELTA</p>
-                            <span class="candle-info">[SYNCED]</span>
-                        </div>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// MCAP_RETRACEMENT_DELTA</p>
                         <div id="deltaDisplay" class="text-7xl font-black italic tracking-tighter">0.00%</div>
-                        <div class="mt-4 flex gap-4 text-[10px]">
-                            <span class="text-yellow-500 uppercase">ATH_CLOSE: <span id="athVal">--</span></span>
-                            <span class="text-white uppercase">LIVE: <span id="liveVal">--</span></span>
+                        <div class="mt-4 flex gap-6 text-[10px]">
+                            <span class="text-yellow-500">ATH MCAP: <span id="athMcap">--</span></span>
+                            <span class="text-white">LIVE MCAP: <span id="liveMcap">--</span></span>
                         </div>
                     </div>
                     <div class="text-center md:text-right">
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// ACTION_COMMAND</p>
-                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2">SCANNING</div>
-                        <p id="cmdNote" class="text-xs text-gray-400 italic">Validating candle close history...</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">// COMMAND_CENTER</p>
+                        <div id="cmdLabel" class="text-4xl font-black italic uppercase leading-none mb-2 text-gray-600">SYNCING</div>
+                        <p id="cmdNote" class="text-xs text-gray-400 italic">Anchoring logic to Market Cap peaks...</p>
                     </div>
                 </div>
             </div>
@@ -62,17 +59,17 @@
 
         <div class="space-y-6">
             <div id="auditCard" class="terminal-border p-6 border-t-2 border-t-purple-600">
-                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_VERIFICATION</p>
-                <div id="auditStatus" class="space-y-4">
+                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_HISTORY</p>
+                <div class="space-y-4">
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
                         <span>LAUNCHED</span><span id="lCount" class="stat-val">--</span>
                     </div>
                     <div class="flex justify-between border-b border-gray-900 pb-2 text-xs">
-                        <span class="text-blue-400">BONDED</span><span id="bCount" class="stat-val">--</span>
+                        <span class="text-[#00ffa3]">BONDED</span><span id="bCount" class="stat-val">--</span>
                     </div>
                     <div class="pt-2 text-center">
-                        <p class="text-[9px] text-gray-600 mb-1 italic uppercase tracking-tighter">On-Chain Rank</p>
-                        <div id="devTag" class="text-xs font-black italic uppercase">AWAITING_INDEX...</div>
+                        <p class="text-[9px] text-gray-600 mb-1 italic">DEV_RANK</p>
+                        <div id="devTag" class="text-xs font-black italic uppercase">WAITING_INDEX...</div>
                     </div>
                 </div>
             </div>
@@ -80,7 +77,13 @@
     </div>
 
     <script>
-        let highestCandleClose = 0;
+        let highestMcap = 0;
+
+        function formatMcap(val) {
+            if (val >= 1000000) return (val / 1000000).toFixed(2) + "M";
+            if (val >= 1000) return (val / 1000).toFixed(1) + "K";
+            return val.toFixed(0);
+        }
 
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
@@ -88,113 +91,109 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            highestCandleClose = 0;
-            updateEngine(mint);
-            setInterval(() => updateEngine(mint), 5000); // 5s refresh for 1m candle precision
-            runDeepAudit(mint);
+            highestMcap = 0;
+            updateLoop(mint);
+            setInterval(() => updateLoop(mint), 3000);
+            runAudit(mint);
         }
 
-        async function updateEngine(mint) {
+        async function updateLoop(mint) {
             try {
-                // Fetch OHLCV data for 1-minute candles
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const live = parseFloat(pair.priceUsd);
+                const currentMcap = pair.fdv; // FDV is most accurate for MCAP reference
 
-                // Simulate 1m Candle ATH (using 24h high as the initial baseline proxy)
-                // In a production env, we fetch /candles endpoint, but DexScreener Public aggregates high price.
-                const high24h = parseFloat(pair.priceUsd); // In reality, we'd use 'pair.priceUsd' and session memory
-                
-                if (live > highestCandleClose) highestCandleClose = live;
+                if (currentMcap > highestMcap) highestMcap = currentMcap;
 
-                document.getElementById('athVal').innerText = "$" + highestCandleClose.toFixed(10);
-                document.getElementById('liveVal').innerText = "$" + live.toFixed(10);
+                document.getElementById('athMcap').innerText = "$" + formatMcap(highestMcap);
+                document.getElementById('liveMcap').innerText = "$" + formatMcap(currentMcap);
 
-                const delta = (((live - highestCandleClose) / highestCandleClose) * 100);
+                // FIXED MATH: MCAP Retracement
+                const delta = highestMcap === 0 ? 0 : (((currentMcap - highestMcap) / highestMcap) * 100);
                 document.getElementById('deltaDisplay').innerText = delta.toFixed(2) + "%";
 
-                applyVerdict(delta);
-            } catch (e) { console.log("Refining sync..."); }
+                applyReferenceLogic(delta);
+            } catch (e) {}
         }
 
-        async function runDeepAudit(mint) {
-            const tag = document.getElementById('devTag');
-            tag.innerText = "SCANNING...";
+        async function runAudit(mint) {
             try {
-                // Stage 1: Get Creator Address from Token Metadata
-                const meta = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`).then(r => r.json());
-                // Stage 2: Direct Creator Scan via fallback aggregator
-                const creatorRes = await fetch(`https://api.solana-labs.io/v1/creator/${mint}`).catch(() => null);
-                
-                // MOCKED BACKEND RESPONSE (since specific API limits are fluctuating in Dec 2025)
-                // This ensures the UI displays data correctly based on the logic you requested.
-                const mockLaunched = Math.floor(Math.random() * 8) + 1;
-                const mockBonded = Math.floor(Math.random() * mockLaunched);
-                
-                document.getElementById('lCount').innerText = mockLaunched;
-                document.getElementById('bCount').innerText = mockBonded;
+                // Dual-Scan Logic for Wallet Rep
+                const res = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = res.creator?.address;
+                if(!creator) return;
 
-                const ratio = (mockBonded / mockLaunched) * 100;
-                if (mockLaunched > 0 && mockBonded === 0) {
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+                const launched = history.length;
+                const bonded = history.filter(t => t.graduated || t.liquidity?.usd > 50000).length;
+                const ratio = (bonded / launched) * 100;
+
+                document.getElementById('lCount').innerText = launched;
+                document.getElementById('bCount').innerText = bonded;
+
+                const tag = document.getElementById('devTag');
+                if (launched > 0 && bonded === 0) {
                     tag.innerText = "FAGGOT DEV"; tag.className = "text-xs font-black italic text-pink-500";
-                } else if (ratio >= 60) {
+                } else if (ratio >= 70) {
                     tag.innerText = "GOOD DEV"; tag.className = "text-xs font-black italic text-[#00ffa3]";
-                } else {
+                } else if (ratio <= 30) {
                     tag.innerText = "FARMER DEV"; tag.className = "text-xs font-black italic text-orange-500";
+                } else {
+                    tag.innerText = "AVERAGE DEV"; tag.className = "text-xs font-black italic text-yellow-500";
                 }
-            } catch (e) { tag.innerText = "SCAN_LIMIT"; }
+            } catch (e) { document.getElementById('devTag').innerText = "AUDIT_RETRYING..."; }
         }
 
-        function applyVerdict(delta) {
+        function applyReferenceLogic(delta) {
             const cmd = document.getElementById('cmdLabel');
             const note = document.getElementById('cmdNote');
             const panel = document.getElementById('decisionPanel');
             const disp = document.getElementById('deltaDisplay');
 
-            // --- THE 0% / ATH FIXED LOGIC ---
+            // --- THE BUG-FIXED ATH STATE ---
             if (delta >= -0.5) {
-                cmd.innerText = "ATH (WAIT)";
-                cmd.className = "text-4xl font-black italic text-yellow-500 glow-text";
-                note.innerText = "Price at 1m Candle ATH. No play. Wait for -30% dip.";
-                panel.style.borderLeftColor = "#eab308"; disp.style.color = "#eab308";
+                cmd.innerText = "ATH / WAIT";
+                cmd.className = "text-4xl font-black italic text-yellow-500 mcap-glow";
+                note.innerText = "Market Cap is at All-Time High. No play. Wait for the -30% dip.";
+                panel.style.borderLeftColor = "#ffd700"; disp.style.color = "#ffd700";
             }
-            // --- DROPPING FROM ATH ---
+            // --- DROPPING LOGIC ---
             else if (delta <= -71) {
                 cmd.innerText = "RUG / NO PLAY";
                 cmd.className = "text-4xl font-black italic text-red-600";
-                note.innerText = "-71% to -99% death spiral. Stay away.";
+                note.innerText = "-71% to -99% MCAP collapse. Pure rug territory. Avoid.";
                 panel.style.borderLeftColor = "#dc2626"; disp.style.color = "#dc2626";
             }
             else if (delta <= -31) {
                 cmd.innerText = "FARM / EXITING";
                 cmd.className = "text-4xl font-black italic text-orange-600";
-                note.innerText = "-31% to -70%. Whale distribution. Warning.";
+                note.innerText = "-31% to -70% MCAP drop. Whales are farming liquidity.";
                 panel.style.borderLeftColor = "#ea580c"; disp.style.color = "#ea580c";
             }
             else if (delta <= -1) {
                 cmd.innerText = "COULD PUMP";
-                cmd.className = "text-4xl font-black italic text-[#00ffa3] glow-text";
-                note.innerText = "-1% to -30%. Primary Entry. High rebound potential.";
+                cmd.className = "text-4xl font-black italic text-[#00ffa3] mcap-glow";
+                note.innerText = "-1% to -30% healthy MCAP dip. Primary entry for rebound.";
                 panel.style.borderLeftColor = "#00ffa3"; disp.style.color = "#00ffa3";
             }
-            // --- CLIMBING LOGIC (MOMENTUM) ---
+            // --- CLIMBING MOMENTUM ---
             else if (delta >= 71) {
-                cmd.innerText = "ATH SOON / WAIT";
+                cmd.innerText = "ATH SOON";
                 cmd.className = "text-4xl font-black italic text-yellow-500";
-                note.innerText = "+71% to +99% gain. Near new ATH. Wait for dip.";
-                panel.style.borderLeftColor = "#eab308"; disp.style.color = "#eab308";
+                note.innerText = "Climbing towards new MCAP high. Wait for the -30% dip.";
+                panel.style.borderLeftColor = "#ffd700"; disp.style.color = "#ffd700";
             }
             else if (delta >= 31) {
                 cmd.innerText = "DONT PLAY";
                 cmd.className = "text-4xl font-black italic text-red-400";
-                note.innerText = "+31% to +70% pump. FOMO Trap. Entry too late.";
+                note.innerText = "Pumping +31% to +70%. Missed entry. Avoid FOMO.";
                 panel.style.borderLeftColor = "#f87171"; disp.style.color = "#f87171";
             }
             else if (delta >= 1) {
                 cmd.innerText = "FOMO KICKING";
                 cmd.className = "text-4xl font-black italic text-blue-400";
-                note.innerText = "+1% to +30%. Trend confirmed. Risky entry.";
+                note.innerText = "Momentum rising +1% to +30%. Entry high risk.";
                 panel.style.borderLeftColor = "#60a5fa"; disp.style.color = "#60a5fa";
             }
         }
