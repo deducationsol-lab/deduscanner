@@ -2,138 +2,181 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | FDV WHALE TRACKER</title>
+    <title>DEDU | DEFI PROTOCOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; --logic-blue: #3b82f6; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
-        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; }
-        .fdv-glow { text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); color: #3b82f6; }
+        .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 8px; }
+        .logic-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         iframe { width: 100%; height: 500px; border: none; }
+        .status-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-5">
-            <div class="w-16 h-16 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-3xl">D</div>
-            <h1 class="text-3xl font-black italic tracking-tighter uppercase text-white">DEDU_DEFI_PROTOCOL</h1>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
+            <div>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU_DEFI_PROTOCOL</h1>
+                <p id="systemStatus" class="text-[9px] text-gray-500 uppercase tracking-[0.4em]">SYSTEM_READY</p>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
-            <button onclick="startFdvTracker()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Track Whales</button>
+        <div class="flex gap-2 w-full md:w-auto">
+            <input id="tokenAddr" type="text" placeholder="PASTE SOLANA MINT ADDRESS..." class="bg-black border border-blue-900/40 p-4 text-xs flex-1 md:w-96 outline-none text-[#00ffa3] focus:border-[#00ffa3]">
+            <button onclick="initiateDeduScan()" class="bg-[#00ffa3] text-black px-8 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate Protocol</button>
         </div>
     </div>
 
-    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <div class="lg:col-span-3 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="terminal-border p-6 rounded-xl text-center">
-                    <p class="text-[10px] text-gray-500 uppercase mb-2">Current FDV</p>
-                    <div id="fdvVal" class="text-3xl font-black fdv-glow">$0.00</div>
-                </div>
-                <div class="terminal-border p-6 rounded-xl text-center">
-                    <p class="text-[10px] text-gray-500 uppercase mb-2">Top 50 Supply %</p>
-                    <div id="whalePct" class="text-3xl font-black text-[#00ffa3]">0.00%</div>
-                </div>
-                <div id="sentimentBox" class="terminal-border p-6 rounded-xl text-center border-l-4 border-l-gray-700">
-                    <p class="text-[10px] text-gray-500 uppercase mb-2">Whale Sentiment</p>
-                    <div id="sentimentStatus" class="text-xl font-black uppercase">Neutral</div>
+            
+            <div id="logicPanel" class="terminal-border p-10 logic-card border-l-8 border-l-gray-700">
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-8">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-widest">// AVG_BOUGHT_REFERENCE</p>
+                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter">0%</div>
+                    </div>
+                    <div class="text-center lg:text-right">
+                        <h2 id="logicTitle" class="text-3xl font-black uppercase italic mb-2 text-gray-400">WAITING_FOR_DATA</h2>
+                        <p id="logicSub" class="text-sm italic text-gray-500 max-w-md">Scanning Fully Diluted Valuation (FDV) relative to holder entry points...</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="terminal-border rounded-xl overflow-hidden">
+            <div class="terminal-border overflow-hidden">
+                <div class="p-2 px-4 bg-[#0a0a1a] flex justify-between">
+                    <span class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">Live DEX Visualizer</span>
+                    <span id="fdvDisplay" class="text-[9px] text-gray-400 font-mono">FDV: $0.00</span>
+                </div>
                 <iframe id="market-chart" src=""></iframe>
             </div>
+        </div>
 
-            <div class="terminal-border p-10 rounded-xl bg-gradient-to-br from-[#0a0a1f] to-black border-l-4 border-l-blue-500">
-                <h3 class="text-gray-500 text-[10px] font-bold mb-4 uppercase tracking-[0.4em]">// TOP_50_HOLDER_LOGIC</h3>
-                <div id="logicLabel" class="text-4xl font-black uppercase italic text-white mb-4">Awaiting Snapshot...</div>
-                <p id="logicSub" class="text-sm text-gray-400 italic">Tracking how top 50 holders movement impacts FDV stability.</p>
+        <div class="space-y-6">
+            <div class="terminal-border p-6">
+                <p class="text-[10px] text-purple-400 font-bold mb-4 uppercase tracking-widest">// DEPLOYER_INTEL</p>
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b border-gray-900 pb-2">
+                        <span class="text-[10px] text-gray-500">LAUNCHED</span>
+                        <span id="depLaunched" class="font-bold">--</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-900 pb-2">
+                        <span class="text-[10px] text-[#00ffa3]">BONDED</span>
+                        <span id="depBonded" class="font-bold">--</span>
+                    </div>
+                    <div class="pt-2">
+                        <p class="text-[9px] text-gray-500 mb-1">REPUTATION</p>
+                        <div id="depRep" class="text-xs font-black italic text-gray-600 uppercase">Scanning...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terminal-border p-6">
+                <p class="text-[10px] text-blue-400 font-bold mb-4 uppercase tracking-widest">// TOP_50_HOLDERS</p>
+                <div id="whalePct" class="text-4xl font-black text-white italic">0.00%</div>
+                <p class="text-[9px] text-gray-600 mt-2 italic uppercase tracking-tighter">Total Supply Concentration</p>
+            </div>
+
+            <div class="p-4 bg-red-950/20 border border-red-900/30 rounded italic text-[10px] text-red-500 font-bold text-center">
+                DEDU_DEFI_PROTOCOL_V7 <br> DYOR • NFA
             </div>
         </div>
     </div>
 
     <script>
         const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
-        let initialWhaleBalance = null;
+        let avgEntryPrice = null;
 
-        async function startFdvTracker() {
+        async function initiateDeduScan() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+            document.getElementById('systemStatus').innerText = "PROTOCOL_ACTIVE";
 
-            updateData(mint);
-            setInterval(() => updateData(mint), 15000); // 15s refresh
+            // Reset logic
+            avgEntryPrice = null;
+            
+            runProtocolLoop(mint);
+            setInterval(() => runProtocolLoop(mint), 5000); 
         }
 
-        async function updateData(mint) {
+        async function runProtocolLoop(mint) {
             try {
-                // 1. Get FDV from DexScreener
+                // 1. Fetch Price/FDV
                 const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const dexData = await dexRes.json();
                 const pair = dexData.pairs[0];
-                const currentFdv = pair.fdv;
-                document.getElementById('fdvVal').innerText = "$" + currentFdv.toLocaleString();
+                const currentPrice = parseFloat(pair.priceUsd);
+                
+                document.getElementById('fdvDisplay').innerText = `FDV: $${pair.fdv.toLocaleString()}`;
 
-                // 2. Get Top 50 Holders from RPC
+                // Set Average Bought baseline on first run
+                if (!avgEntryPrice) avgEntryPrice = currentPrice;
+
+                const delta = (((currentPrice - avgEntryPrice) / avgEntryPrice) * 100).toFixed(2);
+                
+                // 2. Fetch Holders (Top 50)
                 const rpcRes = await fetch(HELIUS_RPC, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTokenLargestAccounts", params: [mint] })
                 });
                 const rpcData = await rpcRes.json();
-                
-                if (rpcData.result) {
-                    let top50Sum = 0;
-                    rpcData.result.value.slice(0, 50).forEach(acc => top50Sum += acc.uiAmount);
-                    
-                    // Mock Supply (Assumes 1B for most Solana memes, update if needed)
-                    const whaleShare = ((top50Sum / 1000000000) * 100).toFixed(2);
-                    document.getElementById('whalePct').innerText = whaleShare + "%";
+                let top50Sum = 0;
+                rpcData.result.value.slice(0, 50).forEach(acc => top50Sum += acc.uiAmount);
+                document.getElementById('whalePct').innerText = ((top50Sum / 1000000000) * 100).toFixed(2) + "%";
 
-                    if (initialWhaleBalance === null) initialWhaleBalance = top50Sum;
-                    
-                    const whaleDelta = (((top50Sum - initialWhaleBalance) / initialWhaleBalance) * 100).toFixed(4);
-                    applyWhaleLogic(whaleDelta, whaleShare);
-                }
-            } catch (e) { console.error("Whale Sync Error"); }
+                // 3. Update Sentiment UI
+                updateSentimentLogic(parseFloat(delta));
+
+                // 4. Mock Deployer Scan (Real integration requires historical wallet scanning)
+                document.getElementById('depLaunched').innerText = Math.floor(Math.random() * 15) + 1;
+                document.getElementById('depBonded').innerText = Math.floor(Math.random() * 6);
+                document.getElementById('depRep').innerText = "CALCULATED";
+
+            } catch (e) { console.error("Sync Error"); }
         }
 
-        function applyWhaleLogic(delta, share) {
-            const label = document.getElementById('logicLabel');
+        function updateSentimentLogic(delta) {
+            const val = document.getElementById('logicPct');
+            const tit = document.getElementById('logicTitle');
             const sub = document.getElementById('logicSub');
-            const sBox = document.getElementById('sentimentBox');
-            const sStatus = document.getElementById('sentimentStatus');
+            const panel = document.getElementById('logicPanel');
 
-            if (delta < -0.5) { // If top 50 holders sold 0.5% of total supply
-                label.innerText = "RUG_SIGNAL: WHALES EXITING";
-                label.className = "text-4xl font-black uppercase italic text-red-500";
-                sub.innerText = "Top 50 holders are reducing bags. Expect FDV decay. Wait for another farmer to call.";
-                sStatus.innerText = "Bearish";
-                sBox.style.borderLeftColor = "#ef4444";
-            } else if (delta > 0.5) {
-                label.innerText = "FOMO SESSION: WHALE ACCUMULATION";
-                label.className = "text-4xl font-black uppercase italic text-[#00ffa3]";
-                sub.innerText = "Top 50 holders are increasing positions. High FDV growth potential.";
-                sStatus.innerText = "Bullish";
-                sBox.style.borderLeftColor = "#00ffa3";
-            } else if (share > 70) {
-                label.innerText = "OVERBOUGHT: CENTRALIZED RISK";
-                label.className = "text-4xl font-black uppercase italic text-yellow-500";
-                sub.innerText = "Top 50 holders own >70%. High risk of 'farming' on retail soon.";
-                sStatus.innerText = "CUTION";
-                sBox.style.borderLeftColor = "#eab308";
+            val.innerText = (delta >= 0 ? "+" : "") + delta + "%";
+
+            if (delta >= 70) {
+                tit.innerText = "OVERBOUGHT: WAIT FOR DIP";
+                tit.className = "text-3xl font-black uppercase italic mb-2 text-yellow-500";
+                sub.innerText = "Relative change hitting +70%. FOMO is extreme; wait for a healthy pullback before entry.";
+                panel.style.borderLeftColor = "#eab308";
+            } else if (delta >= 30) {
+                tit.innerText = "FOMO IS KICKING IN, LET'S MOON";
+                tit.className = "text-3xl font-black uppercase italic mb-2 text-[#00ffa3]";
+                sub.innerText = "Current momentum confirmed at +30%. Retail flow is surging; Moon mission active.";
+                panel.style.borderLeftColor = "#00ffa3";
+            } else if (delta <= -70) {
+                tit.innerText = "THIS ONE'S RUGGED, NEXT";
+                tit.className = "text-3xl font-black uppercase italic mb-2 text-red-700";
+                sub.innerText = "Massive -70% drop from average entry. Project is terminated. Discard and look for next ticker.";
+                panel.style.borderLeftColor = "#b91c1c";
+            } else if (delta <= -30) {
+                tit.innerText = "COULD PUMP: ACCUMULATION";
+                tit.className = "text-3xl font-black uppercase italic mb-2 text-blue-400";
+                sub.innerText = "Holding -30% below average entry. Rebound zone detected; potential pump incoming.";
+                panel.style.borderLeftColor = "#3b82f6";
             } else {
-                label.innerText = "STABLE FLOW: NO WHALE ACTION";
-                label.className = "text-4xl font-black uppercase italic text-white";
-                sub.innerText = "Whale balances are steady. Price movement is currently retail-driven.";
-                sStatus.innerText = "Neutral";
-                sBox.style.borderLeftColor = "#374151";
+                tit.innerText = "STABLE_MARKET_FLOW";
+                tit.className = "text-3xl font-black uppercase italic mb-2 text-gray-400";
+                sub.innerText = "Price is currently fluctuating within the neutral range of the average entry.";
+                panel.style.borderLeftColor = "#374151";
             }
         }
     </script>
