@@ -2,80 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | V43 RETRACEMENT</title>
+    <title>DEDU | v47 MODAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --danger: #ff3e3e; --bg: #050505; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Space Mono', monospace; }
-        .terminal-box { border: 1px solid #222; background: #0a0a0a; border-radius: 4px; }
-        .btn-strike { background: var(--neon); color: #000; font-weight: 900; transition: 0.3s; cursor: pointer; }
-        .btn-strike:hover { background: #fff; box-shadow: 0 0 20px var(--neon); }
+        :root { --neon: #00ffa3; --bg: #050505; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Space Mono', monospace; overflow-x: hidden; }
+        .terminal-box { border: 1px solid #222; background: #0a0a0a; }
         
-        /* Signal Pulse */
-        .buy-glow { animation: buy-pulse 1.5s infinite; border: 2px solid var(--neon) !important; }
-        @keyframes buy-pulse { 0% { box-shadow: 0 0 5px var(--neon); } 50% { box-shadow: 0 0 30px var(--neon); } 100% { box-shadow: 0 0 5px var(--neon); } }
+        /* Modal Overlay */
+        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; backdrop-filter: blur(10px); }
+        .modal-content { position: relative; width: 90%; height: 90%; margin: 2% auto; border: 1px solid #333; }
+        .close-btn { position: absolute; top: -40px; right: 0; color: var(--neon); font-weight: bold; cursor: pointer; }
         
-        .fomo-glow { border: 2px solid var(--danger) !important; box-shadow: 0 0 15px rgba(255, 62, 62, 0.3); }
+        .glow-btn { border: 1px solid var(--neon); color: var(--neon); transition: 0.3s; cursor: pointer; }
+        .glow-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
     </style>
 </head>
-<body class="min-h-screen p-4">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
-            <div>
-                <h2 class="text-lg font-bold tracking-tighter uppercase italic">DEDU_v43_STRIKE</h2>
-                <p class="text-[9px] text-gray-500 tracking-widest uppercase font-bold">Retracement_Buying_Protocol</p>
-            </div>
-        </div>
-        <div class="flex w-full md:w-auto gap-2">
-            <input id="tokenAddr" type="text" placeholder="SOLANA TOKEN MINT..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none font-bold">
-            <button onclick="ignite()" class="btn-strike px-6 py-3 text-xs italic uppercase">Scan Market</button>
+    <div id="bubbleModal">
+        <div class="modal-content">
+            <span onclick="closeMap()" class="close-btn">[ CLOSE_MAP ]</span>
+            <iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
         </div>
     </div>
 
-    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tighter uppercase italic">DEDU_v47_MODAL</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Cluster_Bypass_Integrated</p>
+            </div>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
+            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase">Ignite</button>
+        </div>
+    </div>
+
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <div class="lg:col-span-8 h-[600px] terminal-box">
+        <div class="lg:col-span-8 h-[600px] terminal-box relative">
             <iframe id="market-chart" class="w-full h-full" src=""></iframe>
         </div>
 
-        <div class="lg:col-span-4 space-y-4">
+        <div class="lg:col-span-4 space-y-6">
             
-            <div id="signalPanel" class="terminal-box p-6 transition-all duration-500">
-                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                    <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Market_Pressure</span>
-                    <span id="signalBadge" class="text-[9px] font-black px-2 py-0.5 rounded bg-gray-800 uppercase">Detecting</span>
-                </div>
-
-                <div id="percentageDisplay" class="text-7xl font-black italic tracking-tighter mb-2">0.00%</div>
-                <div id="statusHeader" class="text-2xl font-black italic uppercase text-gray-400 mb-4">INITIALIZING</div>
-                
-                <div class="p-4 bg-black/40 border border-white/5 rounded italic text-xs text-gray-400">
-                    <p id="statusNote">Awaiting blockchain synchronization...</p>
-                </div>
+            <div id="signalPanel" class="terminal-box p-8">
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// RETRACEMENT_LOGIC</p>
+                <div id="percDisplay" class="text-6xl font-black italic tracking-tighter mb-2 text-white">0.00%</div>
+                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4">WAITING</div>
+                <div class="p-3 bg-white/5 border border-white/10 rounded text-[11px] text-gray-400 italic" id="statusNote">Analyzing price delta...</div>
             </div>
 
-            <div class="terminal-box p-5 border-l-4 border-l-blue-600">
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">// Deployer_Identity</p>
-                <div id="devScanProgress" class="text-xs italic text-[#00ffa3]">Awaiting Target Address...</div>
+            <div class="terminal-box p-8 border-t-4 border-t-purple-600">
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">// SUPPLY_CLUSTERS</p>
+                    <span id="mapStatus" class="text-[9px] font-bold px-2 py-1 bg-purple-900/30 text-purple-400">READY</span>
+                </div>
                 
-                <div id="devResult" class="hidden space-y-4">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-black p-3 border border-white/5">
-                            <p class="text-[8px] text-gray-500 uppercase font-bold">Launched</p>
-                            <p id="launchCount" class="text-xl font-bold">--</p>
-                        </div>
-                        <div class="bg-black p-3 border border-white/5">
-                            <p class="text-[8px] text-gray-500 uppercase font-bold">Bonded</p>
-                            <p id="bondCount" class="text-xl font-bold text-blue-400">--</p>
-                        </div>
-                    </div>
-                    <div class="p-2 bg-black text-center border border-white/10">
-                        <a id="solscanLink" target="_blank" class="text-[9px] text-[#00ffa3] font-mono hover:underline">VIEW_WALLET_ON_SOLSCAN</a>
-                    </div>
-                    <div id="devVerdict" class="text-center font-black italic text-xs uppercase text-gray-500">---</div>
+                <div class="space-y-4">
+                    <button onclick="openMap()" class="glow-btn w-full py-4 text-xs font-black italic uppercase">View Interactive Bubblemap</button>
+                    <p class="text-[10px] text-gray-500 leading-relaxed">
+                        Identify "Magic Nodes" and dev-connected wallets in a single view. If bubbles are connected by lines, it's a **bundled supply**.
+                    </p>
                 </div>
             </div>
 
@@ -83,113 +75,57 @@
     </div>
 
     <script>
+        let currentMint = "";
+
         async function ignite() {
-            const mint = document.getElementById('tokenAddr').value.trim();
-            if(!mint) return;
+            currentMint = document.getElementById('tokenAddr').value.trim();
+            if(!currentMint) return;
             document.getElementById('ui').classList.remove('hidden');
-            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
+            document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
-            runProtocol(mint);
-            setInterval(() => runProtocol(mint), 5000);
-            scanDeployerHard(mint);
+            updateLogic(currentMint);
+            setInterval(() => updateLogic(currentMint), 5000);
         }
 
-        async function runProtocol(mint) {
+        async function updateLogic(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
+                const priceChange = parseFloat(pair.priceChange.m5 || 0);
                 
-                // MATH: Net Pressure
-                const buys = pair.txns.h1.buys || 1;
-                const sells = pair.txns.h1.sells || 1;
-                const net = ((buys - sells) / (buys + sells)) * 100;
-
-                const disp = document.getElementById('percentageDisplay');
-                const panel = document.getElementById('signalPanel');
-                const header = document.getElementById('statusHeader');
+                const disp = document.getElementById('percDisplay');
+                const label = document.getElementById('statusLabel');
                 const note = document.getElementById('statusNote');
-                const badge = document.getElementById('signalBadge');
 
-                // Displaying (+) for soaring, (-) for dipping
-                disp.innerText = (net > 0 ? "+" : "") + net.toFixed(2) + "%";
+                disp.innerText = (priceChange > 0 ? "+" : "") + priceChange.toFixed(2) + "%";
 
-                if (net < 0) {
-                    // --- THE DIP (BUY SIGNAL) ---
-                    panel.className = "terminal-box p-6 buy-glow transition-all";
-                    disp.style.color = "#00ffa3";
-                    header.innerText = "BUY SIGNAL";
-                    header.className = "text-2xl font-black italic uppercase text-[#00ffa3]";
-                    note.innerText = "Dipping detected. Market is currently undersold. High entry probability.";
-                    badge.innerText = "ENTRY_ACTIVE";
-                    badge.className = "text-[9px] font-black px-2 py-0.5 rounded bg-[#00ffa3] text-black uppercase";
-                } else if (net > 5) {
-                    // --- THE SOAR (FOMO / RISK) ---
-                    panel.className = "terminal-box p-6 fomo-glow transition-all";
-                    disp.style.color = "#ff3e3e";
-                    header.innerText = "FOMO RISK";
-                    header.className = "text-2xl font-black italic uppercase text-[#ff3e3e]";
-                    note.innerText = "Market soaring. High risk of top-buying. Wait for retracement (-%).";
-                    badge.innerText = "OVERBOUGHT";
-                    badge.className = "text-[9px] font-black px-2 py-0.5 rounded bg-red-600 text-white uppercase";
+                if (priceChange < 0) {
+                    disp.className = "text-6xl font-black italic tracking-tighter text-[#00ffa3]";
+                    label.innerText = "BUY SIGNAL";
+                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase mb-4";
+                    note.innerText = "Market dipping. Check Bubblemaps for holder clusters before entry.";
                 } else {
-                    // --- NEUTRAL / WAITING ---
-                    panel.className = "terminal-box p-6 transition-all border-t-4 border-t-gray-600";
-                    disp.style.color = "white";
-                    header.innerText = "WAITING";
-                    header.className = "text-2xl font-black italic uppercase text-gray-500";
-                    note.innerText = "Market pressure is neutral. Waiting for a dip to trigger entry.";
-                    badge.innerText = "STABLE";
-                    badge.className = "text-[9px] font-black px-2 py-0.5 rounded bg-gray-700 text-gray-200 uppercase";
+                    disp.className = "text-6xl font-black italic tracking-tighter text-red-500";
+                    label.innerText = "FOMO RISK";
+                    label.className = "text-2xl font-black italic text-red-500 uppercase mb-4";
+                    note.innerText = "Price soaring. Entry risk is high. Wait for retracement.";
                 }
-
-            } catch(e) { console.error("Update failed"); }
+            } catch(e) {}
         }
 
-        async function scanDeployerHard(mint) {
-            const load = document.getElementById('devScanProgress');
-            const resBox = document.getElementById('devResult');
-            load.innerText = "Hard-Scanning Blockchain Data...";
+        function openMap() {
+            if(!currentMint) return;
+            const frame = document.getElementById('bubbleFrame');
+            frame.src = `https://iframe.bubblemaps.io/map?address=${currentMint}&chain=solana&partnerId=demo`;
+            document.getElementById('bubbleModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        }
 
-            try {
-                // Fetching Creator from SolanaTracker
-                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
-                const tData = await tRes.json();
-                const creator = tData.creator?.address;
-
-                if (!creator) throw new Error("Metadata Protected");
-
-                document.getElementById('solscanLink').href = `https://solscan.io/account/${creator}`;
-
-                const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
-                const hData = await hRes.json();
-
-                const launched = hData.length || 0;
-                const bonded = hData.filter(t => t.graduated || (t.liquidity && t.liquidity.usd > 30000)).length;
-
-                document.getElementById('launchCount').innerText = launched;
-                document.getElementById('bondCount').innerText = bonded;
-
-                const verdict = document.getElementById('devVerdict');
-                if (launched > 0 && (bonded/launched) > 0.3) {
-                    verdict.innerText = "TRUSTED DEVELOPER";
-                    verdict.className = "text-center font-black italic text-xs uppercase text-[#00ffa3]";
-                } else if (launched > 4) {
-                    verdict.innerText = "SERIAL RUGGER";
-                    verdict.className = "text-center font-black italic text-xs uppercase text-red-500";
-                } else {
-                    verdict.innerText = "UNVERIFIED DEV";
-                    verdict.className = "text-center font-black italic text-xs uppercase text-gray-500";
-                }
-
-                load.classList.add('hidden');
-                resBox.classList.remove('hidden');
-
-            } catch (err) {
-                load.innerText = "DIRECT METADATA BLOCKED";
-                resBox.classList.remove('hidden');
-                document.getElementById('devVerdict').innerText = "Manual Check Required";
-            }
+        function closeMap() {
+            document.getElementById('bubbleModal').style.display = 'none';
+            document.getElementById('bubbleFrame').src = "";
+            document.body.style.overflow = 'auto';
         }
     </script>
 </body>
