@@ -2,87 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | AGGRESSIVE V40</title>
+    <title>DEDU | DIP STRIKE V42</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #030303; }
+        :root { --neon: #00ffa3; --bg: #030303; --strike: #ff0055; }
         body { background-color: var(--bg); color: #e5e5e5; font-family: 'JetBrains Mono', monospace; }
-        .terminal-box { border: 1px solid #222; background: #0d0d0d; position: relative; }
-        .scan-btn { background: var(--neon); color: black; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .terminal-box { border: 1px solid #222; background: #0d0d0d; }
+        .scan-btn { background: var(--neon); color: black; font-weight: 800; cursor: pointer; }
         .scan-btn:hover { background: white; box-shadow: 0 0 20px var(--neon); }
-        .metric-bar-bg { width: 100%; height: 12px; background: #1a1a1a; border-radius: 2px; overflow: hidden; border: 1px solid #333; }
-        .metric-bar-fill { height: 100%; transition: all 0.4s ease; }
         
-        /* Pulse for Active Buy Signal */
-        .buy-pulse { animation: buy-glow 1.5s infinite; }
-        @keyframes buy-glow { 0% { box-shadow: 0 0 5px #00ffa3; } 50% { box-shadow: 0 0 25px #00ffa3; } 100% { box-shadow: 0 0 5px #00ffa3; } }
-        
-        .glow-text-green { text-shadow: 0 0 10px rgba(0,255,163,0.5); }
+        /* The "Strike" Pulse for when the dip is perfect */
+        .strike-glow { animation: strike-pulse 1s infinite; border: 2px solid var(--neon) !important; }
+        @keyframes strike-pulse { 
+            0% { box-shadow: 0 0 5px var(--neon); } 
+            50% { box-shadow: 0 0 30px var(--neon); } 
+            100% { box-shadow: 0 0 5px var(--neon); } 
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center text-3xl font-black text-[#00ffa3] bg-black">D</div>
+            <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center text-3xl font-black text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_STRIKE_V40</h1>
-                <p class="text-[9px] text-[#00ffa3] font-bold tracking-[0.4em] uppercase animate-pulse">Aggressive_Dip_Hunter_Active</p>
+                <h1 class="text-xl font-black italic text-white uppercase tracking-tighter">DEDU_STRIKE_V42</h1>
+                <p class="text-[9px] text-[#00ffa3] font-bold animate-pulse uppercase tracking-widest">Contrarian_Engine_Active</p>
             </div>
         </div>
         <div class="flex w-full md:w-auto gap-2">
-            <input id="tokenAddr" type="text" placeholder="ENTER SOL MINT..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
-            <button onclick="ignite()" class="scan-btn px-8 py-4 text-xs italic">EXECUTE SCAN</button>
+            <input id="tokenAddr" type="text" placeholder="PASTE SOL MINT..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold">
+            <button onclick="ignite()" class="scan-btn px-8 py-4 text-xs italic">STRIKE NOW</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-8 h-[650px] terminal-box border-t-4 border-t-[#00ffa3]">
-            <iframe id="market-chart" class="w-full h-full opacity-80" src=""></iframe>
+        <div class="lg:col-span-8 h-[650px] terminal-box">
+            <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
         </div>
 
         <div class="lg:col-span-4 space-y-6">
             
-            <div id="decisionPanel" class="terminal-box p-8 border-l-8 border-l-gray-800 transition-all duration-300">
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-[10px] text-gray-500 font-black tracking-widest uppercase">// ENTRY_LOGIC_v40</p>
-                    <span id="zoneBadge" class="text-[9px] px-2 py-1 rounded bg-gray-800 text-gray-400 font-bold">SCANNING</span>
+            <div id="decisionPanel" class="terminal-box p-8 border-t-4 border-t-gray-800 transition-all duration-300">
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">// DIP_PROBABILITY</p>
+                    <span id="pState" class="text-[10px] font-black px-2 py-0.5 rounded bg-gray-800 text-gray-300 uppercase">OFFLINE</span>
                 </div>
                 
-                <div class="flex items-baseline gap-2 mb-2">
-                    <div id="pressureDisplay" class="text-6xl font-black italic tracking-tighter text-white">0.00%</div>
-                    <span class="text-xs text-gray-500 font-bold uppercase italic">Pressure</span>
-                </div>
+                <div id="pressureDisplay" class="text-7xl font-black italic tracking-tighter text-white mb-2 leading-none">--%</div>
+                <div id="cmdLabel" class="text-3xl font-black italic uppercase text-gray-500 mb-6">READY</div>
                 
-                <div class="metric-bar-bg mb-8 relative">
-                    <div id="pressureBar" class="metric-bar-fill bg-gray-600" style="width: 50%"></div>
-                    <div class="absolute inset-0 flex justify-between px-2 items-center pointer-events-none text-[8px] font-bold text-white/30">
-                        <span>DIP / BUY</span>
-                        <span>PUMP / WAIT</span>
-                    </div>
-                </div>
-
-                <div class="bg-black/50 p-6 border border-white/5 rounded-lg">
-                    <div id="cmdLabel" class="text-4xl font-black italic uppercase text-white mb-2 leading-none">IDLE</div>
-                    <p id="cmdNote" class="text-sm text-gray-400 italic">Waiting for address input...</p>
+                <div class="bg-white/5 p-4 border border-white/10 rounded">
+                    <p id="cmdNote" class="text-[11px] text-gray-400 leading-relaxed italic">System waiting for token data feed...</p>
                 </div>
             </div>
 
-            <div class="terminal-box p-6">
-                <p class="text-[10px] text-gray-500 font-black tracking-widest mb-4 uppercase">// DEV_BOND_RECORD</p>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-black p-4 border border-[#222]">
-                        <p class="text-[9px] text-gray-500 uppercase">Total Launches</p>
-                        <p id="countLaunch" class="text-2xl font-bold text-white">--</p>
+            <div class="terminal-box p-6 border-l-4 border-l-blue-500">
+                <p class="text-[10px] text-gray-500 font-bold mb-4 uppercase tracking-widest">// CREATOR_INTEL_RETRY_MODE</p>
+                <div id="devLoading" class="text-[11px] italic text-[#00ffa3]">Awaiting Target...</div>
+                
+                <div id="devStats" class="hidden space-y-4">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-black p-4 border border-white/5">
+                            <p class="text-[8px] text-gray-500 uppercase">Launches</p>
+                            <p id="countLaunch" class="text-2xl font-black text-white">0</p>
+                        </div>
+                        <div class="bg-black p-4 border border-white/5">
+                            <p class="text-[8px] text-gray-500 uppercase">Bonded</p>
+                            <p id="countBond" class="text-2xl font-black text-blue-400">0</p>
+                        </div>
                     </div>
-                    <div class="bg-black p-4 border border-[#222]">
-                        <p class="text-[9px] text-gray-500 uppercase">Bonded (Success)</p>
-                        <p id="countBond" class="text-2xl font-bold text-blue-400">--</p>
+                    <div class="p-3 bg-black border border-white/10">
+                        <p class="text-[8px] text-gray-500 uppercase mb-1 font-bold">Wallet Reference</p>
+                        <a id="solscanLink" target="_blank" class="text-[10px] text-[#00ffa3] truncate block font-mono hover:underline">---</a>
                     </div>
+                    <div id="devVerdict" class="text-center font-black italic text-xs uppercase pt-2">---</div>
                 </div>
-                <div id="devVerdict" class="mt-4 text-center text-xs font-bold italic text-gray-600 uppercase">---</div>
             </div>
 
         </div>
@@ -92,15 +89,16 @@
         async function ignite() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
-            document.getElementById('ui').classList.remove('hidden');
+            document.getElementById("ui").classList.remove("hidden");
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            runEngine(mint);
-            setInterval(() => runEngine(mint), 5000);
-            scanDev(mint);
+            // Start the loops
+            refreshEngine(mint);
+            setInterval(() => refreshEngine(mint), 5000);
+            scanDeployerWithRetry(mint, 0);
         }
 
-        async function runEngine(mint) {
+        async function refreshEngine(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
@@ -108,81 +106,96 @@
                 
                 const buys = pair.txns.h1.buys || 1;
                 const sells = pair.txns.h1.sells || 1;
+                // Contrarian Logic: High sell pressure = Buy Signal
                 const net = ((buys - sells) / (buys + sells)) * 100;
 
-                const panel = document.getElementById('decisionPanel');
                 const disp = document.getElementById('pressureDisplay');
-                const bar = document.getElementById('pressureBar');
+                const panel = document.getElementById('decisionPanel');
                 const cmd = document.getElementById('cmdLabel');
                 const note = document.getElementById('cmdNote');
-                const badge = document.getElementById('zoneBadge');
+                const state = document.getElementById('pState');
 
-                disp.innerText = (net > 0 ? "+" : "") + net.toFixed(2) + "%";
-                bar.style.width = `${Math.max(5, Math.min(95, 50 + (net/2)))}%`;
+                disp.innerText = net.toFixed(1) + "%";
 
-                // --- AGGRESSIVE RECALIBRATION ---
-                if (net <= -2) { 
-                    // MARKET IS DIPPING (Sell Volume > Buy Volume)
-                    if (net > -50) {
-                        // HEALTHY DIP (-2% to -50%) -> STRONG BUY
-                        panel.className = "terminal-box p-8 border-l-8 border-l-[#00ffa3] buy-pulse transition-all";
-                        disp.className = "text-6xl font-black italic tracking-tighter text-[#00ffa3] glow-text-green";
-                        bar.className = "metric-bar-fill bg-[#00ffa3]";
-                        cmd.innerText = "STRONG BUY";
-                        cmd.className = "text-4xl font-black italic uppercase text-[#00ffa3] glow-text-green leading-none";
-                        note.innerText = "Accumulation phase. Holders are selling, creating an entry.";
-                        badge.innerText = "ENTRY ZONE";
-                        badge.className = "text-[9px] px-2 py-1 rounded bg-[#00ffa3] text-black font-bold";
-                    } else {
-                        // EXTREME CRASH (<-50%) -> CAUTION BUY
-                        panel.style.borderLeftColor = "#f59e0b";
-                        disp.style.color = "#f59e0b";
-                        bar.className = "metric-bar-fill bg-orange-500";
-                        cmd.innerText = "RISKY ENTRY";
-                        cmd.className = "text-4xl font-black italic uppercase text-orange-500 leading-none";
-                        note.innerText = "Heavy sell-off detected. High reward, but check liquidity.";
-                        badge.innerText = "VOLATILE";
-                        badge.className = "text-[9px] px-2 py-1 rounded bg-orange-500 text-black font-bold";
-                    }
-                } else if (net > 10) {
-                    // MARKET IS PUMPING (FOMO) -> DO NOT BUY
-                    panel.className = "terminal-box p-8 border-l-8 border-l-red-500 transition-all";
-                    disp.className = "text-6xl font-black italic tracking-tighter text-red-500";
-                    bar.className = "metric-bar-fill bg-red-500";
-                    cmd.innerText = "DO NOT BUY";
-                    cmd.className = "text-4xl font-black italic uppercase text-red-500 leading-none";
-                    note.innerText = "Overbought. Wait for the dip to reset the entry level.";
-                    badge.innerText = "FOMO RISK";
-                    badge.className = "text-[9px] px-2 py-1 rounded bg-red-500 text-white font-bold";
+                if (net < 0) { 
+                    // MARKET IS DIPPING (Sells > Buys)
+                    panel.className = "terminal-box p-8 border-t-4 strike-glow transition-all duration-300";
+                    disp.className = "text-7xl font-black italic tracking-tighter text-[#00ffa3]";
+                    cmd.innerText = "ENTRY: STRIKE";
+                    cmd.className = "text-3xl font-black italic uppercase text-[#00ffa3]";
+                    note.innerText = `Strong oversold condition detected (${Math.abs(net.toFixed(0))}% sell lead). High probability bounce zone.`;
+                    state.innerText = "BUY THE DIP";
+                    state.className = "text-[10px] font-black px-2 py-0.5 rounded bg-[#00ffa3] text-black uppercase";
+                } else if (net > 20) {
+                    // MARKET IS PUMPING (Danger Zone)
+                    panel.className = "terminal-box p-8 border-t-4 border-t-red-600 transition-all duration-300";
+                    disp.className = "text-7xl font-black italic tracking-tighter text-red-600";
+                    cmd.innerText = "EXIT / WAIT";
+                    cmd.className = "text-3xl font-black italic uppercase text-red-600";
+                    note.innerText = "Price is over-extended. Buying here is chasing the pump. Wait for -5% drop.";
+                    state.innerText = "OVERBOUGHT";
+                    state.className = "text-[10px] font-black px-2 py-0.5 rounded bg-red-600 text-white uppercase";
                 } else {
-                    // NEUTRAL CHOP
-                    panel.style.borderLeftColor = "#444";
-                    disp.style.color = "#888";
-                    bar.className = "metric-bar-fill bg-gray-600";
-                    cmd.innerText = "WATCHING";
-                    cmd.className = "text-4xl font-black italic uppercase text-gray-500 leading-none";
-                    note.innerText = "Sideways movement. Ready for dip capture.";
-                    badge.innerText = "NEUTRAL";
-                    badge.className = "text-[9px] px-2 py-1 rounded bg-gray-800 text-gray-400 font-bold";
+                    // NEUTRAL
+                    panel.className = "terminal-box p-8 border-t-4 border-t-gray-700 transition-all duration-300";
+                    disp.className = "text-7xl font-black italic tracking-tighter text-white";
+                    cmd.innerText = "MONITORING";
+                    cmd.className = "text-3xl font-black italic uppercase text-gray-500";
+                    note.innerText = "Equilibrium reached. Patiently waiting for the next sell-off to trigger entry.";
+                    state.innerText = "STABLE";
+                    state.className = "text-[10px] font-black px-2 py-0.5 rounded bg-gray-800 text-gray-300 uppercase";
                 }
-
             } catch(e) {}
         }
 
-        async function scanDev(mint) {
+        async function scanDeployerWithRetry(mint, attempt) {
+            const load = document.getElementById('devLoading');
+            const stats = document.getElementById('devStats');
+            
             try {
-                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
-                const creator = tRes.creator?.address;
-                const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
-                const launched = hRes.length;
-                const bonded = hRes.filter(t => t.graduated || (t.liquidity?.usd > 40000)).length;
-                document.getElementById('countLaunch').innerText = launched;
+                load.innerText = `FETCHING CREATOR DATA (TRY ${attempt+1})...`;
+                
+                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
+                const tData = await tRes.json();
+                const creator = tData.creator?.address;
+
+                if (!creator) {
+                    if (attempt < 5) return setTimeout(() => scanDeployerWithRetry(mint, attempt + 1), 2000);
+                    throw new Error("Timeout");
+                }
+
+                document.getElementById('solscanLink').innerText = creator;
+                document.getElementById('solscanLink').href = `https://solscan.io/account/${creator}`;
+
+                const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
+                const hData = await hRes.json();
+
+                const total = hData.length || 0;
+                const bonded = hData.filter(t => t.graduated || (t.liquidity?.usd > 35000)).length;
+
+                document.getElementById('countLaunch').innerText = total;
                 document.getElementById('countBond').innerText = bonded;
-                const ratio = bonded / launched;
-                const v = document.getElementById('devVerdict');
-                if(ratio > 0.3) { v.innerText = "TRUSTED DEVELOPER"; v.className = "mt-4 text-center text-xs font-bold italic text-[#00ffa3] uppercase"; }
-                else { v.innerText = "LOW SUCCESS RATE"; v.className = "mt-4 text-center text-xs font-bold italic text-red-500 uppercase"; }
-            } catch(e) {}
+
+                const verdict = document.getElementById('devVerdict');
+                if (total > 0 && (bonded/total) >= 0.25) {
+                    verdict.innerText = "TRUSTED LAUNCHER";
+                    verdict.style.color = "#00ffa3";
+                } else if (total > 3) {
+                    verdict.innerText = "PROBABLE RUGGER";
+                    verdict.style.color = "#ff0055";
+                } else {
+                    verdict.innerText = "NEW DEV / UNKNOWN";
+                    verdict.style.color = "#888";
+                }
+
+                load.classList.add('hidden');
+                stats.classList.remove('hidden');
+
+            } catch (err) {
+                if (attempt < 3) return scanDeployerWithRetry(mint, attempt + 1);
+                load.innerText = "API BUSY - CLICK WALLET BELOW";
+                stats.classList.remove('hidden');
+            }
         }
     </script>
 </body>
