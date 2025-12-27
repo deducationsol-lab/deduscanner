@@ -6,12 +6,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ffa3; --dark-bg: #020105; --logic-blue: #3b82f6; }
+        :root { --neon-green: #00ffa3; --dark-bg: #020105; }
         body { background-color: var(--dark-bg); color: white; font-family: 'Space+Mono', monospace; }
         .terminal-border { border: 1px solid #1e1b4b; background: #07070a; border-radius: 4px; }
-        .logic-card { transition: all 0.3s ease; }
+        .timer-progress { height: 4px; background: #3b82f6; transition: width 1s linear; }
+        .decision-box { border-left: 10px solid #1e1b4b; transition: all 0.4s ease; }
         iframe { width: 100%; height: 500px; border: none; }
-        .timer-progress { height: 4px; background: #3b82f6; transition: width 1s linear; box-shadow: 0 0 10px #3b82f6; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -19,187 +19,170 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-5">
             <div class="w-14 h-14 border-2 border-[#00ffa3] flex items-center justify-center font-black text-[#00ffa3] italic bg-black text-2xl">D</div>
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU DEFI PROTOCOL</h1>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase">DEDU DEFI V1.4.1</h1>
         </div>
         <div class="flex gap-2">
             <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-blue-900/50 p-4 text-xs w-64 md:w-96 outline-none text-[#00ffa3]">
-            <button onclick="igniteOracle()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Ignite Oracle</button>
+            <button onclick="startDeduProtocol()" class="bg-[#00ffa3] text-black px-10 py-4 font-bold text-xs hover:bg-white transition-all uppercase italic">Initiate</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3 space-y-6">
-            <div id="logicPanel" class="terminal-border p-10 logic-card border-l-8 border-l-gray-800 relative">
+            
+            <div id="decisionPanel" class="terminal-border p-10 decision-box relative">
                 <div id="timerBar" class="timer-progress absolute top-0 left-0" style="width: 0%"></div>
-                <div class="flex flex-col lg:flex-row justify-between items-center gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
                     <div>
-                        <p class="text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-[0.3em]">// 1M CANDLE REFERENCE</p>
-                        <div id="logicPct" class="text-9xl font-black italic tracking-tighter">0.00%</div>
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// PRICE DELTA</p>
+                        <div id="logicPct" class="text-8xl font-black italic tracking-tighter text-white">0.00%</div>
                     </div>
-                    <div class="text-center lg:text-right">
-                        <h2 id="logicTitle" class="text-3xl font-black uppercase italic mb-2 text-gray-400 tracking-tighter">WAITING_FOR_TICK</h2>
-                        <p id="logicSub" class="text-sm italic text-gray-500 max-w-sm ml-auto">Establishing 1-minute candle baseline. Syncing relative price action...</p>
+                    <div class="text-center md:text-right">
+                        <p class="text-[10px] text-gray-500 font-bold mb-1 tracking-[0.3em] uppercase">// DECISION LOGIC</p>
+                        <div id="decisionLabel" class="text-5xl font-black italic uppercase text-gray-700">SYNCING</div>
+                        <p id="decisionReason" class="text-xs text-gray-400 mt-3 italic leading-relaxed">Waiting for 1-minute candle data to formulate entry advice.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="terminal-border overflow-hidden">
-                <iframe id="market-chart" src=""></iframe>
-            </div>
+            <div class="terminal-border overflow-hidden"><iframe id="market-chart" src=""></iframe></div>
         </div>
 
         <div class="space-y-6">
-            <div id="deployerCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
+            <div id="depCard" class="terminal-border p-6 border-t-4 border-t-gray-800">
                 <p class="text-[10px] text-purple-400 font-bold mb-6 uppercase tracking-widest">// DEPLOYER_SCAN</p>
-                <div class="space-y-5">
-                    <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-[10px] text-gray-500 font-bold">LAUNCHED</span>
-                        <span id="depLaunched" class="font-black text-white italic text-xl">0</span>
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b border-gray-900 pb-2 text-sm">
+                        <span class="text-gray-500">LAUNCHED</span>
+                        <span id="depTotal" class="font-black">--</span>
                     </div>
-                    <div class="flex justify-between border-b border-gray-900 pb-2">
-                        <span class="text-[10px] text-[#00ffa3] font-bold">BONDED</span>
-                        <span id="depBonded" class="font-black text-[#00ffa3] italic text-xl">0</span>
+                    <div class="flex justify-between border-b border-gray-900 pb-2 text-sm">
+                        <span class="text-[#00ffa3]">BONDED</span>
+                        <span id="depBonded" class="font-black text-[#00ffa3]">--</span>
                     </div>
-                    <div class="pt-4 text-center">
-                        <p class="text-[9px] text-gray-500 mb-2 uppercase">DEPLOYER_STATUS</p>
-                        <div id="depStatus" class="text-sm font-black italic uppercase text-gray-600">PENDING_SCAN...</div>
-                    </div>
+                    <div id="depStatus" class="text-[10px] text-center font-black mt-4 uppercase italic text-gray-600">Awaiting Creator Info...</div>
                 </div>
             </div>
 
-            <div class="terminal-border p-6">
-                <p class="text-[10px] text-blue-400 font-bold mb-2 uppercase tracking-widest">// 1M_BASE_PRICE</p>
-                <div id="basePriceDisp" class="text-sm font-mono text-gray-400">$0.000000...</div>
-            </div>
-
-            <div class="p-4 bg-red-950/20 border border-red-900/40 rounded italic text-[10px] text-red-500 font-bold text-center">
-                DEDU PROTOCOL <br> FLOW MONITORING
+            <div class="terminal-border p-6 border-t-4 border-t-blue-900">
+                <p class="text-[10px] text-blue-400 font-bold mb-4 uppercase tracking-widest">// DATA_REF</p>
+                <div class="space-y-2">
+                    <p class="text-[9px] text-gray-600 uppercase">1m Baseline</p>
+                    <div id="basePrice" class="text-xs font-mono text-gray-300">$0.00...</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let base1mPrice = null;
-        let lastResetTime = Date.now();
-        let protocolActive = false;
+        let baselinePrice = null;
+        let lastReset = Date.now();
 
-        async function igniteOracle() {
+        async function startDeduProtocol() {
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
-
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
             
-            base1mPrice = null;
-            lastResetTime = Date.now();
-            protocolActive = true;
-
-            runTick(mint);
-            setInterval(() => runTick(mint), 3000);
+            baselinePrice = null;
+            lastReset = Date.now();
+            update(mint);
+            setInterval(() => update(mint), 3000);
         }
 
-        async function runTick(mint) {
+        async function update(mint) {
             const now = Date.now();
-            const elapsed = now - lastResetTime;
-            
+            const elapsed = now - lastReset;
             document.getElementById('timerBar').style.width = (elapsed / 60000) * 100 + "%";
 
-            // HARD RESET LOGIC: Every 60 seconds, clear baseline
-            if (elapsed >= 60000) {
-                base1mPrice = null;
-                lastResetTime = now;
-            }
+            if (elapsed >= 60000) { baselinePrice = null; lastReset = now; }
 
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const currentPrice = parseFloat(pair.priceUsd);
+                const livePrice = parseFloat(pair.priceUsd);
 
-                if (!base1mPrice) {
-                    base1mPrice = currentPrice;
-                    document.getElementById('basePriceDisp').innerText = "$" + base1mPrice.toFixed(10);
+                if (!baselinePrice) {
+                    baselinePrice = livePrice;
+                    document.getElementById('basePrice').innerText = "$" + baselinePrice.toFixed(10);
+                    scanDeployer(pair.baseToken.address);
                 }
 
-                const delta = (((currentPrice - base1mPrice) / base1mPrice) * 100).toFixed(2);
-                updateLogicUI(parseFloat(delta));
-
-                // Scan deployer only on first successful load
-                if (elapsed < 5000) scanDeployer(mint);
-
-            } catch (e) { console.error("Oracle Error"); }
+                const delta = (((livePrice - baselinePrice) / baselinePrice) * 100).toFixed(2);
+                document.getElementById('logicPct').innerText = (delta >= 0 ? "+" : "") + delta + "%";
+                
+                runDecisionLogic(parseFloat(delta));
+            } catch (e) { console.error("Sync Offline"); }
         }
 
         async function scanDeployer(mint) {
             try {
-                // Use SolanaTracker or Helius to get creator
-                const res = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`);
-                const data = await res.json();
-                const creator = data.creator.address;
-                
-                // Get creator's total tokens
-                const cRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
-                const tokens = await cRes.json();
-                
-                const launched = tokens.length;
-                const bonded = tokens.filter(t => t.graduated === true || t.liquidity > 55000).length;
-                const ratio = (bonded / launched) * 100;
+                const meta = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = meta.creator.address;
+                const history = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
 
-                document.getElementById('depLaunched').innerText = launched;
+                const total = history.length;
+                const bonded = history.filter(t => t.graduated === true || t.liquidity > 55000).length;
+                const ratio = (bonded / total) * 100;
+
+                document.getElementById('depTotal').innerText = total;
                 document.getElementById('depBonded').innerText = bonded;
 
                 const status = document.getElementById('depStatus');
-                const card = document.getElementById('deployerCard');
-
                 if (ratio >= 60) {
-                    status.innerText = "LEGIT DEPLOYER";
-                    status.className = "text-sm font-black italic uppercase text-[#00ffa3]";
-                    card.style.borderTopColor = "#00ffa3";
-                } else if (ratio <= 30) {
-                    status.innerText = "SUSPICIOUS_RATIO";
-                    status.className = "text-sm font-black italic uppercase text-red-500";
-                    card.style.borderTopColor = "#ef4444";
+                    status.innerText = "LEGIT DEPLOYER: PROCEED";
+                    status.classList.add('text-[#00ffa3]');
+                } else if (ratio < 30) {
+                    status.innerText = "SUSPICIOUS: AVOID";
+                    status.classList.add('text-red-500');
                 } else {
-                    status.innerText = "MID_TIER_FARMER";
-                    status.className = "text-sm font-black italic uppercase text-yellow-500";
-                    card.style.borderTopColor = "#eab308";
+                    status.innerText = "AVERAGE REPUTATION";
+                    status.classList.add('text-yellow-500');
                 }
-            } catch (e) { console.error("Deployer Scan Fail"); }
+            } catch (e) { document.getElementById('depStatus').innerText = "SCAN ERROR"; }
         }
 
-        function updateLogicUI(delta) {
-            const val = document.getElementById('logicPct');
-            const tit = document.getElementById('logicTitle');
-            const sub = document.getElementById('logicSub');
-            const panel = document.getElementById('logicPanel');
-
-            val.innerText = (delta >= 0 ? "+" : "") + delta + "%";
+        function runDecisionLogic(delta) {
+            const label = document.getElementById('decisionLabel');
+            const reason = document.getElementById('decisionReason');
+            const panel = document.getElementById('decisionPanel');
+            const pctDisplay = document.getElementById('logicPct');
 
             if (delta >= 70) {
-                val.className = "text-9xl font-black italic tracking-tighter text-yellow-500";
-                tit.innerText = "OVERBOUGHT, WAIT FOR DIP";
-                sub.innerText = "Candle is +70% from 1m open. Extreme local peak. Entry not advised.";
+                label.innerText = "DO NOT BUY";
+                label.className = "text-5xl font-black italic uppercase text-yellow-500";
+                reason.innerText = "Price is OVERBOUGHT (+70% in 1m). Wait for a dip to the 1m baseline to avoid getting dumped on.";
                 panel.style.borderLeftColor = "#eab308";
-            } else if (delta >= 30) {
-                val.className = "text-9xl font-black italic tracking-tighter text-[#00ffa3]";
-                tit.innerText = "FOMO IS KICKING IN, LET'S MOON";
-                sub.innerText = "Positive breakout confirmed. Candle is +30% from reset baseline.";
+                pctDisplay.style.color = "#eab308";
+            } 
+            else if (delta >= 30) {
+                label.innerText = "BUY / SCALP";
+                label.className = "text-5xl font-black italic uppercase text-[#00ffa3]";
+                reason.innerText = "FOMO IS KICKING IN (+30% in 1m). Momentum is confirmed. Suitable for moon shot scalp.";
                 panel.style.borderLeftColor = "#00ffa3";
-            } else if (delta <= -70) {
-                val.className = "text-9xl font-black italic tracking-tighter text-red-700";
-                tit.innerText = "THIS ONE'S RUGGED, NEXT";
-                sub.innerText = "Total price collapse. -70% threshold reached. Abort protocol.";
-                panel.style.borderLeftColor = "#b91c1c";
-            } else if (delta <= -30) {
-                val.className = "text-9xl font-black italic tracking-tighter text-blue-500";
-                tit.innerText = "COULD PUMP: ACCUMULATION";
-                sub.innerText = "Healthy pullback detected. -30% from 1m baseline. Entry for rebound potential.";
+                pctDisplay.style.color = "#00ffa3";
+            } 
+            else if (delta <= -70) {
+                label.innerText = "ABORT / EXIT";
+                label.className = "text-5xl font-black italic uppercase text-red-600";
+                reason.innerText = "THIS ONE'S RUGGED (-70% in 1m). Dev or whales have exited. Next ticker immediately.";
+                panel.style.borderLeftColor = "#dc2626";
+                pctDisplay.style.color = "#dc2626";
+            } 
+            else if (delta <= -30) {
+                label.innerText = "ACCUMULATE";
+                label.className = "text-5xl font-black italic uppercase text-blue-500";
+                reason.innerText = "COULD PUMP (-30% in 1m). Price has pulled back significantly from the 1m open. High rebound potential.";
                 panel.style.borderLeftColor = "#3b82f6";
-            } else {
-                val.className = "text-9xl font-black italic tracking-tighter text-white";
-                tit.innerText = "CANDLE_STABLE";
-                sub.innerText = "Price within neutral 1-minute range. Monitoring for breakout...";
-                panel.style.borderLeftColor = "#1f2937";
+                pctDisplay.style.color = "#3b82f6";
+            } 
+            else {
+                label.innerText = "NEUTRAL";
+                label.className = "text-5xl font-black italic uppercase text-gray-600";
+                reason.innerText = "Price is stable within the 1-minute window. Monitoring for breakout signal.";
+                panel.style.borderLeftColor = "#1e1b4b";
+                pctDisplay.style.color = "white";
             }
         }
     </script>
