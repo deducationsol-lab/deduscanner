@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU | PROTOCOL</title>
+    <title>DEDU | SENTIMENT V38</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --bg: #050505; --panel: #0a0a0a; }
-        body { background-color: var(--bg); color: #e5e5e5; font-family: 'Space+Mono', monospace; }
-        .terminal-box { border: 1px solid #333; background: var(--panel); position: relative; }
-        .glitch-text { text-shadow: 2px 0 #fff, -2px 0 #00ffa3; }
-        .btn-scan { background: var(--neon); color: black; font-weight: 900; text-transform: uppercase; transition: all 0.2s; }
-        .btn-scan:hover { background: white; box-shadow: 0 0 15px var(--neon); }
-        .audit-link { border: 1px solid #333; color: #888; padding: 8px; text-align: center; font-size: 10px; text-transform: uppercase; transition: 0.2s; cursor: pointer; display: block; text-decoration: none; }
-        .audit-link:hover { border-color: var(--neon); color: var(--neon); background: #00ffa311; }
+        :root { --neon: #00ffa3; --danger: #ef4444; --warn: #f59e0b; --bg: #030303; --panel: #0d0d0d; }
+        body { background-color: var(--bg); color: #e5e5e5; font-family: 'JetBrains Mono', monospace; }
+        .terminal-box { border: 1px solid #222; background: var(--panel); position: relative; }
+        .stat-val { font-weight: 800; letter-spacing: -0.05em; }
+        .scan-btn { background: var(--neon); color: black; font-weight: 800; text-transform: uppercase; transition: 0.2s; }
+        .scan-btn:hover { background: white; box-shadow: 0 0 15px var(--neon); }
+        .metric-bar-bg { width: 100%; height: 6px; background: #222; margin-top: 4px; }
+        .metric-bar-fill { height: 100%; transition: width 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
@@ -22,13 +22,13 @@
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3] bg-black">D</div>
             <div>
-                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU PROTOCOL</h1>
-                <p class="text-[9px] text-gray-500 tracking-[0.3em]">MULTI TIMEFRAME PEAK ANALYSIS</p>
+                <h1 class="text-xl font-black italic tracking-tighter text-white">DEDU_SENTIMENT_V38</h1>
+                <p class="text-[9px] text-gray-500 tracking-[0.3em]">VOLUME_WEIGHTED_HOLDER_ANALYSIS</p>
             </div>
         </div>
         <div class="flex w-full md:w-auto gap-2">
-            <input id="tokenAddr" type="text" placeholder="ENTER TOKEN ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
-            <button onclick="ignite()" class="btn-scan px-6 py-3 text-xs italic">RUN SCAN</button>
+            <input id="tokenAddr" type="text" placeholder="SOLANA MINT ADDRESS..." class="bg-black border border-[#333] p-3 text-xs flex-grow md:w-80 text-[#00ffa3] outline-none focus:border-[#00ffa3] font-bold">
+            <button onclick="ignite()" class="scan-btn px-6 py-3 text-xs italic">ANALYZE</button>
         </div>
     </div>
 
@@ -38,46 +38,51 @@
             <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
         </div>
 
-        <div class="lg:col-span-4 space-y-4">
+        <div class="lg:col-span-4 space-y-6">
             
-            <div id="athPanel" class="terminal-box p-6 border-l-8 border-l-gray-700 transition-colors duration-500">
-                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// GLOBAL_PEAK_DELTA</p>
-                <div id="deltaDisplay" class="text-6xl font-black italic tracking-tighter text-white mb-2">0.00%</div>
+            <div id="sentimentPanel" class="terminal-box p-6 border-l-8 border-l-gray-700 transition-colors duration-500">
+                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// HOLDER_PRESSURE (1H)</p>
                 
-                <div class="grid grid-cols-2 gap-4 text-[10px] uppercase font-bold text-gray-400 border-t border-gray-800 pt-4">
-                    <div>
-                        <span class="block text-gray-600">TRUE PEAK (ATH)</span>
-                        <span id="athMcap" class="text-[#00ffa3] text-lg">--</span>
-                    </div>
-                    <div>
-                        <span class="block text-gray-600">LIVE MCAP</span>
-                        <span id="liveMcap" class="text-white text-lg">--</span>
-                    </div>
-                </div>
+                <div id="pressureDisplay" class="text-5xl font-black italic tracking-tighter text-white mb-2">0.00%</div>
+                <div class="metric-bar-bg"><div id="pressureBar" class="metric-bar-fill bg-gray-500" style="width: 50%"></div></div>
 
-                <div class="mt-4 pt-4 border-t border-gray-800">
-                    <div id="cmdLabel" class="text-2xl font-black italic uppercase text-white">INITIALIZING</div>
-                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Comparing 1h, 6h, and 24h peaks...</p>
+                <div class="mt-6 pt-4 border-t border-gray-800">
+                    <div id="cmdLabel" class="text-2xl font-black italic uppercase text-white">READY</div>
+                    <p id="cmdNote" class="text-xs text-gray-500 italic mt-1">Calculating buy vs sell volume dominance...</p>
                 </div>
             </div>
 
             <div class="terminal-box p-6">
-                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-4">// DEPLOYER_DEEP_SEARCH</p>
-                <p class="text-[10px] text-gray-600 mb-4 italic">
-                    ⚠ AUTOMATED HISTORY API IS RESTRICTED.<br>
-                    USE THESE DIRECT LINKS TO CHECK DEV HISTORY:
-                </p>
-                
-                <div class="grid grid-cols-2 gap-2">
-                    <a id="linkGmgn" target="_blank" class="audit-link">GMGN.AI CHECK</a>
-                    <a id="linkBullx" target="_blank" class="audit-link">BULLX NEO</a>
-                    <a id="linkSolscan" target="_blank" class="audit-link">SOLSCAN ACCT</a>
-                    <a id="linkRugcheck" target="_blank" class="audit-link">RUGCHECK.XYZ</a>
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[9px] text-gray-500 font-bold tracking-widest">// DEPLOYER_HISTORY</p>
+                    <span id="devRiskBadge" class="text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">UNSCANNED</span>
                 </div>
 
-                <div class="mt-4 pt-4 border-t border-gray-800 flex justify-between items-center">
-                    <span class="text-[10px] font-bold text-gray-500">LIQUIDITY STATUS</span>
-                    <span id="liqStatus" class="text-xs font-black text-white italic">SCANNING...</span>
+                <div class="grid grid-cols-2 gap-4 text-center mb-4">
+                    <div class="bg-black p-3 border border-[#222]">
+                        <p class="text-[9px] text-gray-500">LAUNCHED</p>
+                        <p id="countLaunch" class="text-xl font-bold text-white">--</p>
+                    </div>
+                    <div class="bg-black p-3 border border-[#222]">
+                        <p class="text-[9px] text-gray-500">BONDED</p>
+                        <p id="countBond" class="text-xl font-bold text-blue-400">--</p>
+                    </div>
+                </div>
+
+                <div class="text-center pt-2">
+                     <p id="devVerdict" class="text-xs font-black italic text-gray-600">WAITING FOR TARGET...</p>
+                </div>
+            </div>
+
+            <div class="terminal-box p-6 space-y-3">
+                <p class="text-[9px] text-gray-500 font-bold tracking-widest mb-2">// VOLUME_DELTA_1H</p>
+                <div class="flex justify-between text-xs">
+                    <span class="text-green-500">BUY VOL</span>
+                    <span id="volBuy" class="font-mono">--</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-red-500">SELL VOL</span>
+                    <span id="volSell" class="font-mono">--</span>
                 </div>
             </div>
 
@@ -85,8 +90,6 @@
     </div>
 
     <script>
-        let globalPeak = 0;
-
         function formatVal(v) {
             if (v >= 1000000) return (v / 1000000).toFixed(2) + "M";
             if (v >= 1000) return (v / 1000).toFixed(1) + "K";
@@ -97,117 +100,152 @@
             const mint = document.getElementById('tokenAddr').value.trim();
             if(!mint) return;
 
-            // UI Setup
+            // UI Reveal
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${mint}?embed=1&theme=dark&trades=0&info=0`;
 
-            // Setup External Links
-            document.getElementById('linkGmgn').href = `https://gmgn.ai/sol/token/${mint}`;
-            document.getElementById('linkBullx').href = `https://bullx.io/terminal?chainId=1399811149&address=${mint}`;
-            document.getElementById('linkSolscan').href = `https://solscan.io/token/${mint}`;
-            document.getElementById('linkRugcheck').href = `https://rugcheck.xyz/tokens/${mint}`;
+            // 1. Run Sentiment Loop
+            analyzeSentiment(mint);
+            setInterval(() => analyzeSentiment(mint), 5000);
 
-            // Start Analysis Loop
-            globalPeak = 0;
-            analyze(mint);
-            setInterval(() => analyze(mint), 3000);
+            // 2. Run Deployer Scan (Once)
+            scanDeployer(mint);
         }
 
-        async function analyze(mint) {
+        async function analyzeSentiment(mint) {
             try {
                 const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
                 const data = await res.json();
                 const pair = data.pairs[0];
-                const liveMcap = pair.fdv;
-                
-                // --- MULTI-TIMEFRAME PEAK RECOVERY ---
-                // We calculate what the price WAS based on the change percentage for h1, h6, and h24.
-                // Formula: OriginalPrice = CurrentPrice / (1 + (Change% / 100))
-                
-                const changes = pair.priceChange;
-                
-                // 1. Calculate Implied Highs
-                const impliedH1 = changes.h1 ? liveMcap / (1 + (changes.h1 / 100)) : 0;
-                const impliedH6 = changes.h6 ? liveMcap / (1 + (changes.h6 / 100)) : 0;
-                const impliedH24 = changes.h24 ? liveMcap / (1 + (changes.h24 / 100)) : 0;
-                
-                // 2. Find the Absolute Maximum among implied highs and current live price
-                // We assume the peak is at least the highest of these reconstructed values
-                let calculatedPeak = Math.max(liveMcap, impliedH1, impliedH6, impliedH24);
 
-                // 3. Persistent Storage (Never let ATH drop during session)
-                if (calculatedPeak > globalPeak) globalPeak = calculatedPeak;
-
-                // --- UPDATE UI ---
-                document.getElementById('athMcap').innerText = "$" + formatVal(globalPeak);
-                document.getElementById('liveMcap').innerText = "$" + formatVal(liveMcap);
-
-                // Calculate Delta from the RECONSTRUCTED Global Peak
-                const delta = ((liveMcap - globalPeak) / globalPeak) * 100;
+                // Logic: Volume Weighted Pressure (Proxy for Whale/Holder Sentiment)
+                // We use 1H volume to determine the immediate trend of the "Top Holders" (Volume Movers)
+                const v1h = pair.volume.h1 || 0;
+                const buys = pair.txns.h1.buys || 0;
+                const sells = pair.txns.h1.sells || 0;
                 
-                document.getElementById('deltaDisplay').innerText = delta.toFixed(2) + "%";
+                // Calculate Buy Volume vs Sell Volume approximate
+                // (DexScreener API doesn't separate BuyVOL vs SellVOL directly in basic JSON, 
+                // so we approximate using the ratio of Txns applied to the total Volume, 
+                // OR we use price change direction to weight it. 
+                // BETTER: Use Buy/Sell Txn Count Ratio as the "Crowd Sentiment" % 
+                // AND weight it by the price direction).
                 
-                updateDecisionMatrix(delta);
-                updateLiquidityStatus(pair);
+                // REFINED FORMULA: Net Order Flow %
+                const totalTxns = buys + sells;
+                let netFlow = 0;
+                
+                if (totalTxns > 0) {
+                    netFlow = ((buys - sells) / totalTxns) * 100;
+                }
 
-            } catch (e) { console.error("Stream Error", e); }
+                // UI Updates
+                const volShare = (v1h / 2); // Approximate split for display
+                document.getElementById('volBuy').innerText = "$" + formatVal(v1h * (buys/totalTxns));
+                document.getElementById('volSell').innerText = "$" + formatVal(v1h * (sells/totalTxns));
+
+                // Color Logic
+                const panel = document.getElementById('sentimentPanel');
+                const disp = document.getElementById('pressureDisplay');
+                const bar = document.getElementById('pressureBar');
+                const cmd = document.getElementById('cmdLabel');
+                const note = document.getElementById('cmdNote');
+
+                disp.innerText = (netFlow > 0 ? "+" : "") + netFlow.toFixed(2) + "%";
+
+                // Map -100 to +100 range to 0-100% bar width
+                // 0% net = 50% width
+                const barWidth = 50 + (netFlow / 2); 
+                bar.style.width = `${Math.max(0, Math.min(100, barWidth))}%`;
+
+                // MATRIX DECISION
+                if (netFlow >= 25) {
+                    // Strong Buying
+                    panel.style.borderLeftColor = "#00ffa3";
+                    disp.style.color = "#00ffa3";
+                    bar.className = "metric-bar-fill bg-[#00ffa3]";
+                    cmd.innerText = "ACCUMULATION";
+                    cmd.className = "text-2xl font-black italic text-[#00ffa3]";
+                    note.innerText = "Whales/Holders are Net Buying (+25%).";
+                } else if (netFlow >= 5) {
+                    // Mild Buying
+                    panel.style.borderLeftColor = "#facc15"; // Yellow
+                    disp.style.color = "#facc15";
+                    bar.className = "metric-bar-fill bg-yellow-400";
+                    cmd.innerText = "HOLD / WATCH";
+                    cmd.className = "text-2xl font-black italic text-yellow-400";
+                    note.innerText = "Slight buy pressure. Wait for confirmation.";
+                } else if (netFlow <= -25) {
+                    // Strong Selling
+                    panel.style.borderLeftColor = "#ef4444";
+                    disp.style.color = "#ef4444";
+                    bar.className = "metric-bar-fill bg-red-500";
+                    cmd.innerText = "DISTRIBUTION";
+                    cmd.className = "text-2xl font-black italic text-red-500";
+                    note.innerText = "Heavy dumping detected. DO NOT BUY.";
+                } else {
+                    // Neutral
+                    panel.style.borderLeftColor = "#6b7280";
+                    disp.style.color = "#9ca3af";
+                    bar.className = "metric-bar-fill bg-gray-500";
+                    cmd.innerText = "CHOPPY";
+                    cmd.className = "text-2xl font-black italic text-gray-400";
+                    note.innerText = "Volume is neutral. No clear direction.";
+                }
+
+            } catch(e) { console.log(e); }
         }
 
-        function updateDecisionMatrix(delta) {
-            const panel = document.getElementById('athPanel');
-            const cmd = document.getElementById('cmdLabel');
-            const note = document.getElementById('cmdNote');
-            const disp = document.getElementById('deltaDisplay');
+        async function scanDeployer(mint) {
+            const dVerdict = document.getElementById('devVerdict');
+            const dBadge = document.getElementById('devRiskBadge');
+            
+            try {
+                // 1. Get Creator
+                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${mint}`).then(r => r.json());
+                const creator = tRes.creator?.address;
 
-            // EXACT TRADING ZONES
-            if (delta >= -5) {
-                // Near ATH (0% to -5%)
-                panel.style.borderLeftColor = "#fbbf24"; // Yellow
-                disp.style.color = "#fbbf24";
-                cmd.innerText = "WAIT / ATH";
-                cmd.className = "text-2xl font-black italic text-yellow-500";
-                note.innerText = "Price is at peak. Do not buy.";
-            } 
-            else if (delta <= -80) {
-                // Dead Zone (-80% to -99%)
-                panel.style.borderLeftColor = "#ef4444"; // Red
-                disp.style.color = "#ef4444";
-                cmd.innerText = "RUGGED / DEAD";
-                cmd.className = "text-2xl font-black italic text-red-500";
-                note.innerText = "Loss > 80%. High probability of abandonment.";
-            }
-            else if (delta <= -30 && delta >= -60) {
-                // Goldilocks Zone (-30% to -60%)
-                panel.style.borderLeftColor = "#00ffa3"; // Green
-                disp.style.color = "#00ffa3";
-                cmd.innerText = "ENTRY ZONE";
-                cmd.className = "text-2xl font-black italic text-[#00ffa3]";
-                note.innerText = "Optimal dip retracement. Check Liquidity.";
-            }
-            else {
-                // No Man's Land
-                panel.style.borderLeftColor = "#6b7280"; // Gray
-                disp.style.color = "#9ca3af";
-                cmd.innerText = "OBSERVE";
-                cmd.className = "text-2xl font-black italic text-gray-400";
-                note.innerText = "Price is moving. Wait for signal.";
-            }
-        }
+                if (!creator) {
+                    dVerdict.innerText = "UNKNOWN CREATOR";
+                    return;
+                }
 
-        function updateLiquidityStatus(pair) {
-            const el = document.getElementById('liqStatus');
-            const isRaydium = pair.dexId === 'raydium';
-            const isPump = pair.dexId === 'pump'; // pump.fun usually labeled 'pump' or custom
+                // 2. Scan History (Launch vs Bond)
+                const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`).then(r => r.json());
+                
+                const launched = hRes.length || 0;
+                // 'Graduated' checks if it hit Raydium (Bonded)
+                const bonded = hRes.filter(t => t.graduated === true || t.liquidity?.usd > 60000).length;
 
-            if (isRaydium) {
-                el.innerText = "GRADUATED (RAYDIUM)";
-                el.className = "text-xs font-black italic text-[#00ffa3]";
-            } else if (pair.labels && pair.labels.includes("pump")) {
-                el.innerText = "BONDING CURVE (PUMP)";
-                el.className = "text-xs font-black italic text-orange-500";
-            } else {
-                el.innerText = pair.dexId.toUpperCase();
-                el.className = "text-xs font-black italic text-blue-500";
+                document.getElementById('countLaunch').innerText = launched;
+                document.getElementById('countBond').innerText = bonded;
+
+                // Verdict Logic
+                if (launched === 0) {
+                    dVerdict.innerText = "FRESH WALLET";
+                    dBadge.innerText = "NO DATA"; dBadge.className = "text-[9px] bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold";
+                } else {
+                    const ratio = (bonded / launched);
+                    
+                    if (ratio >= 0.5) { // >50% Success
+                        dVerdict.innerText = "PROVEN DEV (SAFE)";
+                        dVerdict.className = "text-xs font-black italic text-[#00ffa3]";
+                        dBadge.innerText = "HIGH TIER"; dBadge.className = "text-[9px] bg-green-900 px-2 py-1 rounded text-green-300 font-bold";
+                    } else if (ratio >= 0.2) {
+                        dVerdict.innerText = "MID TIER DEV";
+                        dVerdict.className = "text-xs font-black italic text-yellow-500";
+                        dBadge.innerText = "MID TIER"; dBadge.className = "text-[9px] bg-yellow-900 px-2 py-1 rounded text-yellow-300 font-bold";
+                    } else {
+                        dVerdict.innerText = "RUG FARMER";
+                        dVerdict.className = "text-xs font-black italic text-red-500";
+                        dBadge.innerText = "AVOID"; dBadge.className = "text-[9px] bg-red-900 px-2 py-1 rounded text-red-300 font-bold";
+                    }
+                }
+
+            } catch (e) {
+                dVerdict.innerText = "API LIMIT / HIDDEN";
+                document.getElementById('countLaunch').innerText = "?";
+                document.getElementById('countBond').innerText = "?";
             }
         }
     </script>
