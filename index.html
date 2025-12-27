@@ -2,99 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEDU_v56_ULTIMATE</title>
+    <title>DEDU_v57_HELIUS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00ffa3; --bg: #030303; --danger: #ff3131; --warning: #ffaa00; --cyan: #00e5ff; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Space Mono', monospace; overflow-x: hidden; }
+        :root { --neon: #00ffa3; --bg: #030303; --helius: #f39c12; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Space Mono', monospace; }
         .terminal-box { border: 1px solid #222; background: #080808; position: relative; }
-        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; backdrop-filter: blur(15px); }
-        .modal-content { position: relative; width: 96%; height: 92%; margin: 1% auto; border: 1px solid #333; }
-        .close-btn { position: absolute; top: -30px; right: 0; color: var(--neon); cursor: pointer; font-size: 11px; font-weight: bold; }
-        .risk-note { border-left: 3px solid var(--warning); background: rgba(255, 170, 0, 0.03); }
+        .risk-note { border-left: 3px solid #ffaa00; background: rgba(255, 170, 0, 0.05); }
         .glow-green { color: var(--neon); text-shadow: 0 0 10px rgba(0,255,163,0.5); }
-        .glow-red { color: var(--danger); text-shadow: 0 0 10px rgba(255,49,49,0.5); }
-        .scan-line { width: 100%; height: 1px; background: var(--cyan); opacity: 0.2; position: absolute; animation: scan 3s linear infinite; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        #bubbleModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; backdrop-filter: blur(10px); }
+        .modal-content { position: relative; width: 96%; height: 92%; margin: 1% auto; border: 1px solid #333; }
     </style>
 </head>
-<body class="p-4 md:p-6">
+<body class="p-6">
 
-    <div id="bubbleModal">
-        <div class="modal-content">
-            <span onclick="closeMap()" class="close-btn">[ ESCAPE_TERMINAL ]</span>
-            <iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
-        </div>
-    </div>
+    <div id="bubbleModal"><div class="modal-content"><span onclick="closeMap()" class="cursor-pointer absolute -top-8 right-0 text-[#00ffa3]">[ CLOSE ]</span><iframe id="bubbleFrame" src="" style="width:100%; height:100%; border:none;"></iframe></div></div>
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:row justify-between items-center mb-8 gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
+            <div class="w-12 h-12 border-2 border-orange-500 flex items-center justify-center text-2xl font-black text-orange-500">H</div>
             <div>
-                <h1 class="text-xl font-bold italic tracking-tighter uppercase">DEDU_v56_WHOLE</h1>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Bypass_RPC_Signer_Logic</p>
+                <h1 class="text-xl font-bold italic tracking-tighter">DEDU_v57_HELIUS</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Dedicated_RPC_Audit_Live</p>
             </div>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <input id="tokenAddr" type="text" placeholder="PASTE PUMP MINT..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#00ffa3] outline-none font-bold focus:border-[#00ffa3]">
-            <button onclick="ignite()" class="bg-[#00ffa3] text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Strike</button>
+            <input id="tokenAddr" type="text" placeholder="MINT ADDRESS..." class="bg-black border border-[#333] p-4 text-xs flex-grow md:w-96 text-[#f39c12] outline-none font-bold">
+            <button onclick="ignite()" class="bg-orange-500 text-black px-8 py-4 text-xs font-black uppercase hover:bg-white transition-all">Audit</button>
         </div>
     </div>
 
     <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <div class="lg:col-span-8 h-[700px] terminal-box overflow-hidden">
-            <div class="scan-line"></div>
-            <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
+        <div class="lg:col-span-8 h-[650px] terminal-box overflow-hidden">
+            <iframe id="market-chart" class="w-full h-full opacity-80" src=""></iframe>
         </div>
 
         <div class="lg:col-span-4 space-y-4">
-            
-            <div id="signalPanel" class="terminal-box p-6 border-t-2 border-gray-800">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">// MARKET_SENTIMENT</p>
+            <div class="terminal-box p-6 border-t-2 border-gray-800">
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">// PRICE_LOCK_LOGIC</p>
                 <div id="percDisplay" class="text-7xl font-black italic tracking-tighter mb-1 text-center">0.00%</div>
-                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 text-center">READY</div>
-                
-                <div class="risk-note p-4 mb-4 border border-orange-500/20">
-                    <p class="text-[9px] text-orange-400 font-black uppercase mb-1">⚠️ EXECUTION PROTOCOL:</p>
-                    <p class="text-[9px] text-gray-300 leading-relaxed italic">
-                        Verify the volume of market before executing & always use smart money rules of regulation with 50% to 2X profit taking & 35% maximum stoploss procedure.
-                    </p>
+                <div id="statusLabel" class="text-2xl font-black italic text-gray-500 uppercase text-center mb-4 italic">READY</div>
+                <div class="risk-note p-4 text-[9px] italic text-gray-300">
+                    Verify the volume of market before executing & always use smart money rules of regulation with 50% to 2X profit taking & 35% maximum stoploss procedure.
                 </div>
             </div>
 
-            <div class="terminal-box p-6 border-l-4 border-cyan-500 bg-cyan-900/5">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <p class="text-[9px] text-cyan-500 font-bold uppercase tracking-widest italic">Pump_Bond_Audit</p>
-                        <h4 id="devVerdict" class="text-lg font-black italic uppercase leading-tight">INIT_SCAN</h4>
-                    </div>
+            <div class="terminal-box p-6 border-l-4 border-orange-500 bg-orange-900/5">
+                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">// DEPLOYER_BOND_SCAN</p>
+                <div class="flex justify-between items-end mb-6">
+                    <h4 id="devVerdict" class="text-lg font-black italic text-gray-400">WAITING...</h4>
                     <div class="text-right">
-                        <p id="bRatio" class="text-2xl font-black text-cyan-400">0/0</p>
-                        <p class="text-[8px] text-gray-500 uppercase font-bold">Bond / Launch</p>
+                        <p id="bRatio" class="text-3xl font-black text-orange-500">0/0</p>
+                        <p class="text-[8px] text-gray-500 uppercase">Bond / Launch</p>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-2 mb-6">
-                    <div class="bg-black border border-white/5 p-3">
-                        <p class="text-[8px] text-gray-600 uppercase mb-1">Total Created</p>
-                        <p id="statTotal" class="text-sm font-bold tracking-widest">--</p>
-                    </div>
-                    <div class="bg-black border border-white/5 p-3">
-                        <p class="text-[8px] text-gray-600 uppercase mb-1">Raydium Bonded</p>
-                        <p id="statBond" class="text-sm font-bold text-[#00ffa3] tracking-widest">--</p>
-                    </div>
-                </div>
-
-                <button onclick="openMap()" class="w-full py-4 border border-cyan-500/30 text-[10px] font-black uppercase text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all italic">Open Supply Bubblemap</button>
+                <button onclick="openMap()" class="w-full py-4 border border-orange-500/30 text-[10px] font-black uppercase text-orange-400 hover:bg-orange-500 hover:text-black">Open Bubblemaps</button>
             </div>
-
         </div>
     </div>
 
     <script>
+        const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=1a333300-f919-4d0e-ae4c-31b993844ba8";
         let currentMint = "";
 
         async function ignite() {
@@ -103,12 +72,10 @@
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
-            document.getElementById('devVerdict').innerText = "LOCATING_SIGNER...";
-            
-            // Execute parallel streams
+            document.getElementById('devVerdict').innerText = "HELIUS_SCANNING...";
             runSignal();
             setInterval(runSignal, 5000);
-            performAudit();
+            performHeliusAudit();
         }
 
         async function runSignal() {
@@ -117,82 +84,76 @@
                 const data = await res.json();
                 const pair = data.pairs[0];
                 const change = parseFloat(pair.priceChange.m5 || 0);
-                
                 const disp = document.getElementById('percDisplay');
                 const label = document.getElementById('statusLabel');
 
                 disp.innerText = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
-
                 if (change < 0) {
                     disp.className = "text-7xl font-black italic tracking-tighter glow-green text-center";
                     label.innerText = "BUY SIGNAL";
-                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase text-center";
                 } else {
-                    disp.className = "text-7xl font-black italic tracking-tighter glow-red text-center";
-                    label.innerText = "FOMO RISK";
-                    label.className = "text-2xl font-black italic text-red-500 uppercase text-center";
+                    disp.className = "text-7xl font-black italic tracking-tighter text-red-500 text-center";
+                    label.innerText = "WAITING";
                 }
             } catch(e) {}
         }
 
-        async function performAudit() {
+        async function performHeliusAudit() {
             try {
-                // Dual-Path Signer Detection
-                let creator = "";
-                const tRes = await fetch(`https://api.solanatracker.io/v2/tokens/${currentMint}`);
-                const tData = await tRes.json();
-                creator = tData.creator?.address;
+                // Use Helius to get Signatures
+                const rpcRes = await fetch(HELIUS_RPC, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        "jsonrpc": "2.0", "id": 1,
+                        "method": "getSignaturesForAddress",
+                        "params": [currentMint, {"limit": 100}]
+                    })
+                });
+                const rpcData = await rpcRes.json();
+                if(!rpcData.result?.length) throw "NO_SIGNATURES";
 
-                // Fallback to RPC Genesis Trace
-                if (!creator) {
-                    const rpcBody = { "jsonrpc": "2.0", "id": 1, "method": "getSignaturesForAddress", "params": [currentMint, {"limit": 100}] };
-                    const rpcRes = await fetch(`https://api.mainnet-beta.solana.com`, { method: 'POST', body: JSON.stringify(rpcBody) });
-                    const rpcData = await rpcRes.json();
-                    if(rpcData.result?.length) {
-                        const genesisSig = rpcData.result[rpcData.result.length - 1].signature;
-                        const txRes = await fetch(`https://api.mainnet-beta.solana.com`, { 
-                            method: 'POST', 
-                            body: JSON.stringify({ "jsonrpc": "2.0", "id": 1, "method": "getTransaction", "params": [genesisSig, {"maxSupportedTransactionVersion": 0}] }) 
-                        });
-                        const txData = await txRes.json();
-                        creator = txData.result.transaction.message.accountKeys[0];
-                    }
-                }
+                // Genesis is the last sig in the initial batch
+                const genesisSig = rpcData.result[rpcData.result.length - 1].signature;
+                const txRes = await fetch(HELIUS_RPC, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        "jsonrpc": "2.0", "id": 1,
+                        "method": "getTransaction",
+                        "params": [genesisSig, {"maxSupportedTransactionVersion": 0}]
+                    })
+                });
+                const txData = await txRes.json();
+                const creator = txData.result.transaction.message.accountKeys[0];
 
-                if (!creator) throw "NOT_FOUND";
-
+                // Now fetch history via indexed tracker
                 const hRes = await fetch(`https://api.solanatracker.io/v2/creator/${creator}/tokens`);
                 const hData = await hRes.json();
 
                 const pumpHistory = hData.filter(t => t.mint.endsWith('pump'));
                 const bonded = pumpHistory.filter(t => t.graduated || (t.liquidity?.usd > 12000)).length;
                 const total = pumpHistory.length;
-                const rate = total > 0 ? (bonded / total) * 100 : 0;
 
                 document.getElementById('bRatio').innerText = `${bonded} / ${total}`;
-                document.getElementById('statTotal').innerText = total;
-                document.getElementById('statBond').innerText = bonded;
-
                 const v = document.getElementById('devVerdict');
                 if (total > 5 && bonded === 0) {
                     v.innerText = "SERIAL RUGGER"; v.style.color = "#ff3131";
-                } else if (rate > 20 || bonded > 2) {
-                    v.innerText = "ELITE BONDER"; v.style.color = "#00ffa3";
+                } else if (bonded > 0) {
+                    v.innerText = "LEGIT BONDER"; v.style.color = "#00ffa3";
                 } else {
-                    v.innerText = "REGULAR DEV"; v.style.color = "#ffaa00";
+                    v.innerText = "NEW LAUNCHER"; v.style.color = "#f39c12";
                 }
-
             } catch (e) {
-                document.getElementById('devVerdict').innerText = "RPC_OFFLINE";
+                document.getElementById('devVerdict').innerText = "RPC_ERROR";
+                console.error(e);
             }
         }
 
         function openMap() {
-            if(!currentMint) return;
             document.getElementById('bubbleFrame').src = `https://iframe.bubblemaps.io/map?address=${currentMint}&chain=solana&partnerId=demo`;
             document.getElementById('bubbleModal').style.display = 'block';
         }
-
         function closeMap() { document.getElementById('bubbleModal').style.display = 'none'; }
     </script>
 </body>
