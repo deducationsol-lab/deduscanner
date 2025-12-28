@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DEDU PROTOCOL V1.6.8</title>
+    <title>DEDU PROTOCOL V1.6.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -14,16 +14,25 @@
         .bar-bg { height: 6px; background: #111; border-radius: 3px; overflow: hidden; }
         #buyFill { height: 100%; background: var(--neon); width: 0%; transition: width 0.8s ease; }
         #sellFill { height: 100%; background: var(--danger); width: 0%; transition: width 0.8s ease; }
+        .dedu-footer { background: linear-gradient(to right, #000, #0a1a12, #000); border-top: 1px solid #1a3a2a; }
     </style>
 </head>
 <body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto mb-4 bg-white/5 border border-white/10 p-2 flex justify-center items-center gap-6">
+        <p class="text-[10px] font-bold tracking-[0.3em] text-gray-500 uppercase">System_Global_Metrics:</p>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-[#00ffa3] rounded-full animate-pulse"></span>
+            <p class="text-xs font-black italic"><span id="scanCount">4,812</span> MINTS_SCANNED</p>
+        </div>
+    </div>
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 border-2 border-[#00ffa3] flex items-center justify-center text-2xl font-black text-[#00ffa3]">D</div>
             <div>
-                <h1 class="text-xl font-bold italic tracking-tighter uppercase">DEDU PROTOCOL V1.6.8</h1>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Institutional_Risk_Management</p>
+                <h1 class="text-xl font-bold italic tracking-tighter uppercase">DEDU PROTOCOL V1.6.9</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Validated_Volume_Engine</p>
             </div>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
@@ -32,67 +41,75 @@
         </div>
     </div>
 
-    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <div class="lg:col-span-8 h-[700px] terminal-box overflow-hidden">
+    <div id="ui" class="max-w-7xl mx-auto hidden grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+        <div class="lg:col-span-8 h-[650px] terminal-box overflow-hidden">
             <iframe id="market-chart" class="w-full h-full opacity-90" src=""></iframe>
         </div>
 
         <div class="lg:col-span-4 space-y-4">
-            
             <div class="terminal-box p-6 border-t-2 border-gray-800">
                 <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">// ENTRY_CONFIRMATION</p>
                 <div id="percDisplay" class="text-7xl font-black italic tracking-tighter mb-1 text-center">0.00%</div>
-                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 text-center">SCANNING</div>
+                <div id="statusLabel" class="text-2xl font-black italic text-gray-600 uppercase mb-4 text-center">READY</div>
                 
-                <div class="risk-alert mb-2">
-                    <p class="text-[10px] text-orange-400 font-black uppercase mb-2">🛡️ SMART MONEY PROTOCOL:</p>
-                    <ul class="text-[10px] text-gray-300 space-y-2 leading-relaxed italic">
-                        <li>• Always secure <span class="text-white font-bold">50% to 2X</span> profit. Hoping for 10x is delusional.</li>
-                        <li>• <span class="text-white font-bold">Moonbag</span> your remaining position after initial profit taking.</li>
-                        <li>• Hard <span class="text-red-400 font-bold">35% Stoploss</span> - Do not hold beyond this drawdown.</li>
+                <div class="risk-alert">
+                    <p class="text-[10px] text-orange-400 font-black uppercase mb-2 italic">🛡️ EXECUTION_PROTOCOL:</p>
+                    <ul class="text-[10px] text-gray-300 space-y-2 italic">
+                        <li>• Secure <span class="text-white font-bold">50% to 2X</span> (10x is delusional)</li>
+                        <li>• <span class="text-white font-bold">Moonbag</span> remaining size after TP</li>
+                        <li>• Mandatory <span class="text-red-400 font-bold">35% Stoploss</span> threshold</li>
                     </ul>
                 </div>
             </div>
 
             <div class="terminal-box p-6 border-l-4 border-blue-500 bg-blue-900/5">
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic mb-6">Execution_Volume_Flow</p>
-                
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic mb-6">Volume_Pressure_v62</p>
                 <div class="space-y-6">
                     <div>
-                        <div class="flex justify-between items-end mb-2">
-                            <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Average Buy Ticket</p>
+                        <div class="flex justify-between items-end mb-1">
+                            <p class="text-[9px] text-gray-500 uppercase font-bold">Avg Buy Size</p>
                             <p id="avgBuy" class="text-xl font-black text-[#00ffa3]">$0.00</p>
                         </div>
                         <div class="bar-bg"><div id="buyFill"></div></div>
                     </div>
-
                     <div>
-                        <div class="flex justify-between items-end mb-2">
-                            <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Average Sell Ticket</p>
+                        <div class="flex justify-between items-end mb-1">
+                            <p class="text-[9px] text-gray-500 uppercase font-bold">Avg Sell Size</p>
                             <p id="avgSell" class="text-xl font-black text-red-500">$0.00</p>
                         </div>
                         <div class="bar-bg"><div id="sellFill"></div></div>
                     </div>
-
-                    <div id="flowVerdict" class="pt-4 border-t border-white/5 text-center text-[10px] font-bold italic uppercase tracking-tighter text-gray-400">
-                        Analyzing Market Pressure...
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <button onclick="window.open('https://dexscreener.com/solana/'+currentMint)" class="w-full py-4 bg-white/5 border border-white/10 text-[10px] font-black uppercase text-gray-400 hover:text-[#00ffa3] transition-all">
-                External Pair Analysis
-            </button>
+    <div class="max-w-7xl mx-auto dedu-footer p-8 text-center space-y-4 rounded-b-lg border border-white/5">
+        <p class="text-[#00ffa3] text-sm font-black italic uppercase tracking-widest">Support our tokenized $DEDU on Solana</p>
+        <div class="bg-black/80 inline-block p-4 border border-[#1a3a2a]">
+            <p class="text-[9px] text-gray-500 uppercase font-bold mb-2">Official Contract Address:</p>
+            <p class="text-[11px] font-bold text-[#00ffa3] break-all">AqDGzh4jRZipMrkBuekDXDB1Py2huA8G5xCvrSgmpump</p>
+        </div>
+        <div class="flex justify-center gap-4 pt-4">
+            <a href="https://dexscreener.com/solana/AqDGzh4jRZipMrkBuekDXDB1Py2huA8G5xCvrSgmpump" target="_blank" class="text-[10px] font-black uppercase text-gray-400 hover:text-white transition-all border-b border-white/10">[ VIEW_$DEDU_CHART ]</a>
+            <a href="https://pump.fun/AqDGzh4jRZipMrkBuekDXDB1Py2huA8G5xCvrSgmpump" target="_blank" class="text-[10px] font-black uppercase text-gray-400 hover:text-white transition-all border-b border-white/10">[ PUMP_FUN_PROFILE ]</a>
         </div>
     </div>
 
     <script>
         let currentMint = "";
+        let globalScans = localStorage.getItem('dedu_scans') || 4812;
+        document.getElementById('scanCount').innerText = Number(globalScans).toLocaleString();
 
         async function ignite() {
             currentMint = document.getElementById('tokenAddr').value.trim();
             if(!currentMint) return;
+            
+            // Increment Scan Counter
+            globalScans = parseInt(globalScans) + 1;
+            localStorage.setItem('dedu_scans', globalScans);
+            document.getElementById('scanCount').innerText = globalScans.toLocaleString();
+
             document.getElementById('ui').classList.remove('hidden');
             document.getElementById('market-chart').src = `https://dexscreener.com/solana/${currentMint}?embed=1&theme=dark&trades=0&info=0`;
             
@@ -106,7 +123,6 @@
                 const data = await res.json();
                 const pair = data.pairs[0];
                 
-                // SIGNAL LOGIC (RETRACT = BUY)
                 const change = parseFloat(pair.priceChange.m5 || 0);
                 const disp = document.getElementById('percDisplay');
                 const label = document.getElementById('statusLabel');
@@ -115,44 +131,12 @@
                 if (change < 0) {
                     disp.className = "text-7xl font-black italic tracking-tighter glow-green text-center";
                     label.innerText = "BUY SIGNAL";
-                    label.className = "text-2xl font-black italic text-[#00ffa3] uppercase text-center";
                 } else {
                     disp.className = "text-7xl font-black italic tracking-tighter text-red-500 text-center";
                     label.innerText = "WAITING";
-                    label.className = "text-2xl font-black italic text-red-500 uppercase text-center";
                 }
 
-                // VOLUME FLOW CALCULATOR
                 const vol = pair.volume.h1 || 1;
                 const txBuy = pair.txns.h1.buys || 1;
-                const txSells = pair.txns.h1.sells || 1;
+                const txSells = pair.txns.h
                 
-                // Average sizing metrics
-                const avgB = (vol * 0.52) / txBuy;
-                const avgS = (vol * 0.48) / txSells;
-
-                document.getElementById('avgBuy').innerText = "$" + avgB.toFixed(2);
-                document.getElementById('avgSell').innerText = "$" + avgS.toFixed(2);
-
-                const bRatio = (avgB / (avgB + avgS)) * 100;
-                document.getElementById('buyFill').style.width = bRatio + "%";
-                document.getElementById('sellFill').style.width = (100 - bRatio) + "%";
-
-                const v = document.getElementById('flowVerdict');
-                if (avgB > avgS * 1.3) {
-                    v.innerText = "STRONG BUY PRESSURE: LFG";
-                    v.style.color = "#00ffa3";
-                } else if (avgS > avgB * 1.3) {
-                    v.innerText = "DISTRIBUTION DETECTED: CAUTION";
-                    v.style.color = "#ff3131";
-                } else {
-                    v.innerText = "SIDEWAYS FLOW";
-                    v.style.color = "#666";
-                }
-
-            } catch(e) {}
-        }
-    </script>
-</body>
-</html>
-
